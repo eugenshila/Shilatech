@@ -1,6 +1,11 @@
-Updated README: added admin products management and CSV template instructions.
+Updated README: admin, requests, upload and deployment notes.
 
-Admin product management page: /admin/products
-CSV template: data/products_template.csv
+New endpoints:
+- POST /api/requests  — submit a part request (also GET to list requests for admin)
+- POST /api/admin/upload — upload base64 image payload, returns { url }
+- POST /api/admin/login — simple demo login (returns token)
 
-Remember: The API writes directly to data/products.json on the server filesystem (suitable for demo/local use). For production use, replace with a proper database and secure the admin endpoints.
+Notes:
+- The API writes to data/requests.json and data/products.json. This is suitable for demo/local use but not production.
+- For production: configure SMTP via environment variables (SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM) to enable email notifications.
+- Set ADMIN_PASSWORD env to secure the admin login.
