@@ -1,22 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { promises as fs } from 'fs'
-import path from 'path'
+import { initDb, addRequest, getRequests } from '../../lib/db'
 import nodemailer from 'nodemailer'
 
-const DATA_PATH = path.join(process.cwd(), 'data', 'requests.json')
-
-async function writeRequest(entry:any){
-  const content = await fs.readFile(DATA_PATH, 'utf8').catch(()=> '[]')
-  const list = JSON.parse(content || '[]')
-  list.unshift(entry)
-  await fs.writeFile(DATA_PATH, JSON.stringify(list, null, 2), 'utf8')
-}
+initDb()
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse){
   try{
     if(req.method === 'GET'){
-      const content = await fs.readFile(DATA_PATH, 'utf8').catch(()=> '[]')
-      const list = JSON.parse(content || '[]')
+      const list = getRequests()
       return res.status(200).json({ requests: list })
     }
 
@@ -41,9 +32,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         created_at: new Date().toISOString()
       }
 
-      await writeRequest(entry)
+      addRequest(entry)
 
-      // Send notification email if SMTP configured
+      // optional email
       if(process.env.SMTP_HOST){
         try{
           const transporter = nodemailer.createTransport({
@@ -52,9 +43,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             secure: process.env.SMTP_SECURE === 'true',
             auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined
           })
-
           const adminEmail = process.env.ADMIN_EMAIL || 'Eugene.Shilachilu@gmail.com'
-          const subject = `New part request ${entry.id} — ${entry.part_required || entry.part_number || 'No part specified'}`
+          const subject = `New part request ${entry.id}`
           const html = `<p>New part request received:</p>
             <ul>
               <li><strong>Name:</strong> ${entry.name}</li>
@@ -64,11 +54,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               <li><strong>Part:</strong> ${entry.part_required} (${entry.part_number})</li>
               <li><strong>Notes:</strong> ${entry.notes}</li>
             </ul>`
-
           await transporter.sendMail({ from: process.env.SMTP_FROM || 'no-reply@shilatech.co.ke', to: adminEmail, subject, html })
-        }catch(err){
-          console.error('Email send failed', err)
-        }
+        }catch(e){ console.error('email failed', e) }
       }
 
       return res.status(201).json({ success: true, request: entry })

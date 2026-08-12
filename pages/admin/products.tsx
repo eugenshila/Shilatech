@@ -5,12 +5,20 @@ export default function AdminProducts(){
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState<any|null>(null)
   const [message, setMessage] = useState('')
+  const [token, setToken] = useState<string | null>(typeof window !== 'undefined' ? localStorage.getItem('shila_admin_token') : null)
+  const [password, setPassword] = useState('')
 
-  useEffect(()=>{ fetchList() }, [])
+  useEffect(()=>{ if(token) fetchList() }, [token])
+
+  async function login(){
+    const res = await fetch('/api/admin/login', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ password })})
+    if(res.ok){ const json = await res.json(); localStorage.setItem('shila_admin_token', json.token); setToken(json.token); setMessage('Logged in') }
+    else { setMessage('Login failed') }
+  }
 
   async function fetchList(){
     setLoading(true)
-    const res = await fetch('/api/admin/products')
+    const res = await fetch('/api/admin/products', { headers: token? { 'Authorization': 'Bearer ' + token } : undefined })
     const data = await res.json()
     setProducts(data.products || [])
     setLoading(false)
@@ -18,7 +26,7 @@ export default function AdminProducts(){
 
   async function remove(sku:string){
     if(!confirm('Delete product '+sku+'?')) return
-    await fetch('/api/admin/products', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ action: 'delete', product: { sku } }) })
+    await fetch('/api/admin/products', { method: 'POST', headers: {'Content-Type':'application/json', 'Authorization': 'Bearer ' + token}, body: JSON.stringify({ action: 'delete', product: { sku } }) })
     setMessage('Product deleted')
     fetchList()
   }
@@ -28,7 +36,7 @@ export default function AdminProducts(){
   function openEdit(p:any){ setEditing(p) }
 
   async function saveProduct(p:any){
-    await fetch('/api/admin/products', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action: 'update', product: p }) })
+    await fetch('/api/admin/products', { method:'POST', headers:{'Content-Type':'application/json', 'Authorization': 'Bearer ' + token}, body: JSON.stringify({ action: 'update', product: p }) })
     setMessage('Product saved')
     setEditing(null)
     fetchList()
@@ -53,22 +61,33 @@ export default function AdminProducts(){
       const cols = line.split(',')
       const obj:any = {}
       headers.forEach((h,i)=> obj[h]=cols[i] ? cols[i].trim() : '')
-      // convert compatibility from pipe or slash separated into array
       if(obj.compatibility) obj.compatibility = obj.compatibility.split(/\||\//).map((s:string)=>s.trim()).filter(Boolean)
       obj.price = obj.price? Number(obj.price) : null
       obj.featured = obj.featured === 'true' || obj.featured === '1'
       return obj
     })
     // send to import
-    await fetch('/api/admin/products', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action: 'import', products: rows }) })
+    await fetch('/api/admin/products', { method:'POST', headers:{'Content-Type':'application/json', 'Authorization': 'Bearer ' + token}, body: JSON.stringify({ action: 'import', products: rows }) })
     setMessage('CSV imported successfully')
     fetchList()
   }
 
+  if(!token) return (
+    <div className="pt-24 max-w-4xl mx-auto px-4">
+      <h1 className="text-2xl font-bold mt-8">Admin Login</h1>
+      <p className="mt-2 text-shilaSilver">Enter admin password to continue.</p>
+      <div className="mt-4">
+        <input type="password" className="p-2 rounded bg-neutral-900" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Admin password" />
+        <button onClick={login} className="ml-2 px-4 py-2 bg-shilaAccent rounded-md">Login</button>
+      </div>
+      {message && <div className="mt-4 text-shilaSilver">{message}</div>}
+    </div>
+  )
+
   return (
     <div className="pt-24 max-w-6xl mx-auto px-4 pb-16">
       <h1 className="text-2xl font-bold mt-8">Admin — Products</h1>
-      <p className="text-sm text-shilaSilver mt-2">Manage product catalogue. For demo the data file is data/products.json and changes will modify that file on the server filesystem.</p>
+      <p className="text-sm text-shilaSilver mt-2">Manage product catalogue.</p>
 
       <div className="mt-6 flex gap-3">
         <button onClick={openCreate} className="px-4 py-2 bg-shilaAccent rounded-md">Add Product</button>
