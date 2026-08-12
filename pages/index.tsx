@@ -3,10 +3,26 @@ import Header from '../components/Header'
 import Hero from '../components/Hero'
 import BrandCard from '../components/BrandCard'
 import ProductCard from '../components/ProductCard'
-import products from '../data/products.json'
+import type { GetStaticProps } from 'next'
+import { getAllProducts } from '../lib/db.wire'
 
-export default function Home() {
-  const featured = products.filter(p => p.featured).slice(0,6)
+type Product = {
+  sku: string
+  slug: string
+  name: string
+  brand?: string
+  category?: string
+  price?: number
+  featured?: boolean
+  image?: string
+  description?: string
+  part_number?: string
+  oem_number?: string
+  compatibility?: string[]
+}
+
+export default function Home({ products }: { products: Product[] }) {
+  const featured = (products || []).filter(p => p.featured).slice(0, 6)
   const brands = ['Jeep','Mercedes-Benz','Range Rover','Volkswagen','Ford']
 
   return (
@@ -74,4 +90,19 @@ export default function Home() {
       </footer>
     </div>
   )
+}
+
+export const getStaticProps: GetStaticProps = async () => {
+  try {
+    const products = await getAllProducts()
+    return {
+      props: { products },
+      revalidate: 60,
+    }
+  } catch (err) {
+    // build should still succeed if DB/backend is unavailable
+    // eslint-disable-next-line no-console
+    console.error('getAllProducts error', err)
+    return { props: { products: [] } }
+  }
 }
