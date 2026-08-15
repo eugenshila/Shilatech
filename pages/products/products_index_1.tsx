@@ -1,5 +1,5 @@
-import products from '../data/products.json'
-import ProductCard from '../components/ProductCard'
+import products from '../../data/products.json'
+import ProductCard from '../../components/ProductCard'
 import { useState } from 'react'
 
 export default function Products(){
