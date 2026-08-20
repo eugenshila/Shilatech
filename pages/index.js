@@ -22,7 +22,7 @@ export default function Home() {
           <div className="approvedHeroCopy">
             <h1>PREMIUM PARTS FOR<br/><span>PREMIUM PERFORMANCE</span></h1>
             <div className="greenRule" />
-            <p>Genuine & OEM quality parts for Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo & Ford.</p>
+            <p>Genuine & OEM quality auto spare parts in Nairobi, Kenya for Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo & Ford, with delivery across Kenya.</p>
             <div className="heroButtons approvedHeroButtons">
               <Link className="button greenPrimary" href="/shop">🛒 SHOP NOW</Link>
               <Link className="button vehicleButton" href="/vin">▣ SELECT YOUR VEHICLE</Link>
@@ -34,8 +34,8 @@ export default function Home() {
       <section className="approvedBrandsSection">
         <div className="container approvedBrandPanel">
           {makes.map((make) => (
-            <Link className="approvedBrandItem clickableBrand" key={make.name} href={`/shop?brand=${encodeURIComponent(make.name)}`} aria-label={`View available ${make.name} parts`}>
-              <div className="approvedLogoWrap"><img src={make.src} alt={`${make.name} logo`} /></div>
+            <Link className="approvedBrandItem clickableBrand" key={make.name} href={`/shop?brand=${encodeURIComponent(make.name)}`} aria-label={`View available ${make.name} spare parts in Kenya`}>
+              <div className="approvedLogoWrap"><img src={make.src} alt={`${make.name} spare parts brand logo`} /></div>
               <strong>{make.name.toUpperCase()}</strong>
               <span className="brandBrowseHint">VIEW AVAILABLE PARTS →</span>
             </Link>
@@ -54,15 +54,24 @@ export default function Home() {
 
       <section className="section vinBand">
         <div className="container vinGrid">
-          <div><span className="eyebrow">EXACT FITMENT</span><h2>Find the right part with your VIN</h2><p>Enter your 17-character VIN. We decode your vehicle details and narrow the catalog to matching parts.</p></div>
+          <div><span className="eyebrow">EXACT FITMENT</span><h2>Find the right spare part with your VIN</h2><p>Enter your 17-character VIN. We decode your vehicle details and narrow the catalog to matching parts, helping reduce wrong-part orders.</p></div>
           <VinLookup compact />
         </div>
       </section>
 
       <section className="section">
         <div className="container">
-          <div className="sectionHead"><div><span className="eyebrow">CURATED INVENTORY</span><h2>Featured parts</h2></div><Link href="/shop">View all parts →</Link></div>
+          <div className="sectionHead"><div><span className="eyebrow">CURATED INVENTORY</span><h2>Featured auto spare parts</h2></div><Link href="/shop">View all parts →</Link></div>
           <div className="productGrid">{products.slice(0,4).map(p=><ProductCard key={p.id} product={p}/>)}</div>
+        </div>
+      </section>
+
+      <section className="section seoIntroSection">
+        <div className="container">
+          <span className="eyebrow">AUTO PARTS SPECIALIST · NAIROBI, KENYA</span>
+          <h2>Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo & Ford spare parts in Kenya</h2>
+          <p>Shilatech Auto Spares supplies genuine and quality aftermarket parts for premium European and American vehicles. Search our live inventory by vehicle brand, part number or category, use the VIN checker when you need fitment support, and order for delivery in Nairobi and across Kenya.</p>
+          <p>Our catalogue covers common service and repair needs including <Link href="/shop?category=Engine">engine parts</Link>, <Link href="/shop?category=Brakes">brake parts</Link>, <Link href="/shop?category=Suspension">suspension parts</Link>, electrical components, filters and other replacement parts. For an exact enquiry, <Link href="/contact">contact Shilatech Auto Spares</Link> with your vehicle details or VIN.</p>
         </div>
       </section>
     </Layout>
