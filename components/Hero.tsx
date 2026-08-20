@@ -34,8 +34,8 @@ export default function Hero(){
             <div className="py-3 text-center text-shilaSilver">BY KEYWORD</div>
           </div>
 
-          <form action="/request" method="get" className="mt-4 flex">
-            <input name="part" aria-label="Part number" placeholder="Enter part number (e.g. A 271 094 02 04)" className="min-w-0 flex-1 bg-white text-black px-4 py-3 rounded-l-md outline-none" />
+          <form action="/products" method="get" className="mt-4 flex">
+            <input name="q" aria-label="Search spare parts" placeholder="Part number, vehicle or keyword..." className="min-w-0 flex-1 bg-white text-black px-4 py-3 rounded-l-md outline-none" />
             <button type="submit" className="px-5 bg-shilaGold text-black font-black rounded-r-md hover:bg-shilaGoldLight">⌕</button>
           </form>
 
