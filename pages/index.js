@@ -34,10 +34,11 @@ export default function Home() {
       <section className="approvedBrandsSection">
         <div className="container approvedBrandPanel">
           {makes.map((make) => (
-            <div className="approvedBrandItem" key={make.name}>
+            <Link className="approvedBrandItem clickableBrand" key={make.name} href={`/shop?brand=${encodeURIComponent(make.name)}`} aria-label={`View available ${make.name} parts`}>
               <div className="approvedLogoWrap"><img src={make.src} alt={`${make.name} logo`} /></div>
               <strong>{make.name.toUpperCase()}</strong>
-            </div>
+              <span className="brandBrowseHint">VIEW AVAILABLE PARTS →</span>
+            </Link>
           ))}
         </div>
       </section>
