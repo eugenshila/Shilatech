@@ -106,7 +106,12 @@ export default function Home() {
           <div>
             <div className="font-black mb-4">CUSTOMER SERVICE</div>
             <div className="grid gap-2 text-shilaSilver">
-              <span>Delivery Information</span><span>Returns &amp; Warranty</span><span>Payment Methods</span><span>Terms &amp; Conditions</span><span>Privacy Policy</span><span>FAQs</span>
+              <Link href="/delivery"><a className="hover:text-shilaGoldLight">Delivery Information</a></Link>
+              <Link href="/returns"><a className="hover:text-shilaGoldLight">Returns &amp; Warranty</a></Link>
+              <Link href="/payments"><a className="hover:text-shilaGoldLight">Payment Methods</a></Link>
+              <Link href="/terms"><a className="hover:text-shilaGoldLight">Terms &amp; Conditions</a></Link>
+              <Link href="/privacy"><a className="hover:text-shilaGoldLight">Privacy Policy</a></Link>
+              <Link href="/faq"><a className="hover:text-shilaGoldLight">FAQs</a></Link>
             </div>
           </div>
           <div>
