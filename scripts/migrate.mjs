@@ -38,6 +38,8 @@ CREATE TABLE IF NOT EXISTS products (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+ALTER TABLE products ADD COLUMN IF NOT EXISTS barcode TEXT;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_products_barcode ON products(barcode) WHERE barcode IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS garage_vehicles (
   id BIGSERIAL PRIMARY KEY,
@@ -82,10 +84,111 @@ CREATE TABLE IF NOT EXISTS order_items (
   line_total_kes INTEGER NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS warehouses (
+  id BIGSERIAL PRIMARY KEY,
+  code TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  address TEXT,
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS warehouse_bins (
+  id BIGSERIAL PRIMARY KEY,
+  warehouse_id BIGINT NOT NULL REFERENCES warehouses(id) ON DELETE CASCADE,
+  code TEXT NOT NULL,
+  zone TEXT,
+  aisle TEXT,
+  rack TEXT,
+  shelf TEXT,
+  bin_type TEXT NOT NULL DEFAULT 'STORAGE',
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  UNIQUE(warehouse_id, code)
+);
+
+CREATE TABLE IF NOT EXISTS inventory_batches (
+  id BIGSERIAL PRIMARY KEY,
+  product_id BIGINT NOT NULL REFERENCES products(id) ON DELETE RESTRICT,
+  warehouse_id BIGINT NOT NULL REFERENCES warehouses(id) ON DELETE RESTRICT,
+  bin_id BIGINT REFERENCES warehouse_bins(id) ON DELETE SET NULL,
+  batch_no TEXT NOT NULL,
+  supplier_name TEXT,
+  supplier_ref TEXT,
+  received_qty INTEGER NOT NULL CHECK (received_qty > 0),
+  available_qty INTEGER NOT NULL CHECK (available_qty >= 0),
+  unit_cost_kes INTEGER CHECK (unit_cost_kes >= 0),
+  received_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  status TEXT NOT NULL DEFAULT 'AVAILABLE',
+  created_by BIGINT REFERENCES customers(id) ON DELETE SET NULL,
+  UNIQUE(product_id, warehouse_id, batch_no)
+);
+
+CREATE TABLE IF NOT EXISTS inventory_movements (
+  id BIGSERIAL PRIMARY KEY,
+  product_id BIGINT NOT NULL REFERENCES products(id) ON DELETE RESTRICT,
+  batch_id BIGINT REFERENCES inventory_batches(id) ON DELETE SET NULL,
+  warehouse_id BIGINT NOT NULL REFERENCES warehouses(id) ON DELETE RESTRICT,
+  bin_id BIGINT REFERENCES warehouse_bins(id) ON DELETE SET NULL,
+  movement_type TEXT NOT NULL,
+  quantity INTEGER NOT NULL CHECK (quantity <> 0),
+  reference_type TEXT,
+  reference_id TEXT,
+  notes TEXT,
+  created_by BIGINT REFERENCES customers(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS preorders (
+  id BIGSERIAL PRIMARY KEY,
+  product_id BIGINT NOT NULL REFERENCES products(id) ON DELETE RESTRICT,
+  customer_id BIGINT REFERENCES customers(id) ON DELETE SET NULL,
+  customer_name TEXT NOT NULL,
+  phone TEXT,
+  email TEXT,
+  quantity INTEGER NOT NULL CHECK (quantity > 0),
+  allocated_qty INTEGER NOT NULL DEFAULT 0 CHECK (allocated_qty >= 0),
+  expected_at TIMESTAMPTZ,
+  status TEXT NOT NULL DEFAULT 'OPEN',
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS returns (
+  id BIGSERIAL PRIMARY KEY,
+  return_no TEXT UNIQUE NOT NULL,
+  product_id BIGINT NOT NULL REFERENCES products(id) ON DELETE RESTRICT,
+  order_id BIGINT REFERENCES orders(id) ON DELETE SET NULL,
+  batch_id BIGINT REFERENCES inventory_batches(id) ON DELETE SET NULL,
+  quantity INTEGER NOT NULL CHECK (quantity > 0),
+  reason TEXT NOT NULL,
+  defect_type TEXT,
+  disposition TEXT NOT NULL DEFAULT 'QUARANTINE',
+  status TEXT NOT NULL DEFAULT 'OPEN',
+  notes TEXT,
+  reported_by BIGINT REFERENCES customers(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  resolved_at TIMESTAMPTZ
+);
+
+CREATE TABLE IF NOT EXISTS warehouse_audit (
+  id BIGSERIAL PRIMARY KEY,
+  employee_id BIGINT REFERENCES customers(id) ON DELETE SET NULL,
+  action TEXT NOT NULL,
+  entity_type TEXT,
+  entity_id TEXT,
+  details JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brand);
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
 CREATE INDEX IF NOT EXISTS idx_products_part_no ON products(part_no);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
+CREATE INDEX IF NOT EXISTS idx_batches_fifo ON inventory_batches(product_id, warehouse_id, received_at, id) WHERE available_qty > 0 AND status='AVAILABLE';
+CREATE INDEX IF NOT EXISTS idx_movements_product ON inventory_movements(product_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_returns_status ON returns(status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_preorders_status ON preorders(status, created_at);
 `;
 
 const seed = [
@@ -101,15 +204,16 @@ const seed = [
 
 try {
   await pool.query(schema);
+  await pool.query(`INSERT INTO warehouses (code,name,address) VALUES ('MAIN','Shilatech Main Warehouse','Nairobi') ON CONFLICT (code) DO NOTHING`);
   for (const p of seed) {
     await pool.query(
-      `INSERT INTO products (slug,name,brand,category,part_no,part_type,price_kes,stock,years,models,engine,rating)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11,$12)
+      `INSERT INTO products (slug,name,brand,category,part_no,part_type,price_kes,stock,years,models,engine,rating,barcode)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11,$12,$5)
        ON CONFLICT (part_no) DO UPDATE SET
        name=EXCLUDED.name, brand=EXCLUDED.brand, category=EXCLUDED.category,
        part_type=EXCLUDED.part_type, price_kes=EXCLUDED.price_kes,
        years=EXCLUDED.years, models=EXCLUDED.models, engine=EXCLUDED.engine,
-       rating=EXCLUDED.rating, updated_at=NOW()`,
+       rating=EXCLUDED.rating, barcode=COALESCE(products.barcode,EXCLUDED.barcode), updated_at=NOW()`,
       [...p.slice(0,9), JSON.stringify(p[9]), ...p.slice(10)]
     );
   }
