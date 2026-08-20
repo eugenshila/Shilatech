@@ -11,7 +11,7 @@ export default function Header(){
             <span className="text-shilaGoldLight">◇ Genuine &amp; Quality Parts</span>
           </div>
           <div className="flex items-center gap-6">
-            <a href="tel:+254721802597" className="text-shilaGoldLight hover:text-white">☎ 0712 802 597</a>
+            <a href="tel:+254721802597" className="text-shilaGoldLight hover:text-white">☎ 0721 802 597</a>
             <a href="https://wa.me/254721802597" className="text-white hover:text-shilaGoldLight">◉ WhatsApp Us</a>
           </div>
         </div>
