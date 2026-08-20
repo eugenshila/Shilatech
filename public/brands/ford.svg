@@ -1,4 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="120" viewBox="0 0 400 120">
-  <rect width="400" height="120" fill="#0b0b0b" rx="8"/>
-  <text x="20" y="70" fill="#bdbdbd" font-size="28" font-weight="700" font-family="Arial">FORD</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="140" viewBox="0 0 400 140">
+  <defs><linearGradient id="f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2474d4"/><stop offset="0.55" stop-color="#0f4f9d"/><stop offset="1" stop-color="#082c5f"/></linearGradient></defs>
+  <rect width="400" height="140" rx="14" fill="transparent"/>
+  <ellipse cx="200" cy="64" rx="94" ry="39" fill="url(#f)" stroke="#f4f7fb" stroke-width="4"/>
+  <text x="200" y="79" text-anchor="middle" fill="#ffffff" font-size="44" font-style="italic" font-weight="700" font-family="Georgia, 'Times New Roman', serif">Ford</text>
+  <text x="200" y="132" text-anchor="middle" fill="#f1f1f1" font-size="16" font-weight="700" font-family="Arial, Helvetica, sans-serif" letter-spacing="2">FORD</text>
 </svg>
