@@ -3,16 +3,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        shilaBlack: '#050607',
-        shilaCharcoal: '#111418',
-        shilaCard: '#1b2026',
-        shilaSilver: '#aeb6c0',
-        shilaGold: '#c9d0d8',
-        shilaGoldLight: '#f4f6f8',
-        shilaAccent: '#d7dde4'
+        shilaBlack: '#050505',
+        shilaCharcoal: '#0f1012',
+        shilaCard: '#151515',
+        shilaSilver: '#c6c7ca',
+        shilaGold: '#d59b15',
+        shilaGoldLight: '#f2c14e',
+        shilaAccent: '#e1aa28'
       },
       boxShadow: {
-        gold: '0 0 0 1px rgba(201,208,216,.28), 0 18px 45px rgba(0,0,0,.42)'
+        gold: '0 0 0 1px rgba(213,155,21,.32), 0 20px 55px rgba(0,0,0,.55)'
       }
     }
   },
