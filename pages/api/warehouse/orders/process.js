@@ -63,10 +63,12 @@ export default async function handler(req,res){
       if(job.status!=='PACKING') throw new Error('Order must be in packing first.');
       await client.query(`UPDATE warehouse_orders SET status='READY_DISPATCH',updated_at=NOW() WHERE id=$1`,[jobId]);
       await client.query(`UPDATE orders SET status='Out for Delivery',updated_at=NOW() WHERE id=$1`,[job.sales_order_id]);
+      await client.query(`INSERT INTO delivery_jobs (warehouse_order_id,status) VALUES ($1,'READY') ON CONFLICT (warehouse_order_id) DO NOTHING`,[jobId]);
     } else if(action==='DISPATCH'){
       if(job.status!=='READY_DISPATCH') throw new Error('Order must be ready for dispatch first.');
-      await client.query(`UPDATE warehouse_orders SET status='COMPLETED',updated_at=NOW() WHERE id=$1`,[jobId]);
-      await client.query(`UPDATE orders SET status='Shipped',updated_at=NOW() WHERE id=$1`,[job.sales_order_id]);
+      await client.query(`UPDATE warehouse_orders SET status='OUT_FOR_DELIVERY',updated_at=NOW() WHERE id=$1`,[jobId]);
+      await client.query(`UPDATE orders SET status='Out for Delivery',updated_at=NOW() WHERE id=$1`,[job.sales_order_id]);
+      await client.query(`INSERT INTO delivery_jobs (warehouse_order_id,status) VALUES ($1,'OUT_FOR_DELIVERY') ON CONFLICT (warehouse_order_id) DO UPDATE SET status='OUT_FOR_DELIVERY',updated_at=NOW()`,[jobId]);
     } else throw new Error('Unsupported warehouse action.');
 
     if(action!=='PICK_ITEM') await client.query(`INSERT INTO warehouse_audit (employee_id,action,entity_type,entity_id,details) VALUES ($1,$2,'warehouse_order',$3,$4::jsonb)`,[Number(session.sub),action,String(jobId),JSON.stringify({jobNo:job.job_no,orderNo:job.order_no})]);
