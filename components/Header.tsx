@@ -1,41 +1,44 @@
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 export default function Header(){
+  const router = useRouter()
+  const item = (href:string,label:string) => {
+    const active = href === '/' ? router.pathname === '/' : router.pathname.startsWith(href)
+    return <Link href={href}><a className={`pb-2 border-b-2 ${active ? 'text-shilaGoldLight border-shilaGold' : 'text-white/80 border-transparent hover:text-white'}`}>{label}</a></Link>
+  }
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 bg-black/95 backdrop-blur-2xl header-shadow border-b border-shilaGold/25">
-      <div className="hidden lg:block border-b border-white/5 text-xs text-shilaSilver">
-        <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
-          <div className="flex items-center gap-7">
-            <span className="text-white">⌖ Nairobi, Kenya</span>
-            <span>▱ Fast Nationwide Delivery</span>
-            <span className="text-shilaGoldLight">◇ Genuine &amp; Quality Parts</span>
+    <header className="fixed top-0 left-0 right-0 z-40 bg-black/95 backdrop-blur-2xl border-b border-shilaGold/20 shadow-[0_14px_42px_rgba(0,0,0,.55)]">
+      <div className="hidden lg:block border-b border-white/10 text-[12px]">
+        <div className="max-w-[1460px] mx-auto px-6 py-2.5 flex items-center justify-between">
+          <div className="flex items-center gap-8 text-white/85">
+            <span>⌖ Nairobi, Kenya</span>
+            <span>▰ Fast Nationwide Delivery</span>
+            <span>◇ Genuine &amp; Quality Parts</span>
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-7">
             <a href="tel:+254721802597" className="text-shilaGoldLight hover:text-white">☎ 0721 802 597</a>
             <a href="https://wa.me/254721802597" className="text-white hover:text-shilaGoldLight">◉ WhatsApp Us</a>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-6">
-        <Link href="/">
-          <a className="flex items-center gap-3 min-w-0">
-            <img src="/logo.svg" alt="Shilatech Auto Spares" className="h-12 md:h-14 w-auto logo-glow" />
-          </a>
-        </Link>
+      <div className="max-w-[1460px] mx-auto px-6 py-4 flex items-center justify-between gap-8">
+        <Link href="/"><a className="shrink-0"><img src="/logo.svg" alt="Shilatech Auto Spares" className="h-14 lg:h-16 w-auto logo-glow" /></a></Link>
 
-        <nav className="hidden md:flex items-center gap-5 lg:gap-7 text-xs lg:text-sm font-semibold">
-          <Link href="/"><a className="text-shilaGoldLight border-b-2 border-shilaGold pb-2">HOME</a></Link>
-          <Link href="/about"><a className="text-shilaSilver hover:text-white">ABOUT US</a></Link>
-          <Link href="/products"><a className="text-shilaSilver hover:text-white">SPARE PARTS</a></Link>
-          <Link href="/brands"><a className="text-shilaSilver hover:text-white">VEHICLE BRANDS</a></Link>
-          <Link href="/services"><a className="text-shilaSilver hover:text-white">SERVICES</a></Link>
-          <Link href="/contact"><a className="text-shilaSilver hover:text-white">CONTACT US</a></Link>
+        <nav className="hidden md:flex items-center gap-7 xl:gap-9 text-[13px] xl:text-[14px] font-semibold whitespace-nowrap">
+          {item('/','HOME')}
+          {item('/about','ABOUT US')}
+          {item('/products','SPARE PARTS')}
+          {item('/brands','VEHICLE BRANDS')}
+          {item('/services','SERVICES')}
+          {item('/contact','CONTACT US')}
         </nav>
 
-        <div className="flex items-center gap-2">
-          <a href="https://wa.me/254721802597" className="hidden lg:inline-flex px-4 py-2 gold-outline rounded-md text-shilaGoldLight font-semibold hover:bg-shilaGold hover:text-black">WhatsApp</a>
-          <Link href="/request"><a className="px-4 py-2 btn-accent rounded-md text-xs sm:text-sm whitespace-nowrap">FIND A PART</a></Link>
+        <div className="flex items-center gap-3 shrink-0">
+          <a href="https://wa.me/254721802597" className="hidden lg:inline-flex items-center gap-2 px-5 py-3 border border-shilaGold/80 rounded-md text-white font-semibold hover:bg-white/5">◉ WhatsApp</a>
+          <Link href="/request"><a className="px-5 py-3 btn-accent rounded-md text-sm whitespace-nowrap">FIND A PART</a></Link>
         </div>
       </div>
     </header>
