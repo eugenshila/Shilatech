@@ -9,5 +9,5 @@ export const products = [
   { id:8, slug:'vw-passat-water-pump', name:'Volkswagen Water Pump Assembly', brand:'Volkswagen', category:'Engine', partNo:'06H121026DD', type:'OEM', price:22000, stock:6, years:'2010–2018', models:['Passat','Tiguan','Golf'], engine:'1.8 / 2.0 TSI', rating:4.8 }
 ];
 
-export const brands = ['Jeep','Mercedes-Benz','Volkswagen','Range Rover','Volvo'];
+export const brands = ['Jeep','Mercedes-Benz','Volkswagen','Range Rover','Volvo','Ford'];
 export const categories = ['Engine','Brakes','Suspension','Electrical','Body','Interior'];
