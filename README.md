@@ -1,28 +1,24 @@
-# Shilatech Autospares v2
+# Shilatech Autospares
 
-Fresh Next.js rebuild for Shilatech Autospares.
+Premium e-commerce platform for Jeep, Mercedes-Benz, Volkswagen, Range Rover and Volvo spare parts.
 
-## Included in this foundation
-- Premium responsive storefront
-- Jeep, Mercedes-Benz, Volkswagen, Range Rover and Volvo catalog
-- Product filtering and search
-- Product detail pages
-- Persistent browser cart
-- NHTSA vPIC VIN decoding endpoint and catalog hand-off
-- Customer account and admin dashboard UI foundations
-- FAQ, About, Contact and Delivery/Returns pages
-- Railway-compatible Node 20 build/start configuration
+## Production stack
 
-## Next production integrations
-- PostgreSQL product, fitment, customer and order schema
-- Secure authentication and admin authorization
-- M-Pesa / card / PayPal payment integration
-- Real inventory CRUD + CSV/Excel imports
-- Checkout, invoices and delivery tracking
-- Email/SMS notifications
-- Product imagery/object storage
-- Paid VIN data provider if deeper non-US-market fitment data is required
+- Next.js / React
+- Railway hosting
+- PostgreSQL on Railway
+- Database-backed catalog, customers, My Garage and orders
+- VIN decoding with catalog fitment filtering foundation
 
-## Run
-npm install
-npm run dev
+## Required environment variables
+
+- `DATABASE_URL` — Railway Postgres connection
+- `JWT_SECRET` — secure session signing secret (32+ characters)
+
+## Database
+
+Railway runs `npm run db:migrate` before deployment to create/update the schema and seed starter inventory.
+
+## Payments
+
+Checkout supports M-Pesa, card and PayPal selection. Live gateway charges remain disabled until official payment-provider credentials are configured.
