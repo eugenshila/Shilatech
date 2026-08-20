@@ -22,9 +22,10 @@ export function CartProvider({ children }) {
 
   const removeFromCart = id => setCart(prev => prev.filter(x => x.id !== id));
   const setQty = (id, qty) => setCart(prev => prev.map(x => x.id === id ? { ...x, qty: Math.max(1, qty) } : x));
+  const clearCart = () => setCart([]);
   const total = useMemo(() => cart.reduce((s, x) => s + x.price * x.qty, 0), [cart]);
   const count = useMemo(() => cart.reduce((s, x) => s + x.qty, 0), [cart]);
 
-  return <CartContext.Provider value={{ cart, addToCart, removeFromCart, setQty, total, count }}>{children}</CartContext.Provider>;
+  return <CartContext.Provider value={{ cart, addToCart, removeFromCart, setQty, clearCart, total, count }}>{children}</CartContext.Provider>;
 }
 export const useCart = () => useContext(CartContext);
