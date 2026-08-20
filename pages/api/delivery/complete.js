@@ -16,11 +16,12 @@ export default async function handler(req,res){
   const client=await getPool().connect();
   try{
     await client.query('BEGIN');
-    const q=await client.query(`SELECT dj.*,wo.order_id,wo.job_no,o.order_no FROM delivery_jobs dj JOIN warehouse_orders wo ON wo.id=dj.warehouse_order_id JOIN orders o ON o.id=wo.order_id WHERE dj.id=$1 FOR UPDATE`,[deliveryId]);
+    const q=await client.query(`SELECT dj.*,wo.order_id,wo.job_no,o.order_no,o.payment_method,o.payment_status FROM delivery_jobs dj JOIN warehouse_orders wo ON wo.id=dj.warehouse_order_id JOIN orders o ON o.id=wo.order_id WHERE dj.id=$1 FOR UPDATE`,[deliveryId]);
     if(!q.rowCount) throw new Error('Delivery job not found.');
     const d=q.rows[0];
     if(d.status==='DELIVERED') throw new Error('This delivery is already completed.');
     if(session.role==='delivery_driver'&&d.driver_id&&Number(d.driver_id)!==Number(session.sub)) throw new Error('This delivery is assigned to another driver.');
+    if(String(d.payment_method).toLowerCase()==='m-pesa'&&String(d.payment_status).toLowerCase()!=='paid') throw new Error('Payment is still pending. Prompt the customer for M-Pesa payment and wait for confirmation before completing delivery.');
     await client.query(`UPDATE delivery_jobs SET driver_id=COALESCE(driver_id,$1),status='DELIVERED',recipient_name=$2,signature_data=$3,gps_lat=$4,gps_lng=$5,delivery_notes=$6,signed_at=NOW(),delivered_at=NOW(),updated_at=NOW() WHERE id=$7`,[Number(session.sub),recipientName,signatureData,Number.isFinite(lat)?lat:null,Number.isFinite(lng)?lng:null,notes,deliveryId]);
     await client.query(`UPDATE orders SET status='Delivered',updated_at=NOW() WHERE id=$1`,[d.order_id]);
     await client.query(`UPDATE warehouse_orders SET status='COMPLETED',updated_at=NOW() WHERE id=$1`,[d.warehouse_order_id]);
