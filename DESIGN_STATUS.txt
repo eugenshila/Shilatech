@@ -1,0 +1,1 @@
+Shilatech premium black-and-gold homepage redesign: first pass complete on branch redesign-black-gold-homepage. Awaiting preview/build verification and final photographic logo/Jeep hero assets before production merge.
