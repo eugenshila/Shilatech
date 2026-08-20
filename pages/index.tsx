@@ -18,7 +18,7 @@ export default function Home() {
   ]
 
   return (
-    <div className="min-h-screen bg-shilaBlack">
+    <div className="min-h-screen bg-transparent">
       <Head>
         <title>Shilatech Auto Spares — Premium Auto Spares in Kenya</title>
         <meta name="description" content="Premium spare parts for Jeep, Mercedes-Benz, Range Rover, Volkswagen and Ford. Search by part number, vehicle or keyword and contact Shilatech Auto Spares in Nairobi." />
@@ -28,46 +28,52 @@ export default function Home() {
       <main className="pt-[76px] lg:pt-[112px]">
         <Hero />
 
-        <section className="max-w-7xl mx-auto px-4 pt-32 md:pt-36 pb-10">
-          <div className="flex items-center justify-center gap-4 mb-7">
-            <span className="w-10 h-px bg-shilaGold"></span>
-            <h2 className="text-xl md:text-2xl font-black tracking-wide text-center">SHOP BY VEHICLE BRAND</h2>
-            <span className="w-10 h-px bg-shilaGold"></span>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {brands.map(b => <BrandCard key={b} brand={b} />)}
-          </div>
-        </section>
-
-        <section className="benefit-strip border-y border-shilaGold/25">
-          <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {benefits.map(([icon,title,copy]) => (
-              <div key={title} className="flex items-center gap-4 px-4 lg:border-r last:border-r-0 border-white/10">
-                <div className="text-3xl text-shilaGoldLight">{icon}</div>
-                <div>
-                  <div className="text-sm font-black text-shilaGoldLight">{title}</div>
-                  <div className="text-xs text-shilaSilver mt-1">{copy}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="max-w-7xl mx-auto px-4 py-12">
-          <div className="flex items-end justify-between gap-4 mb-7">
-            <div>
-              <p className="section-kicker mb-2">Popular right now</p>
-              <h2 className="text-2xl md:text-3xl font-black">FEATURED SPARE PARTS</h2>
-              <div className="mt-3 h-0.5 w-24 bg-shilaGold"></div>
+        <section className="max-w-7xl mx-auto px-4 pt-32 md:pt-36 pb-6">
+          <div className="page-glass rounded-2xl px-4 md:px-7 py-8">
+            <div className="flex items-center justify-center gap-4 mb-7">
+              <span className="w-10 h-px bg-shilaGold"></span>
+              <h2 className="text-xl md:text-2xl font-black tracking-wide text-center">SHOP BY VEHICLE BRAND</h2>
+              <span className="w-10 h-px bg-shilaGold"></span>
             </div>
-            <Link href="/products"><a className="text-sm font-bold text-shilaGoldLight hover:text-white">VIEW ALL PARTS →</a></Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-            {featured.map((p:any) => <ProductCard key={p.sku} product={p} />)}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              {brands.map(b => <BrandCard key={b} brand={b} />)}
+            </div>
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-4 pb-12">
+        <section className="max-w-7xl mx-auto px-4 py-3">
+          <div className="benefit-strip rounded-xl border border-shilaGold/25">
+            <div className="px-4 py-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {benefits.map(([icon,title,copy]) => (
+                <div key={title} className="flex items-center gap-4 px-4 lg:border-r last:border-r-0 border-white/10">
+                  <div className="text-3xl text-shilaGoldLight">{icon}</div>
+                  <div>
+                    <div className="text-sm font-black text-shilaGoldLight">{title}</div>
+                    <div className="text-xs text-shilaSilver mt-1">{copy}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="max-w-7xl mx-auto px-4 py-6">
+          <div className="page-glass rounded-2xl px-4 md:px-7 py-8">
+            <div className="flex items-end justify-between gap-4 mb-7">
+              <div>
+                <p className="section-kicker mb-2">Popular right now</p>
+                <h2 className="text-2xl md:text-3xl font-black">FEATURED SPARE PARTS</h2>
+                <div className="mt-3 h-0.5 w-24 bg-shilaGold"></div>
+              </div>
+              <Link href="/products"><a className="text-sm font-bold text-shilaGoldLight hover:text-white">VIEW ALL PARTS →</a></Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+              {featured.map((p:any) => <ProductCard key={p.sku} product={p} />)}
+            </div>
+          </div>
+        </section>
+
+        <section className="max-w-7xl mx-auto px-4 pb-12 pt-3">
           <div className="premium-panel newsletter-panel rounded-xl px-5 md:px-8 py-6 flex flex-col lg:flex-row gap-5 lg:items-center lg:justify-between">
             <div className="flex items-center gap-4">
               <div className="text-4xl text-shilaGoldLight">✉</div>
