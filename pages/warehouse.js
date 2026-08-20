@@ -4,107 +4,58 @@ import Layout from '../components/Layout';
 const emptyReceipt={productId:'',warehouseId:'',quantity:'',batchNo:'',supplierName:'',supplierRef:'',binCode:'',unitCostKes:''};
 const emptyPreorder={productId:'',customerName:'',phone:'',email:'',quantity:'',expectedAt:'',notes:''};
 const emptyReturn={productId:'',quantity:'',reason:'Factory defect',defectType:'',disposition:'QUARANTINE',notes:''};
-
+const staffRoles=new Set(['admin','warehouse_manager','warehouse_clerk','picker','packer','dispatch','finance','auditor']);
 const brandLogos={
-  'Jeep':'https://commons.wikimedia.org/wiki/Special:Redirect/file/Jeep_logo.svg',
+  Jeep:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Jeep_logo.svg',
   'Mercedes-Benz':'https://commons.wikimedia.org/wiki/Special:Redirect/file/Mercedes_benz_logo1989.png',
-  'Volkswagen':'https://commons.wikimedia.org/wiki/Special:Redirect/file/Volkswagen_logo.png',
+  Volkswagen:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Volkswagen_logo.png',
   'Range Rover':'https://commons.wikimedia.org/wiki/Special:Redirect/file/Land_Rover_logo_2.jpg',
-  'Volvo':'https://commons.wikimedia.org/wiki/Special:Redirect/file/Volvo-iron-mark-2021.jpg',
-  'Ford':'https://commons.wikimedia.org/wiki/Special:Redirect/file/Ford_Logo.png'
+  Volvo:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Volvo-iron-mark-2021.jpg',
+  Ford:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Ford_Logo.png'
 };
 
 export default function Warehouse(){
+  const [auth,setAuth]=useState('checking'); const [login,setLogin]=useState({email:'',password:''});
   const [data,setData]=useState(null); const [error,setError]=useState(''); const [busy,setBusy]=useState(false);
   const [receipt,setReceipt]=useState(emptyReceipt); const [preorder,setPreorder]=useState(emptyPreorder); const [ret,setRet]=useState(emptyReturn);
-  async function load(){
-    setError('');
-    try{const r=await fetch('/api/warehouse/overview');const j=await r.json();if(!r.ok) throw new Error(j.error||'Could not load warehouse.');setData(j);}catch(e){setError(e.message);}
-  }
-  useEffect(()=>{load();},[]);
-  const products=useMemo(()=>data?.products||[],[data]);
-  const warehouses=data?.warehouses||[];
-  const brandAreas=warehouses.filter(w=>w.storage_type==='BRAND');
-  const selectedProduct=products.find(p=>String(p.id)===String(receipt.productId));
-  const selectedArea=brandAreas.find(w=>w.brand_code===selectedProduct?.brand);
-  async function send(url,body,reset){setBusy(true);setError('');try{const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok) throw new Error(j.error||'Action failed.');reset();await load();}catch(e){setError(e.message);}finally{setBusy(false);}}
-  function selectReceiptProduct(value){
-    const p=products.find(x=>String(x.id)===String(value));
-    const area=brandAreas.find(w=>w.brand_code===p?.brand);
-    setReceipt({...receipt,productId:value,warehouseId:area?String(area.id):''});
-  }
 
-  return <Layout>
-    <section className="pageHero compactHero"><div className="container"><span className="eyebrow">PRIVATE STAFF PORTAL</span><h1>Warehouse & 3PL Operations</h1><p>FIFO inventory, brand-separated storage, receiving, barcode labels, preorders, returns and defect quarantine. Authorized employees only.</p></div></section>
-    <section className="section warehousePage"><div className="container">
-      {error&&<div className="warehouseAlert">{error}</div>}
-      {!data&&!error&&<p>Loading warehouse…</p>}
-      {data&&<>
-        <div className="warehouseMetrics">
-          <div><span>Units on hand</span><strong>{data.metrics.units_on_hand}</strong></div>
-          <div><span>Active FIFO batches</span><strong>{data.metrics.active_batches}</strong></div>
-          <div><span>Aged batches 180+ days</span><strong>{data.metrics.aged_batches}</strong></div>
-          <div><span>Open preorders</span><strong>{data.preorders.length}</strong></div>
-        </div>
+  async function load(){setError('');try{const r=await fetch('/api/warehouse/overview');const j=await r.json();if(r.status===401||r.status===403){setAuth('login');setData(null);return;}if(!r.ok)throw new Error(j.error||'Could not load warehouse.');setData(j);setAuth('staff');}catch(e){setError(e.message);}}
+  useEffect(()=>{(async()=>{try{const r=await fetch('/api/auth/me');const j=await r.json();if(r.ok&&staffRoles.has(j.user?.role)){setAuth('staff');await load();}else setAuth('login');}catch{setAuth('login');}})();},[]);
 
-        <div className="brandStorageHead"><div><span className="eyebrow">DEDICATED STORAGE</span><h2>Separate storage area for every vehicle brand</h2><p>Parts are assigned to their brand zone at receiving. The system blocks staff from mixing brands.</p></div></div>
-        <div className="brandStorageGrid">
-          {(data.brandSummary||[]).map(area=><div className="brandStorageCard" key={area.id}>
-            <div className="brandStorageLogo">{brandLogos[area.brand_code]?<img src={brandLogos[area.brand_code]} alt={`${area.brand_code} logo`}/>:<strong>{area.brand_code}</strong>}</div>
-            <div className="brandStorageBody"><span>{area.code} ZONE</span><h3>{area.name}</h3><p>{area.units_on_hand} units · {area.active_batches} active FIFO batches</p></div>
-          </div>)}
-        </div>
-        <div className="quarantineNotice"><strong>⚠ Returns & Defect Quarantine</strong><span>Factory-defect and non-sellable parts remain physically and digitally separated from all brand stock.</span></div>
+  async function staffLogin(e){e.preventDefault();setBusy(true);setError('');try{const r=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(login)});const j=await r.json();if(!r.ok)throw new Error(j.error||'Sign in failed.');if(!staffRoles.has(j.user?.role)){await fetch('/api/auth/logout',{method:'POST'});throw new Error('This account is not authorized for the warehouse portal.');}setAuth('staff');setLogin({email:'',password:''});await load();}catch(e2){setError(e2.message);}finally{setBusy(false);}}
+  async function logout(){await fetch('/api/auth/logout',{method:'POST'});setData(null);setAuth('login');}
 
-        <div className="warehouseForms">
-          <form className="warehousePanel" onSubmit={e=>{e.preventDefault();send('/api/warehouse/receive',{...receipt,productId:Number(receipt.productId),warehouseId:Number(receipt.warehouseId),quantity:Number(receipt.quantity),unitCostKes:receipt.unitCostKes===''?null:Number(receipt.unitCostKes)},()=>setReceipt(emptyReceipt));}}>
-            <h2>Receive stock</h2><p>Select a part and its dedicated brand storage area is assigned automatically.</p>
-            <label>Part<select required value={receipt.productId} onChange={e=>selectReceiptProduct(e.target.value)}><option value="">Select part</option>{products.map(p=><option value={p.id} key={p.id}>{p.brand} · {p.part_no} — {p.name}</option>)}</select></label>
-            <label>Dedicated storage area<select required value={receipt.warehouseId} onChange={e=>setReceipt({...receipt,warehouseId:e.target.value})}><option value="">Select part first</option>{brandAreas.map(w=><option value={w.id} key={w.id} disabled={selectedProduct&&w.brand_code!==selectedProduct.brand}>{w.code} — {w.name}</option>)}</select></label>
-            {selectedProduct&&<div className="storageAssignment"><b>{selectedProduct.brand}</b><span>→ {selectedArea?.name||'No matching storage area configured'}</span></div>}
-            <label>Quantity<input required type="number" min="1" value={receipt.quantity} onChange={e=>setReceipt({...receipt,quantity:e.target.value})}/></label>
-            <label>Batch / GRN number<input required value={receipt.batchNo} onChange={e=>setReceipt({...receipt,batchNo:e.target.value})}/></label>
-            <label>Bin code<input placeholder="e.g. JEEP-A-01-02" value={receipt.binCode} onChange={e=>setReceipt({...receipt,binCode:e.target.value})}/></label>
-            <label>Supplier<input value={receipt.supplierName} onChange={e=>setReceipt({...receipt,supplierName:e.target.value})}/></label>
-            <label>Supplier reference<input value={receipt.supplierRef} onChange={e=>setReceipt({...receipt,supplierRef:e.target.value})}/></label>
-            <label>Unit cost (KSh)<input type="number" min="0" value={receipt.unitCostKes} onChange={e=>setReceipt({...receipt,unitCostKes:e.target.value})}/></label>
-            <button disabled={busy} className="button greenPrimary">Receive into brand area</button>
-          </form>
+  const products=useMemo(()=>data?.products||[],[data]); const warehouses=data?.warehouses||[]; const brandAreas=warehouses.filter(w=>w.storage_type==='BRAND');
+  const selectedProduct=products.find(p=>String(p.id)===String(receipt.productId)); const selectedArea=brandAreas.find(w=>w.brand_code===selectedProduct?.brand);
+  async function send(url,body,reset){setBusy(true);setError('');try{const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw new Error(j.error||'Action failed.');reset();await load();}catch(e){setError(e.message);}finally{setBusy(false);}}
+  function selectReceiptProduct(value){const p=products.find(x=>String(x.id)===String(value));const area=brandAreas.find(w=>w.brand_code===p?.brand);setReceipt({...receipt,productId:value,warehouseId:area?String(area.id):''});}
 
-          <form className="warehousePanel" onSubmit={e=>{e.preventDefault();send('/api/warehouse/preorders',{...preorder,productId:Number(preorder.productId),quantity:Number(preorder.quantity)},()=>setPreorder(emptyPreorder));}}>
-            <h2>Create preorder</h2><p>Records demand for stock not yet available.</p>
-            <label>Part<select required value={preorder.productId} onChange={e=>setPreorder({...preorder,productId:e.target.value})}><option value="">Select part</option>{products.map(p=><option value={p.id} key={p.id}>{p.brand} · {p.part_no} — {p.name}</option>)}</select></label>
-            <label>Customer name<input required value={preorder.customerName} onChange={e=>setPreorder({...preorder,customerName:e.target.value})}/></label>
-            <label>Phone<input value={preorder.phone} onChange={e=>setPreorder({...preorder,phone:e.target.value})}/></label>
-            <label>Email<input type="email" value={preorder.email} onChange={e=>setPreorder({...preorder,email:e.target.value})}/></label>
-            <label>Quantity<input required type="number" min="1" value={preorder.quantity} onChange={e=>setPreorder({...preorder,quantity:e.target.value})}/></label>
-            <label>Expected date<input type="date" value={preorder.expectedAt} onChange={e=>setPreorder({...preorder,expectedAt:e.target.value})}/></label>
-            <label>Notes<textarea rows="3" value={preorder.notes} onChange={e=>setPreorder({...preorder,notes:e.target.value})}/></label>
-            <button disabled={busy} className="button greenPrimary">Save preorder</button>
-          </form>
+  if(auth==='checking') return <Layout><section className="warehouseLoginPage"><div className="warehouseLoginLoading">Loading secure warehouse portal…</div></section></Layout>;
+  if(auth==='login') return <Layout><section className="warehouseLoginPage"><div className="warehouseLoginShell">
+    <div className="warehouseLoginBrand"><div className="warehouseCompanyMark">S</div><div><h1>SHILATECH</h1><span>AUTO SPARES · WAREHOUSE PORTAL</span></div></div>
+    <div className="warehouseLoginLogos">{Object.entries(brandLogos).map(([name,src])=><div key={name}><img src={src} alt={`${name} logo`}/><span>{name}</span></div>)}</div>
+    <form className="warehouseLoginCard" onSubmit={staffLogin}><span className="eyebrow">EMPLOYEE ACCESS ONLY</span><h2>Warehouse Staff Login</h2><p>Sign in with your authorized Shilatech employee account.</p>{error&&<div className="warehouseAlert">{error}</div>}<label>Email<input type="email" required autoComplete="username" value={login.email} onChange={e=>setLogin({...login,email:e.target.value})}/></label><label>Password<input type="password" required autoComplete="current-password" value={login.password} onChange={e=>setLogin({...login,password:e.target.value})}/></label><button className="button greenPrimary" disabled={busy}>{busy?'Signing in…':'Sign in to warehouse'}</button><small>Customer accounts cannot access warehouse information.</small></form>
+  </div></section></Layout>;
 
-          <form className="warehousePanel" onSubmit={e=>{e.preventDefault();send('/api/warehouse/returns',{...ret,productId:Number(ret.productId),quantity:Number(ret.quantity)},()=>setRet(emptyReturn));}}>
-            <h2>Return / factory defect</h2><p>Defective parts go to the separate quarantine process and remain out of sellable storage.</p>
-            <label>Part<select required value={ret.productId} onChange={e=>setRet({...ret,productId:e.target.value})}><option value="">Select part</option>{products.map(p=><option value={p.id} key={p.id}>{p.brand} · {p.part_no} — {p.name}</option>)}</select></label>
-            <label>Quantity<input required type="number" min="1" value={ret.quantity} onChange={e=>setRet({...ret,quantity:e.target.value})}/></label>
-            <label>Reason<select value={ret.reason} onChange={e=>setRet({...ret,reason:e.target.value})}><option>Factory defect</option><option>Customer return</option><option>Wrong part</option><option>Transit damage</option><option>Warranty issue</option></select></label>
-            <label>Defect type<input placeholder="e.g. cracked housing" value={ret.defectType} onChange={e=>setRet({...ret,defectType:e.target.value})}/></label>
-            <label>Disposition<select value={ret.disposition} onChange={e=>setRet({...ret,disposition:e.target.value})}><option>QUARANTINE</option><option>SUPPLIER_RETURN</option><option>REPAIR</option><option>WRITE_OFF</option></select></label>
-            <label>Notes<textarea rows="3" value={ret.notes} onChange={e=>setRet({...ret,notes:e.target.value})}/></label>
-            <button disabled={busy} className="button greenPrimary">Record return</button>
-          </form>
-        </div>
+  return <Layout><section className="pageHero compactHero"><div className="container warehouseHeroRow"><div><span className="eyebrow">PRIVATE STAFF PORTAL</span><h1>Warehouse & 3PL Operations</h1><p>Customer orders, FIFO inventory, brand-separated storage, barcodes, preorders and returns.</p></div><button className="warehouseLogout" onClick={logout}>Sign out</button></div></section>
+    <section className="section warehousePage"><div className="container">{error&&<div className="warehouseAlert">{error}</div>}{!data&&!error&&<p>Loading warehouse…</p>}{data&&<>
+      <div className="warehouseMetrics"><div><span>Units on hand</span><strong>{data.metrics.units_on_hand}</strong></div><div><span>Active FIFO batches</span><strong>{data.metrics.active_batches}</strong></div><div><span>Online orders waiting</span><strong>{data.warehouseOrders?.length||0}</strong></div><div><span>Open preorders</span><strong>{data.preorders.length}</strong></div></div>
 
-        <div className="warehousePanel warehouseWide">
-          <div className="warehousePanelHead"><div><h2>FIFO stock batches</h2><p>Stock is grouped by brand storage area. Within each part, the oldest available batch is used first.</p></div></div>
-          <div className="warehouseTableWrap"><table className="warehouseTable"><thead><tr><th>Brand</th><th>Part</th><th>Batch</th><th>Received</th><th>Available</th><th>Storage area / Bin</th><th>Supplier</th><th>Barcode</th></tr></thead><tbody>{data.batches.map(b=><tr key={b.id}><td><b>{b.brand}</b><small>{b.warehouse_code}</small></td><td><b>{b.part_no}</b><small>{b.name}</small></td><td>{b.batch_no}</td><td>{new Date(b.received_at).toLocaleDateString()}</td><td>{b.available_qty}/{b.received_qty}</td><td>{b.warehouse}<small>{b.bin_code||'Unassigned'}</small></td><td>{b.supplier_name||'—'}</td><td><a target="_blank" rel="noreferrer" href={`/api/warehouse/barcode?id=${b.product_id}`}>Print label</a></td></tr>)}</tbody></table></div>
-        </div>
+      <div className="warehousePanel warehouseOrderQueue"><div className="warehousePanelHead"><div><span className="eyebrow">ONLINE SALES → WAREHOUSE</span><h2>Customer order fulfilment queue</h2><p>Every website order appears here automatically with its brand storage area and required quantity.</p></div></div>
+        {data.warehouseOrders?.length?<div className="warehouseOrderGrid">{data.warehouseOrders.map(o=><div className="warehouseOrderCard" key={o.id}><div className="warehouseOrderTop"><div><b>{o.job_no}</b><span>Order {o.order_no}</span></div><strong>{o.status}</strong></div><div className="warehouseCustomer"><b>{o.customer_name}</b><span>{o.phone} · {o.delivery_zone}</span><span>{o.payment_method} · {o.payment_status}</span></div><div className="warehouseOrderItems">{(o.items||[]).map(i=><div key={i.id}><div><b>{i.brand} · {i.partNo}</b><span>{i.name}</span><small>{i.storageArea||'Storage area pending'}</small></div><strong>{i.pickedQty}/{i.quantity}</strong></div>)}</div></div>)}</div>:<div className="emptyWarehouseOrders">No online orders waiting for warehouse processing.</div>}
+      </div>
 
-        <div className="warehouseSplit">
-          <div className="warehousePanel"><h2>Open preorders</h2>{data.preorders.length?data.preorders.map(p=><div className="warehouseListRow" key={p.id}><div><b>{p.part_no}</b><span>{p.customer_name}</span></div><strong>{p.allocated_qty}/{p.quantity}</strong></div>):<p>No open preorders.</p>}</div>
-          <div className="warehousePanel"><h2>Open returns & defects</h2>{data.returns.length?data.returns.map(r=><div className="warehouseListRow" key={r.id}><div><b>{r.return_no} · {r.brand} · {r.part_no}</b><span>{r.reason}{r.defect_type?` — ${r.defect_type}`:''}</span></div><strong>{r.disposition}</strong></div>):<p>No open returns.</p>}</div>
-        </div>
-      </>}
-    </div></section>
-  </Layout>;
+      <div className="brandStorageHead"><div><span className="eyebrow">DEDICATED STORAGE</span><h2>Separate storage area for every vehicle brand</h2><p>Parts are automatically assigned to the correct brand zone.</p></div></div>
+      <div className="brandStorageGrid">{(data.brandSummary||[]).map(area=><div className="brandStorageCard" key={area.id}><div className="brandStorageLogo">{brandLogos[area.brand_code]?<img src={brandLogos[area.brand_code]} alt={`${area.brand_code} logo`}/>:<strong>{area.brand_code}</strong>}</div><div className="brandStorageBody"><span>{area.code} ZONE</span><h3>{area.name}</h3><p>{area.units_on_hand} units · {area.active_batches} active FIFO batches</p></div></div>)}</div>
+      <div className="quarantineNotice"><strong>⚠ Returns & Defect Quarantine</strong><span>Factory-defect and non-sellable parts remain separated from sellable stock.</span></div>
+
+      <div className="warehouseForms">
+        <form className="warehousePanel" onSubmit={e=>{e.preventDefault();send('/api/warehouse/receive',{...receipt,productId:Number(receipt.productId),warehouseId:Number(receipt.warehouseId),quantity:Number(receipt.quantity),unitCostKes:receipt.unitCostKes===''?null:Number(receipt.unitCostKes)},()=>setReceipt(emptyReceipt));}}><h2>Receive stock</h2><p>Select a part and its brand area is assigned automatically.</p><label>Part<select required value={receipt.productId} onChange={e=>selectReceiptProduct(e.target.value)}><option value="">Select part</option>{products.map(p=><option value={p.id} key={p.id}>{p.brand} · {p.part_no} — {p.name}</option>)}</select></label><label>Dedicated storage area<select required value={receipt.warehouseId} onChange={e=>setReceipt({...receipt,warehouseId:e.target.value})}><option value="">Select part first</option>{brandAreas.map(w=><option value={w.id} key={w.id} disabled={selectedProduct&&w.brand_code!==selectedProduct.brand}>{w.code} — {w.name}</option>)}</select></label>{selectedProduct&&<div className="storageAssignment"><b>{selectedProduct.brand}</b><span>→ {selectedArea?.name||'No matching area configured'}</span></div>}<label>Quantity<input required type="number" min="1" value={receipt.quantity} onChange={e=>setReceipt({...receipt,quantity:e.target.value})}/></label><label>Batch / GRN number<input required value={receipt.batchNo} onChange={e=>setReceipt({...receipt,batchNo:e.target.value})}/></label><label>Bin code<input placeholder="e.g. JEEP-A-01-02" value={receipt.binCode} onChange={e=>setReceipt({...receipt,binCode:e.target.value})}/></label><label>Supplier<input value={receipt.supplierName} onChange={e=>setReceipt({...receipt,supplierName:e.target.value})}/></label><label>Supplier reference<input value={receipt.supplierRef} onChange={e=>setReceipt({...receipt,supplierRef:e.target.value})}/></label><label>Unit cost (KSh)<input type="number" min="0" value={receipt.unitCostKes} onChange={e=>setReceipt({...receipt,unitCostKes:e.target.value})}/></label><button disabled={busy} className="button greenPrimary">Receive into brand area</button></form>
+        <form className="warehousePanel" onSubmit={e=>{e.preventDefault();send('/api/warehouse/preorders',{...preorder,productId:Number(preorder.productId),quantity:Number(preorder.quantity)},()=>setPreorder(emptyPreorder));}}><h2>Create preorder</h2><p>Records demand for stock not yet available.</p><label>Part<select required value={preorder.productId} onChange={e=>setPreorder({...preorder,productId:e.target.value})}><option value="">Select part</option>{products.map(p=><option value={p.id} key={p.id}>{p.brand} · {p.part_no} — {p.name}</option>)}</select></label><label>Customer name<input required value={preorder.customerName} onChange={e=>setPreorder({...preorder,customerName:e.target.value})}/></label><label>Phone<input value={preorder.phone} onChange={e=>setPreorder({...preorder,phone:e.target.value})}/></label><label>Email<input type="email" value={preorder.email} onChange={e=>setPreorder({...preorder,email:e.target.value})}/></label><label>Quantity<input required type="number" min="1" value={preorder.quantity} onChange={e=>setPreorder({...preorder,quantity:e.target.value})}/></label><label>Expected date<input type="date" value={preorder.expectedAt} onChange={e=>setPreorder({...preorder,expectedAt:e.target.value})}/></label><label>Notes<textarea rows="3" value={preorder.notes} onChange={e=>setPreorder({...preorder,notes:e.target.value})}/></label><button disabled={busy} className="button greenPrimary">Save preorder</button></form>
+        <form className="warehousePanel" onSubmit={e=>{e.preventDefault();send('/api/warehouse/returns',{...ret,productId:Number(ret.productId),quantity:Number(ret.quantity)},()=>setRet(emptyReturn));}}><h2>Return / factory defect</h2><p>Defective parts go to quarantine.</p><label>Part<select required value={ret.productId} onChange={e=>setRet({...ret,productId:e.target.value})}><option value="">Select part</option>{products.map(p=><option value={p.id} key={p.id}>{p.brand} · {p.part_no} — {p.name}</option>)}</select></label><label>Quantity<input required type="number" min="1" value={ret.quantity} onChange={e=>setRet({...ret,quantity:e.target.value})}/></label><label>Reason<select value={ret.reason} onChange={e=>setRet({...ret,reason:e.target.value})}><option>Factory defect</option><option>Customer return</option><option>Wrong part</option><option>Transit damage</option><option>Warranty issue</option></select></label><label>Defect type<input value={ret.defectType} onChange={e=>setRet({...ret,defectType:e.target.value})}/></label><label>Disposition<select value={ret.disposition} onChange={e=>setRet({...ret,disposition:e.target.value})}><option>QUARANTINE</option><option>SUPPLIER_RETURN</option><option>REPAIR</option><option>WRITE_OFF</option></select></label><label>Notes<textarea rows="3" value={ret.notes} onChange={e=>setRet({...ret,notes:e.target.value})}/></label><button disabled={busy} className="button greenPrimary">Record return</button></form>
+      </div>
+
+      <div className="warehousePanel warehouseWide"><div className="warehousePanelHead"><div><h2>FIFO stock batches</h2><p>Oldest available stock is used first.</p></div></div><div className="warehouseTableWrap"><table className="warehouseTable"><thead><tr><th>Brand</th><th>Part</th><th>Batch</th><th>Received</th><th>Available</th><th>Storage area / Bin</th><th>Supplier</th><th>Barcode</th></tr></thead><tbody>{data.batches.map(b=><tr key={b.id}><td><b>{b.brand}</b><small>{b.warehouse_code}</small></td><td><b>{b.part_no}</b><small>{b.name}</small></td><td>{b.batch_no}</td><td>{new Date(b.received_at).toLocaleDateString()}</td><td>{b.available_qty}/{b.received_qty}</td><td>{b.warehouse}<small>{b.bin_code||'Unassigned'}</small></td><td>{b.supplier_name||'—'}</td><td><a target="_blank" rel="noreferrer" href={`/api/warehouse/barcode?id=${b.product_id}`}>Print label</a></td></tr>)}</tbody></table></div></div>
+      <div className="warehouseSplit"><div className="warehousePanel"><h2>Open preorders</h2>{data.preorders.length?data.preorders.map(p=><div className="warehouseListRow" key={p.id}><div><b>{p.part_no}</b><span>{p.customer_name}</span></div><strong>{p.allocated_qty}/{p.quantity}</strong></div>):<p>No open preorders.</p>}</div><div className="warehousePanel"><h2>Open returns & defects</h2>{data.returns.length?data.returns.map(r=><div className="warehouseListRow" key={r.id}><div><b>{r.return_no} · {r.brand} · {r.part_no}</b><span>{r.reason}{r.defect_type?` — ${r.defect_type}`:''}</span></div><strong>{r.disposition}</strong></div>):<p>No open returns.</p>}</div></div>
+    </>}</div></section></Layout>;
 }
