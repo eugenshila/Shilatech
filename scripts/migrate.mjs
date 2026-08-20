@@ -1,0 +1,119 @@
+import pg from 'pg';
+
+const { Pool } = pg;
+if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is required');
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+});
+
+const schema = `
+CREATE TABLE IF NOT EXISTS customers (
+  id BIGSERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  phone TEXT,
+  password_hash TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'customer',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS products (
+  id BIGSERIAL PRIMARY KEY,
+  slug TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  brand TEXT NOT NULL,
+  category TEXT NOT NULL,
+  part_no TEXT UNIQUE NOT NULL,
+  part_type TEXT NOT NULL DEFAULT 'Aftermarket',
+  price_kes INTEGER NOT NULL CHECK (price_kes >= 0),
+  stock INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0),
+  years TEXT,
+  models JSONB NOT NULL DEFAULT '[]'::jsonb,
+  engine TEXT,
+  rating NUMERIC(2,1) DEFAULT 5.0,
+  image_url TEXT,
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS garage_vehicles (
+  id BIGSERIAL PRIMARY KEY,
+  customer_id BIGINT NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+  vin VARCHAR(17) NOT NULL,
+  make TEXT,
+  model TEXT,
+  model_year TEXT,
+  engine TEXT,
+  trim TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(customer_id, vin)
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+  id BIGSERIAL PRIMARY KEY,
+  order_no TEXT UNIQUE NOT NULL,
+  customer_id BIGINT REFERENCES customers(id) ON DELETE SET NULL,
+  customer_name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  delivery_address TEXT NOT NULL,
+  delivery_zone TEXT NOT NULL DEFAULT 'Nairobi',
+  subtotal_kes INTEGER NOT NULL,
+  delivery_kes INTEGER NOT NULL DEFAULT 0,
+  total_kes INTEGER NOT NULL,
+  payment_method TEXT NOT NULL,
+  payment_status TEXT NOT NULL DEFAULT 'Pending',
+  status TEXT NOT NULL DEFAULT 'Pending',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS order_items (
+  id BIGSERIAL PRIMARY KEY,
+  order_id BIGINT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+  product_id BIGINT REFERENCES products(id) ON DELETE SET NULL,
+  part_no TEXT NOT NULL,
+  name TEXT NOT NULL,
+  quantity INTEGER NOT NULL CHECK (quantity > 0),
+  unit_price_kes INTEGER NOT NULL,
+  line_total_kes INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brand);
+CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
+CREATE INDEX IF NOT EXISTS idx_products_part_no ON products(part_no);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
+`;
+
+const seed = [
+  ['mercedes-oil-filter-a2711800109','Mercedes-Benz Oil Filter','Mercedes-Benz','Engine','A2711800109','OEM',2800,18,'2008–2015',['C-Class','E-Class','GLK'],'1.8 / 2.0 Petrol',4.9],
+  ['jeep-grand-cherokee-front-brake-pad','Jeep Grand Cherokee Front Brake Pad Set','Jeep','Brakes','68212327AA','Aftermarket',12500,9,'2014–2021',['Grand Cherokee'],'3.0 / 3.6 / 5.7',4.8],
+  ['vw-golf-coil-pack','Volkswagen Ignition Coil Pack','Volkswagen','Electrical','06H905115B','OEM',6500,24,'2009–2018',['Golf','Passat','Tiguan'],'1.8 / 2.0 TSI',4.7],
+  ['range-rover-air-suspension-compressor','Range Rover Air Suspension Compressor','Range Rover','Suspension','LR061888','Aftermarket',48000,4,'2013–2020',['Range Rover','Range Rover Sport'],'Multiple',4.9],
+  ['volvo-xc60-control-arm','Volvo XC60 Front Control Arm','Volvo','Suspension','31317603','Aftermarket',18500,7,'2010–2017',['XC60'],'T5 / T6 / D4 / D5',4.6],
+  ['mercedes-cabin-air-filter','Mercedes-Benz Cabin Air Filter','Mercedes-Benz','Interior','A2048300018','OEM',4200,15,'2007–2014',['C-Class','GLK'],'All',4.8],
+  ['jeep-wrangler-wheel-bearing','Jeep Wrangler Front Wheel Bearing Hub','Jeep','Suspension','52060398AC','Aftermarket',16500,8,'2007–2018',['Wrangler'],'2.8 / 3.6 / 3.8',4.7],
+  ['vw-passat-water-pump','Volkswagen Water Pump Assembly','Volkswagen','Engine','06H121026DD','OEM',22000,6,'2010–2018',['Passat','Tiguan','Golf'],'1.8 / 2.0 TSI',4.8]
+];
+
+try {
+  await pool.query(schema);
+  for (const p of seed) {
+    await pool.query(
+      `INSERT INTO products (slug,name,brand,category,part_no,part_type,price_kes,stock,years,models,engine,rating)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11,$12)
+       ON CONFLICT (part_no) DO UPDATE SET
+       name=EXCLUDED.name, brand=EXCLUDED.brand, category=EXCLUDED.category,
+       part_type=EXCLUDED.part_type, price_kes=EXCLUDED.price_kes,
+       years=EXCLUDED.years, models=EXCLUDED.models, engine=EXCLUDED.engine,
+       rating=EXCLUDED.rating, updated_at=NOW()`,
+      [...p.slice(0,9), JSON.stringify(p[9]), ...p.slice(10)]
+    );
+  }
+  console.log('Database migration and seed complete.');
+} finally {
+  await pool.end();
+}
