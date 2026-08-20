@@ -35,9 +35,15 @@ export default async function handler(req,res){
       const phone=String(req.body?.phone||'').trim()||null;
       const password=String(req.body?.password||'');
       if(!name||!email||password.length<8) throw new Error('Driver name, email and a password of at least 8 characters are required.');
+      const existing=await client.query(`SELECT id,role FROM customers WHERE email=$1 FOR UPDATE`,[email]);
+      if(existing.rowCount&&existing.rows[0].role!=='delivery_driver') throw new Error('That email already belongs to a non-driver account. Use a different driver email.');
       const hash=await bcrypt.hash(password,12);
-      const created=await client.query(`INSERT INTO customers (name,email,phone,password_hash,role) VALUES ($1,$2,$3,$4,'delivery_driver')
-        ON CONFLICT (email) DO UPDATE SET name=EXCLUDED.name,phone=EXCLUDED.phone,role='delivery_driver' RETURNING id,name,email,phone,role`,[name,email,phone,hash]);
+      let created;
+      if(existing.rowCount){
+        created=await client.query(`UPDATE customers SET name=$1,phone=$2,password_hash=$3 WHERE id=$4 RETURNING id,name,email,phone,role`,[name,phone,hash,existing.rows[0].id]);
+      }else{
+        created=await client.query(`INSERT INTO customers (name,email,phone,password_hash,role) VALUES ($1,$2,$3,$4,'delivery_driver') RETURNING id,name,email,phone,role`,[name,email,phone,hash]);
+      }
       await client.query(`INSERT INTO warehouse_audit (employee_id,action,entity_type,entity_id,details) VALUES ($1,'DRIVER_ACCOUNT_CREATED','customer',$2,$3::jsonb)`,[Number(session.sub),String(created.rows[0].id),JSON.stringify({name,email,phone})]);
       await client.query('COMMIT');
       return res.status(201).json({ok:true,driver:created.rows[0]});
