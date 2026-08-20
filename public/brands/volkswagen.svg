@@ -1,4 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="120" viewBox="0 0 400 120">
-  <rect width="400" height="120" fill="#0b0b0b" rx="8"/>
-  <text x="20" y="70" fill="#bdbdbd" font-size="24" font-weight="700" font-family="Arial">VOLKSWAGEN</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="140" viewBox="0 0 400 140">
+  <defs><linearGradient id="vw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5aa9ff"/><stop offset="0.55" stop-color="#1769aa"/><stop offset="1" stop-color="#0a2f5d"/></linearGradient></defs>
+  <rect width="400" height="140" rx="14" fill="transparent"/>
+  <g transform="translate(200 64)">
+    <circle r="43" fill="url(#vw)" stroke="#f2f6ff" stroke-width="4"/>
+    <path d="M-25,-24 L-8,14 L0,-4 L8,14 L25,-24" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M-20,8 L-6,31 L0,18 L6,31 L20,8" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+  </g>
+  <text x="200" y="132" text-anchor="middle" fill="#f1f1f1" font-size="16" font-weight="700" font-family="Arial, Helvetica, sans-serif" letter-spacing="2">VOLKSWAGEN</text>
 </svg>
