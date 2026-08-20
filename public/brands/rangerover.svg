@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="140" viewBox="0 0 400 140">
-  <defs><linearGradient id="lr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f7a4b"/><stop offset="0.5" stop-color="#154d2d"/><stop offset="1" stop-color="#0c2f1a"/></linearGradient></defs>
-  <rect width="400" height="140" rx="14" fill="transparent"/>
-  <ellipse cx="200" cy="62" rx="92" ry="40" fill="url(#lr)" stroke="#f2f2f2" stroke-width="4" transform="rotate(-8 200 62)"/>
-  <text x="200" y="54" text-anchor="middle" fill="#ffffff" font-size="25" font-style="italic" font-weight="800" font-family="Arial, Helvetica, sans-serif">LAND</text>
-  <text x="200" y="80" text-anchor="middle" fill="#ffffff" font-size="25" font-style="italic" font-weight="800" font-family="Arial, Helvetica, sans-serif">ROVER</text>
-  <text x="200" y="128" text-anchor="middle" fill="#d7d7d7" font-size="15" font-weight="700" font-family="Arial, Helvetica, sans-serif" letter-spacing="1.7">RANGE ROVER</text>
-</svg>
