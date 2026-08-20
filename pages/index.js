@@ -4,41 +4,50 @@ import VinLookup from '../components/VinLookup';
 import ProductCard from '../components/ProductCard';
 import { products } from '../data/products';
 
-const makeLogos = [
-  { name: 'Jeep', mark: <span className="jeepWordmark">JEEP</span> },
-  { name: 'Mercedes-Benz', mark: <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27"/><path d="M32 7v25M32 32 11 46M32 32l21 14"/></svg> },
-  { name: 'Volkswagen', mark: <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27"/><path d="M14 17l12 30 6-15 6 15 12-30M20 17l12 15 12-15"/></svg> },
-  { name: 'Range Rover', mark: <span className="rangeWordmark"><b>RANGE</b><b>ROVER</b></span> },
-  { name: 'Volvo', mark: <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="28" cy="36" r="18"/><path d="M41 23 55 9M44 9h11v11"/></svg> }
+const makes = [
+  { name: 'Jeep', src: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Jeep_logo.svg' },
+  { name: 'Mercedes-Benz', src: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Mercedes_benz_logo1989.png' },
+  { name: 'Volkswagen', src: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Volkswagen_logo.png' },
+  { name: 'Range Rover', src: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Land_Rover_logo_2.jpg' },
+  { name: 'Volvo', src: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Volvo-iron-mark-2021.jpg' },
+  { name: 'Ford', src: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Ford_Logo.png' }
 ];
 
 export default function Home() {
   return (
     <Layout>
-      <section className="hero premiumJeepHero">
-        <div className="heroShade" />
-        <div className="container heroGrid jeepHeroGrid">
-          <div className="heroCopy jeepHeroCopy">
-            <span className="eyebrow">PREMIUM AUTOMOTIVE PARTS • NAIROBI</span>
-            <h1>Precision parts.<br/><span>Confidence on every drive.</span></h1>
-            <p>Genuine and quality aftermarket parts for Jeep, Mercedes-Benz, Volkswagen, Range Rover and Volvo — backed by specialist fitment support.</p>
-            <div className="heroButtons"><Link className="button primary" href="/shop">Shop parts</Link><Link className="button ghost" href="/vin">Find by VIN</Link></div>
-            <div className="heroStats"><div><strong>5</strong><span>Premium makes</span></div><div><strong>VIN</strong><span>Fitment lookup</span></div><div><strong>KE</strong><span>Nationwide delivery</span></div></div>
+      <section className="hero approvedJeepHero">
+        <div className="approvedHeroOverlay" />
+        <div className="container approvedHeroInner">
+          <div className="approvedHeroCopy">
+            <h1>PREMIUM PARTS FOR<br/><span>PREMIUM PERFORMANCE</span></h1>
+            <div className="greenRule" />
+            <p>Genuine & OEM quality parts for Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo & Ford.</p>
+            <div className="heroButtons approvedHeroButtons">
+              <Link className="button greenPrimary" href="/shop">🛒 SHOP NOW</Link>
+              <Link className="button vehicleButton" href="/vin">▣ SELECT YOUR VEHICLE</Link>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="brandStrip premiumBrandStrip">
-        <div className="container brandStripInner">
-          <div className="brandStripHeading"><span className="eyebrow">SPECIALIST PARTS FOR</span><h2>Five premium marques. One trusted parts specialist.</h2></div>
-          <div className="brandLogoCards">
-            {makeLogos.map((brand) => (
-              <div className="brandLogoCard" key={brand.name}>
-                <div className="brandLogoMark">{brand.mark}</div>
-                <span>{brand.name}</span>
-              </div>
-            ))}
-          </div>
+      <section className="approvedBrandsSection">
+        <div className="container approvedBrandPanel">
+          {makes.map((make) => (
+            <div className="approvedBrandItem" key={make.name}>
+              <div className="approvedLogoWrap"><img src={make.src} alt={`${make.name} logo`} /></div>
+              <strong>{make.name.toUpperCase()}</strong>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="approvedBenefits">
+        <div className="container approvedBenefitsGrid">
+          <div className="approvedBenefit"><i>✓</i><div><h3>100% Genuine Parts</h3><p>We stock original and OEM quality parts.</p></div></div>
+          <div className="approvedBenefit"><i>▣</i><div><h3>Fast Nationwide Delivery</h3><p>Quick & reliable delivery across Kenya.</p></div></div>
+          <div className="approvedBenefit"><i>★</i><div><h3>Best Prices Guarantee</h3><p>Competitive prices on all parts.</p></div></div>
+          <div className="approvedBenefit"><i>◉</i><div><h3>Expert Support</h3><p>We help you find the right part.</p></div></div>
         </div>
       </section>
 
@@ -54,16 +63,6 @@ export default function Home() {
           <div className="sectionHead"><div><span className="eyebrow">CURATED INVENTORY</span><h2>Featured parts</h2></div><Link href="/shop">View all parts →</Link></div>
           <div className="productGrid">{products.slice(0,4).map(p=><ProductCard key={p.id} product={p}/>)}</div>
         </div>
-      </section>
-
-      <section className="section trustSection">
-        <div className="container trustGrid">
-          {[['✓','Genuine & verified','Carefully sourced OEM and quality aftermarket options.'],['◇','Fitment support','VIN-assisted matching before you buy.'],['↗','Fast delivery','Local and nationwide delivery options across Kenya.'],['★','Warranty support','Clear warranty and returns policies on eligible items.']].map(x=><div className="trustCard" key={x[1]}><i>{x[0]}</i><h3>{x[1]}</h3><p>{x[2]}</p></div>)}
-        </div>
-      </section>
-
-      <section className="section quoteSection">
-        <div className="container quoteBox"><span className="eyebrow">WHY SHILATECH</span><h2>Parts expertise without the guesswork.</h2><p>“Our goal is simple: help every customer identify the correct part, understand the options and get back on the road with confidence.”</p><Link href="/about" className="button ghost">Our story</Link></div>
       </section>
     </Layout>
   );
