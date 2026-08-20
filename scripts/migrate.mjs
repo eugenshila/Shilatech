@@ -92,6 +92,8 @@ CREATE TABLE IF NOT EXISTS warehouses (
   active BOOLEAN NOT NULL DEFAULT TRUE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+ALTER TABLE warehouses ADD COLUMN IF NOT EXISTS brand_code TEXT;
+ALTER TABLE warehouses ADD COLUMN IF NOT EXISTS storage_type TEXT NOT NULL DEFAULT 'BRAND';
 
 CREATE TABLE IF NOT EXISTS warehouse_bins (
   id BIGSERIAL PRIMARY KEY,
@@ -189,6 +191,7 @@ CREATE INDEX IF NOT EXISTS idx_batches_fifo ON inventory_batches(product_id, war
 CREATE INDEX IF NOT EXISTS idx_movements_product ON inventory_movements(product_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_returns_status ON returns(status, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_preorders_status ON preorders(status, created_at);
+CREATE INDEX IF NOT EXISTS idx_warehouses_brand ON warehouses(brand_code) WHERE active=TRUE;
 `;
 
 const seed = [
@@ -202,9 +205,21 @@ const seed = [
   ['vw-passat-water-pump','Volkswagen Water Pump Assembly','Volkswagen','Engine','06H121026DD','OEM',22000,6,'2010–2018',['Passat','Tiguan','Golf'],'1.8 / 2.0 TSI',4.8]
 ];
 
+const brandAreas = [
+  ['JEEP','Jeep Storage Area','Jeep'],
+  ['MERC','Mercedes-Benz Storage Area','Mercedes-Benz'],
+  ['VW','Volkswagen Storage Area','Volkswagen'],
+  ['RROVER','Range Rover / Land Rover Storage Area','Range Rover'],
+  ['VOLVO','Volvo Storage Area','Volvo'],
+  ['FORD','Ford Storage Area','Ford']
+];
+
 try {
   await pool.query(schema);
-  await pool.query(`INSERT INTO warehouses (code,name,address) VALUES ('MAIN','Shilatech Main Warehouse','Nairobi') ON CONFLICT (code) DO NOTHING`);
+  await pool.query(`INSERT INTO warehouses (code,name,address,brand_code,storage_type) VALUES ('QUAR','Returns & Defect Quarantine','Nairobi',NULL,'QUARANTINE') ON CONFLICT (code) DO UPDATE SET name=EXCLUDED.name,storage_type='QUARANTINE',active=TRUE`);
+  for (const [code,name,brand] of brandAreas) {
+    await pool.query(`INSERT INTO warehouses (code,name,address,brand_code,storage_type) VALUES ($1,$2,'Nairobi',$3,'BRAND') ON CONFLICT (code) DO UPDATE SET name=EXCLUDED.name,brand_code=EXCLUDED.brand_code,storage_type='BRAND',active=TRUE`, [code,name,brand]);
+  }
   for (const p of seed) {
     await pool.query(
       `INSERT INTO products (slug,name,brand,category,part_no,part_type,price_kes,stock,years,models,engine,rating,barcode)
@@ -217,7 +232,7 @@ try {
       [...p.slice(0,9), JSON.stringify(p[9]), ...p.slice(10)]
     );
   }
-  console.log('Database migration and seed complete.');
+  console.log('Database migration, brand storage areas and seed complete.');
 } finally {
   await pool.end();
 }
