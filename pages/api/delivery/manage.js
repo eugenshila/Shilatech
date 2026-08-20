@@ -11,15 +11,25 @@ export default async function handler(req,res){
   const pool=getPool();
   if(req.method==='GET'){
     try{
-      const [drivers,jobs]=await Promise.all([
+      const [drivers,jobs,performance,recent]=await Promise.all([
         pool.query(`SELECT id,name,email,phone,role,created_at FROM customers WHERE role='delivery_driver' ORDER BY name,email`),
         pool.query(`SELECT dj.id,dj.status,dj.driver_id,wo.job_no,o.order_no,o.customer_name,o.phone,o.delivery_address,o.delivery_zone,
           c.name AS driver_name,c.email AS driver_email
           FROM delivery_jobs dj JOIN warehouse_orders wo ON wo.id=dj.warehouse_order_id JOIN orders o ON o.id=wo.order_id
           LEFT JOIN customers c ON c.id=dj.driver_id
-          WHERE dj.status<>'DELIVERED' ORDER BY dj.created_at ASC LIMIT 200`)
+          WHERE dj.status<>'DELIVERED' ORDER BY dj.created_at ASC LIMIT 200`),
+        pool.query(`SELECT c.id,c.name,c.email,
+          COUNT(dj.id) FILTER (WHERE dj.status<>'DELIVERED')::int AS active_jobs,
+          COUNT(dj.id) FILTER (WHERE dj.status='DELIVERED')::int AS delivered_jobs,
+          MAX(dj.delivered_at) AS last_delivery_at
+          FROM customers c LEFT JOIN delivery_jobs dj ON dj.driver_id=c.id
+          WHERE c.role='delivery_driver' GROUP BY c.id ORDER BY c.name,c.email`),
+        pool.query(`SELECT dj.id,dj.delivered_at,dj.recipient_name,dj.gps_lat,dj.gps_lng,c.name AS driver_name,
+          o.order_no,o.customer_name,o.delivery_zone
+          FROM delivery_jobs dj JOIN customers c ON c.id=dj.driver_id JOIN warehouse_orders wo ON wo.id=dj.warehouse_order_id JOIN orders o ON o.id=wo.order_id
+          WHERE dj.status='DELIVERED' ORDER BY dj.delivered_at DESC NULLS LAST LIMIT 50`)
       ]);
-      return res.status(200).json({drivers:drivers.rows,jobs:jobs.rows});
+      return res.status(200).json({drivers:drivers.rows,jobs:jobs.rows,performance:performance.rows,recentDeliveries:recent.rows});
     }catch(error){console.error(error);return res.status(500).json({error:'Could not load driver management.'});}
   }
 
