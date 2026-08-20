@@ -16,10 +16,15 @@ export default function Shop() {
 
   useEffect(()=>{
     if (!router.isReady) return;
-    const raw = String(router.query.brand || '').trim().toLowerCase();
-    const requested = brands.find(b => b.toLowerCase() === raw) || brands.find(b => raw.includes(b.toLowerCase()) || b.toLowerCase().includes(raw));
-    setBrand(requested || '');
-  },[router.isReady, router.query.brand]);
+    const rawBrand = String(router.query.brand || '').trim().toLowerCase();
+    const requestedBrand = brands.find(b => b.toLowerCase() === rawBrand) || brands.find(b => rawBrand && (rawBrand.includes(b.toLowerCase()) || b.toLowerCase().includes(rawBrand)));
+    setBrand(requestedBrand || '');
+
+    const rawCategory = String(router.query.category || '').trim().toLowerCase();
+    const requestedCategory = categories.find(c => c.toLowerCase() === rawCategory);
+    setCategory(requestedCategory || '');
+    setSearch(String(router.query.q || '').trim());
+  },[router.isReady, router.query.brand, router.query.category, router.query.q]);
 
   useEffect(()=>{
     const timer=setTimeout(async()=>{
@@ -59,8 +64,11 @@ export default function Shop() {
     router.replace('/shop', undefined, { shallow:true });
   };
 
-  return <Layout>
-    <section className="pageHero compactHero"><div className="container"><span className="eyebrow">CATALOG</span><h1>{brand ? `${brand} parts` : 'Premium parts, precisely matched.'}</h1><p>{brand ? `Browse currently available ${brand} spare parts, then refine by category, availability or part number.` : 'Search live inventory by vehicle, part number or category.'}</p></div></section>
+  const seoTitle = brand ? `${brand} Spare Parts Kenya | Shilatech Auto Spares` : category ? `${category} Auto Parts Kenya | Shilatech Auto Spares` : undefined;
+  const seoDescription = brand ? `Shop available ${brand} spare parts in Nairobi, Kenya. Search genuine and quality aftermarket parts by part number and category, with VIN fitment support and nationwide delivery.` : undefined;
+
+  return <Layout title={seoTitle} description={seoDescription}>
+    <section className="pageHero compactHero"><div className="container"><span className="eyebrow">CATALOG</span><h1>{brand ? `${brand} parts` : category ? `${category} parts` : 'Premium parts, precisely matched.'}</h1><p>{brand ? `Browse currently available ${brand} spare parts, then refine by category, availability or part number.` : 'Search live inventory by vehicle, part number or category.'}</p></div></section>
     <section className="section"><div className="container shopLayout">
       <aside className="filters">
         <h3>Filter parts</h3>
