@@ -1,6 +1,6 @@
 {
   "name": "shilatech-autospares",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "private": true,
   "engines": { "node": "20.x" },
   "packageManager": "npm@10.8.2",
@@ -8,7 +8,7 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start -p ${PORT:-3000}",
-    "db:migrate": "node scripts/migrate.mjs && node scripts/migrate-fulfillment.mjs && node scripts/migrate-delivery.mjs && node scripts/migrate-payments.mjs"
+    "db:migrate": "node scripts/migrate.mjs && node scripts/migrate-fulfillment.mjs && node scripts/migrate-delivery.mjs && node scripts/migrate-payments.mjs && node scripts/migrate-v1.mjs"
   },
   "dependencies": {
     "bcryptjs": "2.4.3",
