@@ -1,28 +1,29 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="400" height="140" viewBox="0 0 400 140">
   <defs>
-    <radialGradient id="vwBlue" cx="38%" cy="28%" r="78%">
-      <stop offset="0" stop-color="#79c2ff"/>
-      <stop offset="0.42" stop-color="#2479c8"/>
-      <stop offset="1" stop-color="#06396d"/>
+    <radialGradient id="blue" cx="34%" cy="26%" r="82%">
+      <stop offset="0" stop-color="#69c4ff"/>
+      <stop offset="0.38" stop-color="#1687d4"/>
+      <stop offset="0.72" stop-color="#07538f"/>
+      <stop offset="1" stop-color="#032d55"/>
     </radialGradient>
-    <linearGradient id="silver" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="chrome" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#ffffff"/>
-      <stop offset="0.35" stop-color="#dce5ee"/>
-      <stop offset="0.68" stop-color="#8997a5"/>
+      <stop offset="0.22" stop-color="#dce7ef"/>
+      <stop offset="0.48" stop-color="#ffffff"/>
+      <stop offset="0.72" stop-color="#8d9ca9"/>
       <stop offset="1" stop-color="#f7fbff"/>
     </linearGradient>
-    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
-      <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#000000" flood-opacity="0.7"/>
-      <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#5aa9ff" flood-opacity="0.35"/>
+    <filter id="drop" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#000" flood-opacity=".75"/>
     </filter>
   </defs>
   <rect width="400" height="140" rx="14" fill="transparent"/>
-  <g transform="translate(200 61)" filter="url(#shadow)">
-    <circle r="46" fill="#07111c" stroke="url(#silver)" stroke-width="5"/>
-    <circle r="39" fill="url(#vwBlue)" stroke="#dbe7f2" stroke-width="2"/>
-    <path d="M-25,-25 L-9,12 L0,-7 L9,12 L25,-25" fill="none" stroke="url(#silver)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
-    <path d="M-23,7 L-7,31 L0,17 L7,31 L23,7" fill="none" stroke="url(#silver)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
-    <path d="M-31,-10 C-19,-28 19,-28 31,-10" fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="2"/>
+  <g transform="translate(200 61)" filter="url(#drop)">
+    <circle r="45" fill="url(#blue)" stroke="url(#chrome)" stroke-width="4"/>
+    <circle r="37" fill="none" stroke="#f5f8fb" stroke-width="2.5" opacity=".95"/>
+    <path d="M-28,-27 L-14,-27 L0,4 L14,-27 L28,-27 L10,14 L0,-8 L-10,14 Z" fill="url(#chrome)"/>
+    <path d="M-29,4 L-17,4 L0,34 L17,4 L29,4 L8,38 L-8,38 Z" fill="url(#chrome)"/>
+    <path d="M-32,-15 C-18,-31 18,-31 32,-15" fill="none" stroke="#fff" stroke-width="2" opacity=".35"/>
   </g>
-  <text x="200" y="132" text-anchor="middle" fill="#f5f7fa" font-size="15" font-weight="700" font-family="Segoe UI, Arial, sans-serif" letter-spacing="2.2">VOLKSWAGEN</text>
+  <text x="200" y="132" text-anchor="middle" fill="#f7f7f7" font-size="13" font-weight="700" font-family="Segoe UI, Arial, sans-serif" letter-spacing="2.5">VOLKSWAGEN</text>
 </svg>
