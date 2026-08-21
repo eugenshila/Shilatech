@@ -50,7 +50,7 @@ export default function Layout({ children, title, description, image, canonicalP
   const shouldNoindex = noindex || privatePaths.some(p => router.pathname === p || router.pathname.startsWith(`${p}/`));
   const path = canonicalPath || (router.asPath || '/').split('?')[0].split('#')[0];
   const canonical = `${SITE_URL}${path === '/' ? '' : path}`;
-  const socialImage = image || `${SITE_URL}/favicon.ico`;
+  const socialImage = image || `${SITE_URL}/shilatech-logo.webp`;
   const { count } = useCart();
   const links = [['/','Home'],['/shop','Shop'],['/brands','Brands'],['/about','About Us'],['/contact','Contact']];
 
@@ -59,6 +59,7 @@ export default function Layout({ children, title, description, image, canonicalP
     '@type':'AutoPartsStore',
     name:'Shilatech Auto Spares',
     url:SITE_URL,
+    logo:`${SITE_URL}/shilatech-logo.webp`,
     telephone:'+254721802597',
     email:'info@shilatechautospares.co.ke',
     areaServed:{'@type':'Country',name:'Kenya'},
@@ -80,6 +81,8 @@ export default function Layout({ children, title, description, image, canonicalP
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription}/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="icon" type="image/png" href="/favicon.png"/>
+        <link rel="apple-touch-icon" href="/favicon.png"/>
         <meta name="robots" content={shouldNoindex ? 'noindex,nofollow' : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1'}/>
         <link rel="canonical" href={canonical}/>
         <meta property="og:type" content="website"/>
@@ -114,8 +117,7 @@ export default function Layout({ children, title, description, image, canonicalP
 
         <div className="navWrap container premiumNav">
           <Link href="/" className="brand premiumBrand" aria-label="Shilatech Autospares home">
-            <span className="premiumBrandIcon">⚙</span>
-            <span><strong>SHILATECH</strong><small>AUTO SPARES</small></span>
+            <img className="siteLogo" src="/shilatech-logo-small.webp" alt="Shilatech Auto Spares"/>
           </Link>
 
           <nav aria-label="Main navigation">
@@ -141,7 +143,7 @@ export default function Layout({ children, title, description, image, canonicalP
       <footer>
         <div className="container footerGrid">
           <div>
-            <div className="brand footerBrand premiumBrand"><span className="premiumBrandIcon">⚙</span><span><strong>SHILATECH</strong><small>AUTO SPARES</small></span></div>
+            <div className="brand footerBrand premiumBrand"><img className="footerLogo" src="/shilatech-logo.webp" alt="Shilatech Auto Spares"/></div>
             <p>Specialist parts for Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo and Ford.</p>
           </div>
           <div><h4>Shop</h4><Link href="/shop">All parts</Link><Link href="/brands">Vehicle brands</Link><Link href="/vin">VIN checker</Link><Link href="/cart">Cart</Link></div>
