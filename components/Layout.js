@@ -118,6 +118,7 @@ export default function Layout({ children, title, description, image, canonicalP
         <div className="navWrap container premiumNav">
           <Link href="/" className="brand premiumBrand" aria-label="Shilatech Autospares home">
             <img className="siteLogo" src="/shilatech-logo-small.webp" alt="Shilatech Auto Spares"/>
+            <span className="siteBrandWords"><strong>SHILATECH</strong><small>AUTO SPARES</small></span>
           </Link>
 
           <nav aria-label="Main navigation">
@@ -143,7 +144,10 @@ export default function Layout({ children, title, description, image, canonicalP
       <footer>
         <div className="container footerGrid">
           <div>
-            <div className="brand footerBrand premiumBrand"><img className="footerLogo" src="/shilatech-logo.webp" alt="Shilatech Auto Spares"/></div>
+            <div className="brand footerBrand premiumBrand">
+              <img className="footerLogo" src="/shilatech-logo.webp" alt="Shilatech Auto Spares"/>
+              <span className="siteBrandWords"><strong>SHILATECH</strong><small>AUTO SPARES</small></span>
+            </div>
             <p>Specialist parts for Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo and Ford.</p>
           </div>
           <div><h4>Shop</h4><Link href="/shop">All parts</Link><Link href="/brands">Vehicle brands</Link><Link href="/vin">VIN checker</Link><Link href="/cart">Cart</Link></div>
