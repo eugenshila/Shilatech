@@ -59,6 +59,20 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="section workshopHomeBand">
+        <div className="container workshopHomeGrid">
+          <div>
+            <span className="eyebrow">SHILATECH GARAGE · NAIROBI</span>
+            <h2>Parts, diagnostics and repairs under one roof.</h2>
+            <p>Let our workshop inspect, service and repair your vehicle using the correct parts from our catalogue. We specialise in Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo and Ford.</p>
+          </div>
+          <div className="workshopHomeActions">
+            <Link className="button primary" href="/workshop#booking">Book a workshop visit</Link>
+            <Link className="button ghost" href="/workshop">View repair services</Link>
+          </div>
+        </div>
+      </section>
+
       <section className="section">
         <div className="container">
           <div className="sectionHead"><div><span className="eyebrow">CURATED INVENTORY</span><h2>Featured auto spare parts</h2></div><Link href="/shop">View all parts →</Link></div>
@@ -77,3 +91,4 @@ export default function Home() {
     </Layout>
   );
 }
+

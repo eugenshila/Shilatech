@@ -30,6 +30,10 @@ const seoByPath = {
     title: 'Contact Shilatech Auto Spares Nairobi | Parts Enquiries Kenya',
     description: 'Contact Shilatech Auto Spares in Nairobi for Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo and Ford spare parts, VIN checks and delivery enquiries.'
   },
+  '/workshop': {
+    title: 'Car Repair Workshop Nairobi | Shilatech Garage',
+    description: 'Book diagnostics, servicing and mechanical repairs in Nairobi for Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo and Ford vehicles at Shilatech Garage.'
+  },
   '/faq': {
     title: 'Auto Spare Parts FAQ Kenya | Shilatech Auto Spares',
     description: 'Answers about vehicle fitment, VIN checking, genuine and aftermarket parts, payments, delivery and returns from Shilatech Auto Spares Kenya.'
@@ -52,7 +56,7 @@ export default function Layout({ children, title, description, image, canonicalP
   const canonical = `${SITE_URL}${path === '/' ? '' : path}`;
   const socialImage = image || `${SITE_URL}/shilatech-logo.webp`;
   const { count } = useCart();
-  const links = [['/','Home'],['/shop','Shop'],['/brands','Brands'],['/about','About Us'],['/contact','Contact']];
+  const links = [['/','Home'],['/shop','Shop'],['/brands','Brands'],['/workshop','Workshop'],['/about','About Us'],['/contact','Contact']];
 
   const businessSchema = {
     '@context':'https://schema.org',
@@ -151,7 +155,7 @@ export default function Layout({ children, title, description, image, canonicalP
             <p>Specialist parts for Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo and Ford.</p>
           </div>
           <div><h4>Shop</h4><Link href="/shop">All parts</Link><Link href="/brands">Vehicle brands</Link><Link href="/vin">VIN checker</Link><Link href="/cart">Cart</Link></div>
-          <div><h4>Support</h4><Link href="/faq">FAQ</Link><Link href="/delivery-returns">Delivery & Returns</Link><Link href="/contact">Contact</Link></div>
+          <div><h4>Support</h4><Link href="/workshop">Book a repair</Link><Link href="/faq">FAQ</Link><Link href="/delivery-returns">Delivery & Returns</Link><Link href="/contact">Contact</Link></div>
           <div><h4>Dealer</h4><Link href="/admin">Admin dashboard</Link><p>Secure inventory and order management.</p></div>
         </div>
         <div className="container copyright">© {new Date().getFullYear()} Shilatech Autospares. All rights reserved.</div>
@@ -159,3 +163,4 @@ export default function Layout({ children, title, description, image, canonicalP
     </>
   );
 }
+
