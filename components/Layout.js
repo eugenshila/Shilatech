@@ -46,7 +46,7 @@ const seoByPath = {
 
 const privatePaths = ['/admin','/warehouse','/delivery','/account','/cart','/checkout'];
 
-export default function Layout({ children, title, description, image, canonicalPath, noindex = false, structuredData }) {
+export default function Layout({ children, title, description, image, canonicalPath, noindex = false, structuredData, homeTheme = false }) {
   const router = useRouter();
   const routeSeo = seoByPath[router.pathname] || {};
   const pageTitle = title || routeSeo.title || 'Shilatech Auto Spares | Premium Auto Parts Kenya';
@@ -104,7 +104,7 @@ export default function Layout({ children, title, description, image, canonicalP
         {!shouldNoindex && structuredData && <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(structuredData)}}/>}
       </Head>
 
-      <header className="siteHeader premiumHeader">
+      <header className={`siteHeader premiumHeader${homeTheme ? ' boldHeader' : ''}`}>
         <div className="premiumTopbar">
           <div className="container premiumTopbarInner">
             <div className="topContact">
@@ -133,6 +133,7 @@ export default function Layout({ children, title, description, image, canonicalP
           </nav>
 
           <div className="navActions premiumNavActions">
+            {homeTheme && <a className="boldNavWhatsapp" href="https://wa.me/254721802597" target="_blank" rel="noopener noreferrer">WhatsApp us ↗</a>}
             <form className="navSearch" action="/shop" method="get">
               <input name="q" placeholder="Search parts, brands..." aria-label="Search parts"/>
               <button type="submit" aria-label="Search">⌕</button>

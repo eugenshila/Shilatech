@@ -1,0 +1,63 @@
+/* Approved Bold Automotive concept. The existing original Jeep hero is retained. */
+.boldHome{background:#080a09;color:#f6f7f5;--accent:#58b72a}
+.boldHome .container,.boldHeader .container{width:min(1376px,calc(100% - 80px))}
+.boldHeader{background:#030504;position:relative}
+.boldHeader .premiumTopbar{display:none}
+.boldHeader .premiumNav{min-height:100px;height:auto;gap:24px}
+.boldHeader .siteLogo{width:78px;height:58px}
+.boldHeader .premiumBrand strong{font-size:26px;letter-spacing:.035em}
+.boldHeader .premiumNav nav{gap:24px}
+.boldHeader .premiumNav nav a{font-size:12px;white-space:nowrap}
+.boldHeader .premiumNav nav a.active:after{bottom:-21px}
+.boldHeader .premiumNavActions{gap:12px}
+.boldHeader .navSearch{display:none}
+.boldNavWhatsapp{display:inline-flex!important;align-items:center;justify-content:center;background:#58b72a;color:#071103!important;padding:14px 18px;border-radius:5px;font-size:13px;font-weight:800;white-space:nowrap}
+.boldHome .approvedJeepHero{min-height:570px;background-position:center 52%;background-color:#101710}
+.boldHome .approvedHeroOverlay{background:linear-gradient(90deg,#020403 0%,rgba(2,4,3,.92) 24%,rgba(2,4,3,.49) 44%,rgba(2,4,3,.02) 72%),linear-gradient(0deg,#080a09 0%,transparent 20%)}
+.boldHome .approvedHeroInner{min-height:570px;align-items:center}
+.boldHome .approvedHeroCopy{max-width:490px;padding:40px 0 74px}
+.boldHome .approvedHeroCopy h1{font-size:clamp(52px,5.8vw,80px);font-weight:850;line-height:1.02;letter-spacing:-.045em;text-shadow:none}
+.boldHome .approvedHeroCopy h1 span{color:var(--accent)}
+.boldHome .greenRule{width:66px;margin:22px 0;height:3px}
+.boldHome .approvedHeroCopy p{font-size:16px;line-height:1.65;max-width:465px;color:#d8ddd7}
+.boldHome .approvedHeroButtons{margin-top:25px;gap:16px;flex-direction:row}
+.boldHome .greenPrimary{background:var(--accent);border:1px solid var(--accent);color:#071103;font-size:13px;letter-spacing:.03em;font-weight:800;border-radius:5px;padding:15px 24px;min-height:48px}
+.boldHome .vehicleButton{border:1px solid #508d31;color:#fff;font-size:13px;letter-spacing:.03em;border-radius:5px;padding:15px 24px;min-height:48px}
+.boldHome .button:hover,.boldNavWhatsapp:hover{filter:brightness(1.12)}
+.boldHome :is(a,button,input,select):focus-visible,.boldHeader :is(a,button,input):focus-visible{outline:3px solid #9ae367;outline-offset:4px}
+.boldDiscovery{position:relative;padding-bottom:40px}
+.boldFinder{position:relative;margin-top:-36px;z-index:3;display:grid;grid-template-columns:1.65fr 1fr 1fr 1fr auto;align-items:center;gap:14px;padding:20px 24px;background:linear-gradient(110deg,#101610,#090c09);border:1px solid #3b4935;border-radius:9px;box-shadow:0 12px 30px #0004}
+.boldFinderIntro{display:flex;align-items:center;gap:15px;min-width:0}
+.boldFinderIcon{width:48px;height:48px;flex:none;border-radius:50%;background:#243e18;color:#9ddd71;display:grid;place-items:center;font-size:30px}
+.boldFinder h2{font-size:14px;text-transform:uppercase;line-height:1.4;letter-spacing:.025em;margin:0 0 5px}
+.boldFinder p{font-size:11px;color:#abb5a7;line-height:1.5;margin:0}
+.boldFinder p a{display:block;color:#9cc689}
+.boldFinder label{display:block;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:#a8b0a4;min-width:0;border:1px solid #343d32;border-radius:5px;background:#151915;padding:8px 12px}
+.boldFinder :is(select,input){width:100%;min-width:0;margin:0;padding:5px 0 0;color:#f4f6f3;border:0;background:#151915;font-size:13px;letter-spacing:normal;border-radius:0;outline-offset:2px}
+.boldFinder select{cursor:pointer}
+.boldFinder button{white-space:nowrap;cursor:pointer}
+.boldBrands{display:grid;grid-template-columns:repeat(6,1fr);padding:27px 0}
+.boldBrands a{padding:9px 12px;text-align:center;border-right:1px solid #30382e;font-size:16px;color:#e4e9e1;transition:color .15s}
+.boldBrands a:first-child{font-weight:900;font-size:21px;padding-top:5px}
+.boldBrands a:last-child{border:0}
+.boldBrands a:hover{color:#85d451}
+.boldCategories{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.boldCategory{position:relative;isolation:isolate;overflow:hidden;min-height:212px;border:1px solid #3d4935;border-radius:8px;background:#020402;display:flex;align-items:center;padding:25px;transition:border-color .2s,transform .2s}
+.boldCategory img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.boldCategory:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#020402f5 0%,#020402a0 35%,transparent 80%);z-index:-1}
+.boldCategory h2{font-size:21px;text-transform:uppercase;margin:0 0 8px;letter-spacing:-.025em}
+.boldCategory p{font-size:13px;color:#d0d9cc;line-height:1.5;max-width:155px;margin:0 0 19px}
+.boldCategory span{color:#90dc5d;font-size:12px;text-transform:uppercase;font-weight:800}
+.boldCategory b{margin-left:12px}
+.boldCategory:hover{border-color:var(--accent);transform:translateY(-3px)}
+.boldHome .approvedBenefits{background:#080a09;padding:0 0 32px}
+.boldHome .approvedBenefitsGrid{border-color:#242d22;background:#0d110d;border-radius:8px}
+.boldHome .approvedBenefit{padding:23px 18px;gap:12px}
+.boldHome .approvedBenefit h3{font-size:14px}
+.boldHome .approvedBenefit i{width:36px;height:36px;font-size:16px;border-width:2px}
+.boldHome .vinBand,.boldHome .workshopHomeBand{background:#0c110c;border-color:#253020}
+@media(min-width:1800px){.boldHome .approvedJeepHero{background-size:cover;background-position:center 52%}.boldHome .approvedHeroCopy{max-width:510px}}
+@media(max-width:1200px){.boldHeader .premiumNav{gap:16px;flex-wrap:wrap;padding:16px 0}.boldHeader .premiumNav nav{order:3;width:100%;justify-content:center;padding:8px 0}.boldHeader .premiumNav nav a.active:after{bottom:-9px}.boldHeader .premiumNavActions{margin-left:auto}.boldFinder{grid-template-columns:repeat(3,1fr) auto}.boldFinderIntro{grid-column:1/-1}.boldCategory{padding:20px}.boldCategory h2{font-size:18px}}
+@media(max-width:760px){.boldHome .container,.boldHeader .container{width:calc(100% - 32px)}.boldHeader .premiumNav{padding:12px 0;gap:12px}.boldHeader .siteLogo{width:53px;height:44px}.boldHeader .premiumBrand{gap:8px}.boldHeader .premiumBrand strong{font-size:19px}.boldHeader .premiumBrand small{font-size:7px}.boldHeader .premiumNavActions{gap:8px}.boldNavWhatsapp{padding:10px;font-size:11px}.boldHeader .navIconLink,.boldHeader .cartIconLink{min-width:26px;font-size:20px}.boldHeader .premiumNav nav{justify-content:flex-start;overflow-x:auto;gap:22px;scrollbar-width:thin}.boldHome .approvedJeepHero{min-height:680px;background-position:65% top;background-size:auto 450px;background-repeat:no-repeat}.boldHome .approvedHeroOverlay{background:linear-gradient(180deg,rgba(2,4,3,.08) 0%,rgba(2,4,3,.25) 26%,#080a09 57%)}.boldHome .approvedHeroInner{min-height:680px;align-items:flex-end}.boldHome .approvedHeroCopy{max-width:100%;padding:265px 0 70px}.boldHome .approvedHeroCopy h1{font-size:51px}.boldHome .approvedHeroCopy h1 br{display:none}.boldHome .approvedHeroCopy h1 span{display:inline}.boldHome .approvedHeroCopy p{font-size:14px;max-width:520px}.boldHome .greenRule{margin:18px 0}.boldHome .approvedHeroButtons{display:flex;gap:10px}.boldHome .approvedHeroButtons .button{padding:14px 17px;font-size:12px}.boldFinder{padding:18px;gap:12px;grid-template-columns:1fr 1fr;margin-top:-28px}.boldFinderIntro{grid-column:1/-1}.boldFinder label:last-of-type{grid-column:1/-1}.boldFinder button{grid-column:1/-1}.boldBrands{grid-template-columns:repeat(3,1fr);gap:14px 0;padding:24px 0}.boldBrands a{font-size:12px;padding:8px 5px}.boldBrands a:nth-child(3){border:0}.boldBrands a:first-child{font-size:16px}.boldCategories{grid-template-columns:1fr}.boldCategory{min-height:210px;padding:26px}.boldCategory h2{font-size:24px}.boldCategory img{object-position:center 50%}.boldCategory p{max-width:180px}.boldHome .approvedBenefitsGrid{grid-template-columns:1fr}.boldHome .approvedBenefit{padding:20px}}
+@media(max-width:390px){.boldHeader .premiumBrand strong{font-size:16px}.boldHeader .siteLogo{width:42px}.boldNavWhatsapp{font-size:10px;padding:9px 6px}.boldHome .approvedHeroCopy h1{font-size:44px}}
+@media(prefers-reduced-motion:reduce){.boldCategory{transition:none}.boldCategory:hover{transform:none}}

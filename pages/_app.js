@@ -5,6 +5,7 @@ import '../styles/warehouse-premium.css';
 import '../styles/warehouse-receiving.css';
 import '../styles/delivery.css';
 import '../styles/workshop.css';
+import '../styles/bold-home.css';
 import { CartProvider } from '../components/CartContext';
 
 export default function App({ Component, pageProps }) {

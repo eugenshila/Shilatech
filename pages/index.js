@@ -2,44 +2,47 @@ import Link from 'next/link';
 import Layout from '../components/Layout';
 import VinLookup from '../components/VinLookup';
 import ProductCard from '../components/ProductCard';
-import { products } from '../data/products';
+import { products, brands, categories } from '../data/products';
 
-const makes = [
-  { name: 'Jeep', src: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Jeep_logo.svg' },
-  { name: 'Mercedes-Benz', src: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Mercedes_benz_logo1989.png' },
-  { name: 'Volkswagen', src: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Volkswagen_logo.png' },
-  { name: 'Range Rover', src: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Land_Rover_logo_2.jpg' },
-  { name: 'Volvo', src: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Volvo-iron-mark-2021.jpg' },
-  { name: 'Ford', src: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Ford_Logo.png' }
+const categoryCards = [
+  { name: 'Braking', category: 'Brakes', image: 'brakes', description: 'Pads, discs, calipers & components' },
+  { name: 'Suspension', category: 'Suspension', image: 'suspension', description: 'Shocks, struts, control arms & more' },
+  { name: 'Engine parts', category: 'Engine', image: 'engine', description: 'Filters, belts, sensors & engine components' }
 ];
 
 export default function Home() {
   return (
-    <Layout>
+    <Layout homeTheme>
+      <div className="boldHome">
       <section className="hero approvedJeepHero">
         <div className="approvedHeroOverlay" />
         <div className="container approvedHeroInner">
           <div className="approvedHeroCopy">
-            <h1>PREMIUM PARTS FOR<br/><span>PREMIUM PERFORMANCE</span></h1>
+            <h1>Built for <br/>the <span>road <br/>ahead.</span></h1>
             <div className="greenRule" />
             <p>Genuine & OEM quality auto spare parts in Nairobi, Kenya for Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo & Ford, with delivery across Kenya.</p>
             <div className="heroButtons approvedHeroButtons">
-              <Link className="button greenPrimary" href="/shop">🛒 SHOP NOW</Link>
-              <Link className="button vehicleButton" href="/vin">▣ SELECT YOUR VEHICLE</Link>
+              <Link className="button greenPrimary" href="/shop">SHOP PARTS</Link>
+              <a className="button vehicleButton" href="https://wa.me/254721802597" target="_blank" rel="noopener noreferrer">WHATSAPP US ↗</a>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="approvedBrandsSection">
-        <div className="container approvedBrandPanel">
-          {makes.map((make) => (
-            <Link className="approvedBrandItem clickableBrand" key={make.name} href={`/shop?brand=${encodeURIComponent(make.name)}`} aria-label={`View available ${make.name} spare parts in Kenya`}>
-              <div className="approvedLogoWrap"><img src={make.src} alt={`${make.name} spare parts brand logo`} /></div>
-              <strong>{make.name.toUpperCase()}</strong>
-              <span className="brandBrowseHint">VIEW AVAILABLE PARTS →</span>
-            </Link>
-          ))}
+      <section className="boldDiscovery" aria-label="Find and browse parts">
+        <div className="container">
+          <form className="boldFinder" action="/shop" method="get">
+            <div className="boldFinderIntro"><span className="boldFinderIcon" aria-hidden="true">⌕</span><div><h2>Find parts for your vehicle</h2><p>Search the catalogue. <Link href="/vin">Check exact fit with your VIN →</Link></p></div></div>
+            <label>Make<select name="brand" defaultValue=""><option value="">All makes</option>{brands.map(brand => <option key={brand}>{brand}</option>)}</select></label>
+            <label>Category<select name="category" defaultValue=""><option value="">All categories</option>{categories.map(category => <option key={category}>{category}</option>)}</select></label>
+            <label>Part name / number<input name="q" placeholder="Optional" /></label>
+            <button className="button greenPrimary" type="submit">Find parts →</button>
+          </form>
+          <div className="boldBrands" aria-label="Shop by vehicle make">{brands.map(brand => <Link key={brand} href={`/shop?brand=${encodeURIComponent(brand)}`}>{brand}</Link>)}</div>
+          <div className="boldCategories">{categoryCards.map(card => <Link className="boldCategory" key={card.category} href={`/shop?category=${card.category}`}>
+            <img src={`/images/category-${card.image}.webp`} alt="" width="768" height="512" loading="lazy" />
+            <div><h2>{card.name}</h2><p>{card.description}</p><span>Shop now <b aria-hidden="true">↗</b></span></div>
+          </Link>)}</div>
         </div>
       </section>
 
@@ -88,6 +91,7 @@ export default function Home() {
           <p>Our catalogue covers common service and repair needs including <Link href="/shop?category=Engine">engine parts</Link>, <Link href="/shop?category=Brakes">brake parts</Link>, <Link href="/shop?category=Suspension">suspension parts</Link>, electrical components, filters and other replacement parts. For an exact enquiry, <Link href="/contact">contact Shilatech Auto Spares</Link> with your vehicle details or VIN.</p>
         </div>
       </section>
+    </div>
     </Layout>
   );
 }
