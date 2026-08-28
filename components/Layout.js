@@ -56,7 +56,7 @@ export default function Layout({ children, title, description, image, canonicalP
   const canonical = `${SITE_URL}${path === '/' ? '' : path}`;
   const socialImage = image || `${SITE_URL}/shilatech-logo.webp`;
   const { count } = useCart();
-  const links = [['/','Home'],['/shop','Shop'],['/brands','Brands'],['/workshop','Workshop'],['/about','About Us'],['/contact','Contact']];
+  const links = [['/','Home'],['/shop','Shop'],['/brands','Brands'],['/workshop','Workshop'],['/facility','Facility'],['/about','About Us'],['/contact','Contact']];
 
   const businessSchema = {
     '@context':'https://schema.org',
@@ -164,4 +164,5 @@ export default function Layout({ children, title, description, image, canonicalP
     </>
   );
 }
+
 
