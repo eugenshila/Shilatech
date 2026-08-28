@@ -1,6 +1,7 @@
 import { useEffect,useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import EmployeeDashboard from './EmployeeDashboard';
 import { staffPages,staffPageLabels,canViewStaffPage,staffDestination } from '../lib/staff-access.mjs';
 
 
@@ -63,6 +64,6 @@ export default function StaffBoundary({children}){
  if(user?.must_change_password)return <StaffAccessScreen title="Change your temporary password"><p>This staff account must set a private password before opening staff tools.</p><Link className="button primary" href="/staff-password">Change password</Link></StaffAccessScreen>;
  if(!user||!canViewStaffPage(user.role,path))return <StaffAccessScreen title="Welcome to the staff portal"><p>{error||'This page is available only to authorised staff in the assigned department.'}</p><Link className="button primary" href={staffDestination(user?.role)||'/staff-login?next='+encodeURIComponent(path)}> {staffDestination(user?.role)?'Open my department':'Staff sign in'}</Link></StaffAccessScreen>;
  const readOnly=user.role==='general_manager'&&!['/staff','/approvals','/staff-garage','/payroll','/my-hr'].includes(path);
- return <><nav className="staffNav noPrint" aria-label="Staff tools"><strong>{user.name} · {user.role.replaceAll('_',' ')}</strong><div>{staffPages(user.role).map(p=><Link key={p} href={p} aria-current={p===path?'page':undefined}>{staffPageLabels[p]}</Link>)}<button onClick={async()=>{await fetch('/api/auth/logout',{method:'POST'});setUser(null);await router.push('/staff-login');}}>Sign out</button></div></nav>{readOnly&&<p className="staffReadOnly noPrint">General manager: viewing only. Use Requests &amp; approvals to propose changes or review staff requests.</p>}{readOnly?<fieldset disabled className="staffReadOnlyContent">{children}</fieldset>:children}</>;
+ return <><nav className="staffNav noPrint" aria-label="Staff tools"><strong>{user.name} · {user.role.replaceAll('_',' ')}</strong><div>{staffPages(user.role).map(p=><Link key={p} href={p} aria-current={p===path?'page':undefined}>{staffPageLabels[p]}</Link>)}<button onClick={async()=>{await fetch('/api/auth/logout',{method:'POST'});setUser(null);await router.push('/staff-login');}}>Sign out</button></div></nav><EmployeeDashboard key={path} user={user}>{readOnly&&<p className="staffReadOnly noPrint">General manager: viewing only. Use Requests &amp; approvals to propose changes or review staff requests.</p>}{readOnly?<fieldset disabled className="staffReadOnlyContent">{children}</fieldset>:children}</EmployeeDashboard></>;
 }
 
