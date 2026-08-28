@@ -72,6 +72,7 @@ export default async function handler(req, res) {
     if (!warehouse.rowCount) throw new Error('Storage area not found.');
     const w = warehouse.rows[0];
     const p = product.rows[0];
+    if (session.assignedBrand && p.brand !== session.assignedBrand) throw new Error(`This account is assigned to ${session.assignedBrand} only.`);
     if (w.storage_type !== 'BRAND') throw new Error('Sellable stock cannot be received into the quarantine area.');
     if (w.brand_code !== p.brand) throw new Error(`${p.brand} parts must be received into the ${p.brand} storage area. This prevents brands from being mixed.`);
 
