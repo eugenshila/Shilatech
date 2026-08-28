@@ -17,6 +17,7 @@ export default function BrandLogoLinks() {
       className={styles.link} href={`/shop?brand=${encodeURIComponent(brand)}`}
       aria-label={`Shop ${label} spare parts`}>
       <Image className={styles.image} src={`/images/brand-logos/${file}`}
+        unoptimized={brand === 'Jeep'}
         alt={`${label} logo`} width={160} height={120} sizes="160px" />
     </Link>)}
   </nav>;
