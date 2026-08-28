@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { PGlite } from '@electric-sql/pglite';
 import { normalizeItems,createCounterSale,requireCounterUser,assertStock } from '../lib/counter.mjs';
 import { cancelUnpickedOrder } from '../lib/cancel-order.mjs';
+import { staffDestination } from '../lib/staff-access.mjs';
 
 let db,client,user;
 const read=path=>readFile(new URL(path,import.meta.url),'utf8');
@@ -42,6 +43,14 @@ test('duplicate lines aggregate; invalid quantities and identifiers fail',()=>{
  for(const quantity of [0,-1,1.5,NaN,Infinity,100001])assert.throws(()=>normalizeItems([{id:1,quantity}]));
  assert.throws(()=>normalizeItems([{id:0,quantity:1}]));
  assert.throws(()=>normalizeItems([]));
+});
+test('staff login sends each role to authorised local tools only',()=>{
+ assert.equal(staffDestination('cashier','/pos'),'/pos');
+ assert.equal(staffDestination('admin','/operations'),'/operations');
+ assert.equal(staffDestination('warehouse_clerk','/pos'),'/warehouse');
+ assert.equal(staffDestination('delivery_driver','/pos'),'/delivery');
+ for(const role of ['customer','unknown','toString','__proto__',undefined])assert.equal(staffDestination(role,'/pos'),null);
+ for(const next of ['https://example.com','//example.com','/admin','/pos?next=https://example.com',['/pos']])assert.equal(staffDestination('cashier',next),'/pos');
 });
 test('cash sale records payment, FIFO costs, movements, and exact change',async()=>{
  const r=await sell(body());assert.equal(r.total_kes,500);assert.equal(r.change_kes,100);assert.equal(r.items.length,1);

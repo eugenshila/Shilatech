@@ -39,10 +39,10 @@ export default function Counter(){
  async function openReceipt(id){setError('');try{const r=await fetch('/api/pos?saleId='+id);const d=await r.json();if(!r.ok)throw new Error(d.error);setReceipt(d.receipt);}catch(e){setError(e.message);}}
  return <Layout title="Warehouse Counter | Shilatech" noindex>
   <div className="counterShell">
-   <div className="counterTop noPrint"><div><span className="eyebrow">SHILATECH · STAFF</span><h1>Warehouse counter</h1><p>{data?`${data.user.location_name} · ${data.user.name}`:'Sign in using your existing staff account.'}</p></div><div><Link href="/account">Staff account</Link> · <Link href="/warehouse">Warehouse</Link> · <Link href="/operations">Management</Link></div></div>
+   <div className="counterTop noPrint"><div><span className="eyebrow">SHILATECH · STAFF</span><h1>Warehouse counter</h1><p>{data?`${data.user.location_name} · ${data.user.name}`:'Sign in using your existing staff account.'}</p></div><div><Link href="/staff-login?next=/pos">Staff sign in</Link> · <Link href="/warehouse">Warehouse</Link> · <Link href="/operations">Management</Link></div></div>
    {error&&<p className="counterError noPrint" role="alert">{error}</p>}
    {loading&&<p>Loading counter…</p>}
-   {!loading&&!data&&<p className="noPrint"><Link href="/account">Sign in</Link>, then <button onClick={()=>{setError('');load(query);}}>reload the counter</button>. An administrator or assigned cashier account is required.</p>}
+   {!loading&&!data&&<p className="noPrint"><Link href="/staff-login?next=/pos">Staff sign in</Link>, then <button onClick={()=>{setError('');load(query);}}>reload the counter</button>. An administrator or assigned cashier account is required.</p>}
    {data&&<>
     <div className="counterSummary noPrint"><div><strong>Today · Nairobi time</strong><p>{data.user.role==='cashier'?'Your counter sales':'All counter sales at this location'} · excludes online orders</p></div>{data.daily.map(d=><div key={d.payment_method}><span>{d.payment_method} · {d.sales} sales</span><strong>{money(d.total_kes)}</strong></div>)}</div>
     {pending&&<div className="counterNotice noPrint"><strong>A sale is awaiting confirmation.</strong><p>Retry it with the same details to retrieve its receipt safely. Do not collect payment again.</p><button className="button primary" disabled={busy} onClick={sell}>{busy?'Checking…':'Check / retry pending sale'}</button></div>}

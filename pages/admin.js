@@ -45,7 +45,7 @@ export default function Admin(){
     <section className="pageHero compactHero"><div className="container"><span className="eyebrow">DEALER CONTROL CENTER</span><h1>Admin dashboard</h1><p>Live inventory, orders, customers and sales performance.</p></div></section>
     <section className="section"><div className="container">
       {loading && <div className="panel"><p>Loading dashboard…</p></div>}
-      {error && <div className="panel adminError"><h3>Admin access</h3><p>{error}</p>{error.toLowerCase().includes('sign in') && <a className="button primary" href="/account">Customer / admin login</a>}</div>}
+      {error && <div className="panel adminError"><h3>Admin access</h3><p>{error}</p>{error.toLowerCase().includes('sign in') && <a className="button primary" href="/staff-login?next=/admin">Staff / admin sign in</a>}</div>}
       {data && <>
         <div className="metrics"><div><span>Sales today</span><strong>KSh {Number(data.metrics.salesToday||0).toLocaleString()}</strong></div><div><span>Open orders</span><strong>{data.metrics.openOrders}</strong></div><div><span>Low stock</span><strong>{data.metrics.lowStock}</strong></div><div><span>Customers</span><strong>{data.metrics.customers}</strong></div></div>
 

@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { query } from '../../../lib/db';
 import { setSession, signSession } from '../../../lib/auth';
+import { staffDestination } from '../../../lib/staff-access.mjs';
 
 function isAdminEmail(email) {
   const adminEmail = String(process.env.ADMIN_EMAIL || '').trim().toLowerCase();
@@ -33,6 +34,9 @@ export default async function handler(req, res) {
       role = promoted.rows[0]?.role || 'admin';
     }
 
+    if(req.body?.staffOnly===true&&!staffDestination(role)){
+      return res.status(403).json({error:'This is a customer account. Please use an authorised staff account or ask your administrator to arrange access.'});
+    }
     const safeUser = { id: user.id, name: user.name, email: user.email, phone: user.phone, role };
     setSession(res, signSession(safeUser));
     res.status(200).json({ user: safeUser });
