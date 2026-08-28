@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     let role = user.role;
     if (isAdminEmail(normalizedEmail) && role !== 'admin') {
       const promoted = await query(
-        `UPDATE customers SET role='admin' WHERE id=$1 RETURNING role`,
+        `UPDATE customers SET role='admin',location_id=COALESCE(location_id,main_business_location_id()) WHERE id=$1 RETURNING role`,
         [user.id]
       );
       role = promoted.rows[0]?.role || 'admin';

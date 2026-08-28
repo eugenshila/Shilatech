@@ -9,7 +9,7 @@ export function middleware(request){
   response.headers.set('Cross-Origin-Opener-Policy','same-origin');
   if(process.env.NODE_ENV==='production') response.headers.set('Strict-Transport-Security','max-age=31536000; includeSubDomains');
   const p=request.nextUrl.pathname;
-  if(p.startsWith('/admin')||p.startsWith('/warehouse')||p.startsWith('/delivery')||p.startsWith('/operations')||p.startsWith('/account')||p.startsWith('/api/admin')||p.startsWith('/api/warehouse')||p.startsWith('/api/delivery')){
+  if(p.startsWith('/pos')||p.startsWith('/api/pos')||p.startsWith('/admin')||p.startsWith('/warehouse')||p.startsWith('/delivery')||p.startsWith('/operations')||p.startsWith('/account')||p.startsWith('/api/admin')||p.startsWith('/api/warehouse')||p.startsWith('/api/delivery')){
     response.headers.set('Cache-Control','private, no-store, max-age=0');
     response.headers.set('X-Robots-Tag','noindex, nofollow, noarchive');
   }

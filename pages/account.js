@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
+import Link from 'next/link';
 
 export default function Account(){
   const [user,setUser]=useState(null);
@@ -64,6 +65,7 @@ export default function Account(){
     </div>}
 
     {user && <>
+      {['admin','warehouse_manager','cashier'].includes(user.role)&&<div className="dashCard wide"><h2>Staff tools</h2><Link className="button primary" href="/pos">Open sales counter</Link></div>}
       <div className="dashCard wide"><div className="sectionHead"><div><h2>My Garage</h2><p>Save a 17-character VIN and we’ll reuse the decoded vehicle details for future searches.</p></div><button className="textButton" onClick={logout}>Sign out</button></div>
         <form className="vinForm" onSubmit={addGarage}><div className="vinInputWrap"><input value={vin} onChange={e=>setVin(e.target.value.toUpperCase())} maxLength="17" placeholder="Enter 17-character VIN"/><span>{vin.length}/17</span></div><button className="button primary">Save vehicle</button></form>
         {message && <p>{message}</p>}

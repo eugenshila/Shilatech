@@ -20,8 +20,8 @@ export default async function handler(req, res) {
   try {
     const hash = await bcrypt.hash(password, 12);
     const result = await query(
-      `INSERT INTO customers (name,email,phone,password_hash,role)
-       VALUES ($1,$2,$3,$4,$5)
+      `INSERT INTO customers (name,email,phone,password_hash,role,location_id)
+       VALUES ($1,$2,$3,$4,$5,CASE WHEN $5='admin' THEN main_business_location_id() ELSE NULL END)
        RETURNING id,name,email,phone,role`,
       [String(name).trim(), normalizedEmail, phone ? String(phone).trim() : null, hash, role]
     );

@@ -40,6 +40,8 @@ export default async function handler(req,res){
       if(scanned.toUpperCase()!==expected && scanned.toUpperCase()!==String(item.part_no).trim().toUpperCase()) throw new Error(`Barcode does not match ${item.part_no}.`);
       if(!item.storage_area_id) throw new Error('No brand storage area is assigned to this part.');
       const needed=Number(item.quantity)-Number(item.picked_qty);
+      // Serialize the physical deduction with receiving, counter sales and new online reservations.
+      await client.query('SELECT id FROM products WHERE id=$1 FOR UPDATE',[item.product_id]);
       const batches=await client.query(`SELECT id,available_qty,bin_id,batch_no,received_at FROM inventory_batches WHERE product_id=$1 AND warehouse_id=$2 AND available_qty>0 AND status='AVAILABLE' ORDER BY received_at ASC,id ASC FOR UPDATE`,[item.product_id,item.storage_area_id]);
       const available=batches.rows.reduce((s,b)=>s+Number(b.available_qty),0);
       if(available<needed) throw new Error(`Insufficient FIFO stock. Available ${available}, required ${needed}.`);

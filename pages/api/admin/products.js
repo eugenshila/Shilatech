@@ -29,6 +29,7 @@ export default async function handler(req, res) {
   try {
     if (req.method === 'POST') {
       const p = cleanProduct(req.body);
+      if(p.stock!==0)throw new Error('Create the part with zero stock, then receive its opening batch in the warehouse.');
       const result = await query(`INSERT INTO products (slug,name,brand,category,part_no,part_type,price_kes,stock,years,models,engine,active)
         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11,$12)
         RETURNING *`, [p.slug,p.name,p.brand,p.category,p.partNo,p.partType,p.price,p.stock,p.years,JSON.stringify(p.models),p.engine,p.active]);
@@ -38,8 +39,8 @@ export default async function handler(req, res) {
       const id = Number(req.body?.id);
       if (!Number.isInteger(id)) return res.status(400).json({ error: 'Product id is required.' });
       const p = cleanProduct(req.body);
-      const result = await query(`UPDATE products SET slug=$1,name=$2,brand=$3,category=$4,part_no=$5,part_type=$6,price_kes=$7,stock=$8,years=$9,models=$10::jsonb,engine=$11,active=$12,updated_at=NOW() WHERE id=$13 RETURNING *`, [p.slug,p.name,p.brand,p.category,p.partNo,p.partType,p.price,p.stock,p.years,JSON.stringify(p.models),p.engine,p.active,id]);
-      if (!result.rowCount) return res.status(404).json({ error: 'Product not found.' });
+      const result = await query(`UPDATE products SET slug=$1,name=$2,brand=$3,category=$4,part_no=$5,part_type=$6,price_kes=$7,years=$9,models=$10::jsonb,engine=$11,active=$12,updated_at=NOW() WHERE id=$13 AND stock=$8 AND (brand=$3 OR NOT EXISTS(SELECT 1 FROM inventory_batches WHERE product_id=$13)) RETURNING *`, [p.slug,p.name,p.brand,p.category,p.partNo,p.partType,p.price,p.stock,p.years,JSON.stringify(p.models),p.engine,p.active,id]);
+      if (!result.rowCount) return res.status(409).json({ error: 'Reload this product. Stock must be changed through receiving/issuing; the brand of a batched part cannot be changed.' });
       return res.status(200).json({ product: result.rows[0] });
     }
     if (req.method === 'DELETE') {
