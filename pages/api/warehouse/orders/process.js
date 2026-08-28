@@ -35,6 +35,7 @@ export default async function handler(req,res){
       const itemQ=await client.query(`SELECT wi.*,p.barcode,p.part_no AS product_part_no FROM warehouse_order_items wi JOIN products p ON p.id=wi.product_id WHERE wi.id=$1 AND wi.warehouse_order_id=$2 FOR UPDATE`,[itemId,jobId]);
       if(!itemQ.rowCount) throw new Error('Order item not found.');
       const item=itemQ.rows[0];
+      if (session.assignedBrand && item.brand !== session.assignedBrand) throw new Error(`This account is assigned to ${session.assignedBrand} only.`);
       if(item.status==='PICKED'||Number(item.picked_qty)>=Number(item.quantity)) throw new Error('This item is already fully picked.');
       const expected=String(item.barcode||item.product_part_no).trim().toUpperCase();
       if(scanned.toUpperCase()!==expected && scanned.toUpperCase()!==String(item.part_no).trim().toUpperCase()) throw new Error(`Barcode does not match ${item.part_no}.`);
