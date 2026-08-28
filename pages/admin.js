@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 
 const emptyProduct = { name:'', brand:'Mercedes-Benz', category:'Engine', partNo:'', partType:'OEM', priceKes:'', stock:'0', years:'', models:'', engine:'' };
+const emptyStaff = { name:'', email:'', phone:'', role:'cashier', password:'' };
+const staffRoleLabels = { general_manager:'General manager', warehouse_manager:'Warehouse manager', warehouse_clerk:'Warehouse receiving staff', picker:'Warehouse picker', packer:'Warehouse packer', dispatch:'Dispatch staff', finance:'Finance staff', auditor:'Auditor', delivery_driver:'Delivery driver', cashier:'Sales counter staff', garage_staff:'Garage staff' };
 
 export default function Admin(){
   const [data,setData]=useState(null);
@@ -9,16 +11,24 @@ export default function Admin(){
   const [loading,setLoading]=useState(true);
   const [product,setProduct]=useState(emptyProduct);
   const [saving,setSaving]=useState(false);
+  const [staff,setStaff]=useState(emptyStaff),[staffRoles,setStaffRoles]=useState(Object.keys(staffRoleLabels)),[staffSaving,setStaffSaving]=useState(false),[showStaff,setShowStaff]=useState(false);
 
   async function load(){
     setLoading(true); setError('');
     try{
-      const r=await fetch('/api/admin/overview');
-      const j=await r.json();
-      if(!r.ok) throw new Error(j.error||'Could not load admin dashboard.');
+      const [dashboard,accounts]=await Promise.all([fetch('/api/admin/overview'),fetch('/api/admin/staff')]);
+      const j=await dashboard.json();
+      if(!dashboard.ok) throw new Error(j.error||'Could not load admin dashboard.');
       setData(j);
+      const a=await accounts.json();if(accounts.ok&&Array.isArray(a.roles))setStaffRoles(a.roles);
     }catch(e){ setError(e.message); }
     finally{ setLoading(false); }
+  }
+
+  async function addStaff(e){
+    e.preventDefault(); setStaffSaving(true); setError('');
+    try{const r=await fetch('/api/admin/staff',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'CREATE',...staff})});const j=await r.json();if(!r.ok)throw new Error(j.error||'Could not create staff account.');setStaff(emptyStaff);setShowStaff(false);await load();}
+    catch(e){setError(e.message);}finally{setStaffSaving(false);}
   }
 
   useEffect(()=>{ load(); },[]);
@@ -41,6 +51,8 @@ export default function Admin(){
       {error && <div className="panel adminError"><h3>Admin access</h3><p>{error}</p>{error.toLowerCase().includes('sign in') && <a className="button primary" href="/staff-login?next=/admin">Staff / admin sign in</a>}</div>}
       {data && <>
         <div className="metrics"><div><span>Net sales today</span><strong>KSh {Number(data.metrics.salesToday||0).toLocaleString()}</strong></div><div><span>Open orders</span><strong>{data.metrics.openOrders}</strong></div><div><span>Low stock</span><strong>{data.metrics.lowStock}</strong></div><div><span>Customers</span><strong>{data.metrics.customers}</strong></div></div>
+
+        <div className="panel adminStaffPanel"><div className="adminHeading"><div><span className="eyebrow">STAFF ACCESS</span><h2>Add staff account</h2><p>Create accounts for every department from this dashboard. The selected role controls available pages and actions.</p></div><button className="button primary" type="button" onClick={()=>setShowStaff(v=>!v)}>{showStaff?'Close form':'Add staff'}</button></div>{showStaff&&<form className="adminForm" onSubmit={addStaff}><div className="adminFormRow"><input required placeholder="Full name" value={staff.name} onChange={e=>setStaff({...staff,name:e.target.value})}/><input required type="email" placeholder="Staff email" value={staff.email} onChange={e=>setStaff({...staff,email:e.target.value})}/></div><div className="adminFormRow"><input placeholder="Phone number" value={staff.phone} onChange={e=>setStaff({...staff,phone:e.target.value})}/><select value={staff.role} onChange={e=>setStaff({...staff,role:e.target.value})}>{staffRoles.filter(r=>r!=='admin').map(r=><option value={r} key={r}>{staffRoleLabels[r]||r.replaceAll('_',' ')}</option>)}</select></div><input required minLength="8" type="password" autoComplete="new-password" placeholder="Temporary password (8+ characters)" value={staff.password} onChange={e=>setStaff({...staff,password:e.target.value})}/><button className="button primary" disabled={staffSaving}>{staffSaving?'Creating…':'Create staff account'}</button></form>}</div>
 
         <div className="adminSectionGrid">
           <div className="panel">
