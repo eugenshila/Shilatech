@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { getPool,query } from '../../../lib/db';
 import { readSession } from '../../../lib/auth';
-const roles=new Set(['general_manager','garage_staff','warehouse_manager','warehouse_clerk','picker','packer','dispatch','finance','auditor','delivery_driver','cashier']);
+const roles=new Set(['hr','general_manager','garage_staff','warehouse_manager','warehouse_clerk','picker','packer','dispatch','finance','auditor','delivery_driver','cashier']);
 async function admin(req,res){const s=await readSession(req);if(!s){res.status(401).json({error:'Sign in required.'});return null;}if(s.role!=='admin'){res.status(403).json({error:'Administrator access required.'});return null;}return s;}
 export default async function handler(req,res){
  const s=await admin(req,res);if(!s)return;
@@ -27,3 +27,4 @@ export default async function handler(req,res){
   throw new Error('Unsupported action.');
  }catch(e){await c.query('ROLLBACK');console.error(e);return res.status(400).json({error:e.message||'Could not update employee.'});}finally{c.release();}
 }
+
