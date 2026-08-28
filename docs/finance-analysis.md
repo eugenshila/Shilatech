@@ -1,0 +1,1 @@
+Finance analysis uses recorded POS and invoice revenue, recorded inventory costs and approved liabilities. Forecasts are estimates; review with an accountant.
