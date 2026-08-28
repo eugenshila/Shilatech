@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   if (!requireAdmin(req, res)) return;
   try {
     const [sales, openOrders, lowStock, customers, recentOrders, products] = await Promise.all([
-      query(`SELECT COALESCE(SUM(total_kes),0)::int AS total FROM orders WHERE created_at >= CURRENT_DATE AND payment_status IN ('Paid','Completed')`),
+      query(`SELECT COALESCE(SUM(total_kes),0) AS total FROM (SELECT total_kes,created_at FROM orders WHERE payment_status IN ('Paid','Completed') UNION ALL SELECT total_kes,created_at FROM counter_sales) sales WHERE (created_at AT TIME ZONE 'Africa/Nairobi')::date=(NOW() AT TIME ZONE 'Africa/Nairobi')::date`),
       query(`SELECT COUNT(*)::int AS total FROM orders WHERE status NOT IN ('Delivered','Cancelled')`),
       query(`SELECT COUNT(*)::int AS total FROM products WHERE active=TRUE AND stock <= 5`),
       query(`SELECT COUNT(*)::int AS total FROM customers`),

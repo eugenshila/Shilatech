@@ -44,7 +44,7 @@ const seoByPath = {
   }
 };
 
-const privatePaths = ['/admin','/warehouse','/delivery','/account','/cart','/checkout'];
+const privatePaths = ['/admin','/warehouse','/delivery','/account','/cart','/checkout','/pos','/operations'];
 
 export default function Layout({ children, title, description, image, canonicalPath, noindex = false, structuredData, homeTheme = false }) {
   const router = useRouter();
@@ -157,7 +157,7 @@ export default function Layout({ children, title, description, image, canonicalP
           </div>
           <div><h4>Shop</h4><Link href="/shop">All parts</Link><Link href="/brands">Vehicle brands</Link><Link href="/vin">VIN checker</Link><Link href="/cart">Cart</Link></div>
           <div><h4>Support</h4><Link href="/workshop">Book a repair</Link><Link href="/faq">FAQ</Link><Link href="/delivery-returns">Delivery & Returns</Link><Link href="/contact">Contact</Link></div>
-          <div><h4>Dealer</h4><Link href="/admin">Admin dashboard</Link><p>Secure inventory and order management.</p></div>
+          <div><h4>Dealer</h4><Link href="/admin">Admin dashboard</Link><Link href="/pos">Staff sales counter</Link><p>Secure inventory and order management.</p></div>
         </div>
         <div className="container copyright">© {new Date().getFullYear()} Shilatech Autospares. All rights reserved.</div>
       </footer>
