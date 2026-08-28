@@ -50,7 +50,7 @@ export default function Warehouse(){
   const visiblePreorders=activeBrand?(data?.preorders||[]).filter(p=>p.brand===activeBrand):(data?.preorders||[]);
   const visibleReturns=activeBrand?(data?.returns||[]).filter(r=>r.brand===activeBrand):(data?.returns||[]);
   const activeSummary=(data?.brandSummary||[]).find(area=>area.brand_code===activeBrand);
-  function openBrand(brand){router.push(`/warehouse/${brandSlugs[brand]}`);}
+  function openBrand(brand){const slug=brandSlugs[brand];if(!slug)return;router.push(`/warehouse/${slug}`);}
   function openAllBrands(){router.push('/warehouse');}
 
   function parseCsv(text){
