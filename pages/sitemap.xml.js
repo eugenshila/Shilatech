@@ -9,7 +9,7 @@ export default function Sitemap(){return null;}
 export async function getServerSideProps({res}){
   const staticPages=[
     ['/',1.0,'daily'],['/shop',0.9,'daily'],['/brands',0.8,'weekly'],['/vin',0.8,'weekly'],
-    ['/workshop',0.8,'weekly'],['/about',0.6,'monthly'],['/contact',0.6,'monthly'],['/faq',0.5,'monthly'],['/delivery-returns',0.5,'monthly']
+    ['/workshop',0.8,'weekly'],['/facility',0.7,'monthly'],['/about',0.6,'monthly'],['/contact',0.6,'monthly'],['/faq',0.5,'monthly'],['/delivery-returns',0.5,'monthly']
   ];
   let products=[];
   try{
@@ -26,4 +26,5 @@ export async function getServerSideProps({res}){
   res.write(xml);res.end();
   return {props:{}};
 }
+
 
