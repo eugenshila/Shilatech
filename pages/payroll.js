@@ -14,6 +14,15 @@ export default function Payroll() {
   async function send(body){setBusy(true);setError('');setNotice('');try{const r=await fetch('/api/payroll',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw new Error(j.error);await refresh();setNotice('Saved. No payment was sent.');setNote('');}catch(e){setError(e.message);}finally{setBusy(false);}}
   let preview=null;try{preview=calculatePayroll(form);}catch{}
   const entry=data?.entries.find(e=>String(e.id)===String(selected));
+  async function printPayslip(){
+    if(entry?.status!=='APPROVED'||busy)return;
+    try{
+      const logo=document.querySelector('#payroll-statement img');
+      if(logo)await logo.decode();
+      await document.fonts.ready;
+      window.print();
+    }catch{setError('The company logo could not load. Please reload before printing.');}
+  }
   const update=e=>setForm({...form,[e.target.name]:e.target.value});
   return <Layout title="Payroll | Shilatech staff" noindex><section className="counterShell payrollPage">
     <div className="noPrint"><span className="staffEyebrow">SHILATECH · ERP / PAYROLL</span><h1>Kenya payroll</h1>
@@ -38,14 +47,30 @@ export default function Payroll() {
     </form>}
     {data?.ready&&<><h2>Salary records</h2><p>Latest 200 records. Rejected records can be replaced; submitted amounts cannot be edited.</p><div style={{overflowX:'auto'}}><table><thead><tr><th>Month</th><th>Employee</th><th>Method</th><th>Net KSh</th><th>Status</th><th>Details</th></tr></thead><tbody>{data.entries.map(e=><tr key={e.id}><td>{e.period}</td><td>{e.employee_name}</td><td>{e.amounts.method==='BANK'?'Bank':'M-Pesa'}</td><td>{money(e.amounts.net)}</td><td>{e.status.replaceAll('_',' ')}</td><td><button onClick={()=>{setSelected(e.id);setNote('');}}>Open record {e.id}</button></td></tr>)}</tbody></table></div>{!data.entries.length&&<p>No salary records yet.</p>}</>}
     </div>
-    {entry&&<><article id="payroll-statement"><h2>Shilatech salary statement</h2><p>{entry.employee_name} · {entry.period} · Record {entry.id}</p><p><strong>{entry.status==='APPROVED'?'APPROVED — PAYMENT NOT SENT':'DRAFT / '+entry.status.replaceAll('_',' ')}</strong></p><p>Method: {entry.amounts.method==='BANK'?'Bank transfer':'M-Pesa'} · Currency: KES · Rules: {entry.amounts.ruleVersion}</p><Breakdown amounts={entry.amounts}/><p>This statement records salary calculations only. It is not proof of salary payment or statutory remittance.</p></article>
-      <div className="noPrint"><button onClick={()=>window.print()}>Print salary statement</button>
+    {entry&&<><article id="payroll-statement" data-approved={entry.status==='APPROVED'}><div className="payslipHeader"><img src="/shilatech-logo.webp" alt="Shilatech Auto Spares" width="100" height="64"/><div><strong>SHILATECH AUTO SPARES</strong><h2>Monthly payslip</h2></div></div><p>{entry.employee_name} · {entry.period} · Record {entry.id}</p><p><strong>{entry.status==='APPROVED'?'APPROVED — PAYMENT NOT SENT':'DRAFT / '+entry.status.replaceAll('_',' ')}</strong></p><p>Method: {entry.amounts.method==='BANK'?'Bank transfer':'M-Pesa'} · Currency: KES · Rules: {entry.amounts.ruleVersion}</p><Breakdown amounts={entry.amounts}/><p>This statement records salary calculations only. It is not proof of salary payment or statutory remittance.</p></article>
+      <div className="noPrint">{entry.status==='APPROVED'?<><button disabled={busy} onClick={printPayslip}>Print approved payslip (A5)</button><p>Select A5, portrait, 100% scale and turn off browser headers and footers in the print dialog.</p></>:<p>Printing is available after administrator approval.</p>}
       {((data.role==='general_manager'&&entry.status==='PENDING_MANAGER')||(data.role==='admin'&&entry.status==='PENDING_ADMIN'))&&<div><label>Review note<textarea required maxLength={1000} value={note} onChange={e=>setNote(e.target.value)}/></label><button disabled={busy||!note.trim()} onClick={()=>send({id:entry.id,action:data.role==='general_manager'?'REVIEW':'APPROVE',note})}>{data.role==='general_manager'?'Recommend to administrator':'Approve salary record (no payment)'}</button> <button disabled={busy||!note.trim()} onClick={()=>send({id:entry.id,action:'REJECT',note})}>Reject</button></div>}
       <h3>Audit trail</h3>{data.events.filter(e=>String(e.entry_id)===String(entry.id)).map(e=><p key={e.id}>{new Date(e.created_at).toLocaleString()} · {e.actor_name} · {e.action}: {e.note}</p>)}</div>
     </>}
     <style jsx>{`
-      .payrollPage{color:#e7ede4;background:#080c08;line-height:1.7}.payrollPage h1,.payrollPage h2,.payrollPage h3,.payrollPage a{color:#70c342}.payrollNotice{border-left:3px solid #70c342;padding:12px;background:#14200f}.payrollFields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:20px 0}label{display:block}input:not([type=checkbox]),select,textarea{display:block;width:100%;padding:10px;color:#f1f5ef;background:#101910;border:1px solid #53654b}button{padding:10px 16px;background:#65bd35;color:#071003;border:0;border-radius:4px;cursor:pointer;margin:12px 0}button:disabled{opacity:.5;cursor:not-allowed}td,th{text-align:left;padding:10px;border-bottom:1px solid #30402a}#payroll-statement{margin-top:28px;padding:24px;border:1px solid #405338} @media(max-width:640px){.payrollFields{grid-template-columns:1fr}}
+      .payrollPage{color:#e7ede4;background:#080c08;line-height:1.7}.payrollPage h1,.payrollPage h2,.payrollPage h3,.payrollPage a{color:#70c342}.payrollNotice{border-left:3px solid #70c342;padding:12px;background:#14200f}.payrollFields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:20px 0}label{display:block}input:not([type=checkbox]),select,textarea{display:block;width:100%;padding:10px;color:#f1f5ef;background:#101910;border:1px solid #53654b}button{padding:10px 16px;background:#65bd35;color:#071003;border:0;border-radius:4px;cursor:pointer;margin:12px 0}button:disabled{opacity:.5;cursor:not-allowed}td,th{text-align:left;padding:10px;border-bottom:1px solid #30402a}#payroll-statement{box-sizing:border-box;max-width:148mm;margin:28px 0;padding:20px;border:1px solid #405338;overflow-wrap:anywhere}.payslipHeader{display:flex;align-items:center;gap:16px;border-bottom:2px solid #70c342;padding-bottom:12px}.payslipHeader img{object-fit:contain;flex-shrink:0}.payslipHeader strong{color:#70c342}.payslipHeader h2{margin:4px 0;font-size:22px} @media(max-width:640px){.payrollFields{grid-template-columns:1fr}}
     `}</style>
-    <style jsx global>{`.payrollAmounts{max-width:650px}.payrollAmounts>div{display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid #30402a;padding:5px 0}.payrollAmounts dd{margin:0}@media print{body *{visibility:hidden}#payroll-statement,#payroll-statement *{visibility:visible;color:#000!important;background:#fff!important}#payroll-statement{position:absolute;left:0;top:0;width:100%;border:0!important}.noPrint{display:none!important}}`}</style>
+    <style jsx global>{`.payrollAmounts{max-width:650px}.payrollAmounts>div{display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid #30402a;padding:5px 0}.payrollAmounts dd{margin:0}@page{size:A5 portrait;margin:10mm}
+@media print{
+ body{margin:0!important;background:#fff!important}
+ body *:not(:has(#payroll-statement)):not(#payroll-statement):not(#payroll-statement *){display:none!important}
+ body *:has(#payroll-statement){display:block!important;position:static!important;margin:0!important;padding:0!important;border:0!important;min-height:0!important;height:auto!important;width:auto!important;max-width:none!important;background:#fff!important}
+ #payroll-statement{display:block!important;position:static!important;box-sizing:border-box!important;width:128mm!important;max-width:100%!important;margin:0!important;padding:0!important;border:0!important;break-inside:avoid;font-size:9pt!important;line-height:1.3!important}
+ #payroll-statement,#payroll-statement *{color:#111!important;background:transparent!important;box-shadow:none!important}
+ #payroll-statement[data-approved="false"]{display:none!important}
+ #payroll-statement .payslipHeader{display:flex!important;gap:4mm!important;padding-bottom:3mm!important;border-bottom:1pt solid #385c26!important}
+ #payroll-statement .payslipHeader img{width:24mm!important;height:16mm!important;object-fit:contain!important}
+ #payroll-statement h2{font-size:15pt!important;margin:1mm 0!important}
+ #payroll-statement p{margin:2mm 0!important}
+ #payroll-statement .payrollAmounts{max-width:none!important;margin:3mm 0!important}
+ #payroll-statement .payrollAmounts>div{padding:1mm 0!important;gap:3mm!important;border-bottom:.3pt solid #bbb!important;break-inside:avoid}
+ #payroll-statement .payrollAmounts dd{white-space:nowrap}
+ .noPrint{display:none!important}
+}`}</style>
   </section></Layout>;
 }
