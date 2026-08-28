@@ -17,7 +17,7 @@ export default async function handler(req,res) {
   }
   const c=await getPool().connect();
   try {
-    if(req.method==='GET') {
+    if(req.method==='GET') { const ready=await c.query("SELECT to_regclass('public.hr_leave_requests') AS table_name"); if(!ready.rows[0].table_name)return res.json({role:session.role,ready:false,leaves:[],payslips:[]});
       const leaves=await c.query('SELECT l.*,u.name AS employee_name FROM hr_leave_requests l JOIN customers u ON u.id=l.employee_id WHERE l.employee_id=$1 OR $2=ANY($3::text[]) ORDER BY l.created_at DESC LIMIT 100',[session.id,session.role,MANAGERS]);
       const hasPayroll=await c.query("SELECT to_regclass('public.payroll_entries') AS table_name");const payslips=hasPayroll.rows[0].table_name?await c.query("SELECT id,period,employee_name,status,amounts FROM payroll_entries WHERE employee_id=$1 AND status='APPROVED' ORDER BY period DESC LIMIT 50",[session.id]):{rows:[]};
       return res.json({role:session.role,leaves:leaves.rows,payslips:payslips.rows});
