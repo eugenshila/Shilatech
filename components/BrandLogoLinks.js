@@ -3,7 +3,7 @@ import Image from 'next/image';
 import styles from './BrandLogoLinks.module.css';
 
 const logos = [
-  ['Jeep', 'jeep.png', 'Jeep'],
+  ['Jeep', 'jeep-black.jpg', 'Jeep'],
   ['Mercedes-Benz', 'mercedes-benz-black.png', 'Mercedes-Benz'],
   ['Volkswagen', 'volkswagen-black.png', 'Volkswagen'],
   ['Range Rover', 'land-rover-black.png', 'Land Rover and Range Rover'],
