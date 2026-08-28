@@ -68,7 +68,7 @@ export default function Shop() {
   const seoDescription = brand ? `Shop available ${brand} spare parts in Nairobi, Kenya. Search genuine and quality aftermarket parts by part number and category, with VIN fitment support and nationwide delivery.` : undefined;
 
   return <Layout title={seoTitle} description={seoDescription}>
-    <section className="pageHero compactHero"><div className="container"><span className="eyebrow">CATALOG</span><h1>{brand ? `${brand} parts` : category ? `${category} parts` : 'Auto spare parts in Kenya'}</h1><p>{brand ? `Browse ${brand} spare parts, then refine by category, stock status or part number. Check each listing and confirm compatibility with your vehicle.` : 'Browse Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo and Ford parts. Search by part number, compare listed specifications and confirm fitment before ordering.'}</p></div></section>
+    <section className="pageHero compactHero"><div className="container"><span className="eyebrow">CATALOG</span><h1>{brand ? `${brand} parts` : category ? `${category} parts` : 'Auto spare parts in Kenya'}</h1><p>{brand ? `Browse ${brand} spare parts, then refine by category, stock status or part number. Check fitment and part type on each listing. Enquiries welcome from Kenya and East Africa.` : 'Browse Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo and Ford parts. Search by part number and compare listed specifications. We welcome parts enquiries from Kenya and East Africa.'}</p></div></section>
     <section className="section"><div className="container shopLayout">
       <aside className="filters">
         <h3>Filter parts</h3>

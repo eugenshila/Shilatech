@@ -13,7 +13,7 @@ const categoryCards = [
 
 export default function Home() {
   return (
-    <Layout homeTheme title="Auto Spare Parts in Nairobi, Kenya | Shilatech" description="Find Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo and Ford spare parts at Shilatech in Nairobi. Search by part number and ask for fitment support.">
+    <Layout homeTheme title="Auto Spare Parts in Nairobi, Kenya | Shilatech" description="Find Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo and Ford spare parts at Shilatech in Nairobi. Parts enquiries welcome from Kenya and East Africa.">
       <div className="boldHome">
       <section className="hero approvedJeepHero">
         <div className="approvedHeroOverlay" />
@@ -21,7 +21,7 @@ export default function Home() {
           <div className="approvedHeroCopy">
             <h1>Auto parts for <br/>the <span>road ahead.</span></h1>
             <div className="greenRule" />
-            <p>Find auto spare parts in Nairobi for Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo and Ford. Search by part number, check vehicle compatibility and ask our team about delivery across Kenya.</p>
+            <p>Find auto spare parts in Nairobi for Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo and Ford. Search by part number and check vehicle compatibility. Based in Kenya, we welcome parts enquiries from across East Africa.</p>
             <div className="heroButtons approvedHeroButtons">
               <Link className="button greenPrimary" href="/shop">SHOP PARTS</Link>
               <a className="button vehicleButton" href="https://wa.me/254721802597" target="_blank" rel="noopener noreferrer">WHATSAPP US ↗</a>
@@ -93,6 +93,8 @@ export default function Home() {
         </div>
       </section>
       <section className="section"><div className="container narrow prose">
+        <h2>Spare parts enquiries from Kenya and East Africa</h2>
+        <p>Looking for a part for your vehicle or workshop? Contact Shilatech with your part number, VIN and destination. We welcome enquiries from across East Africa; our team will confirm availability and any delivery arrangements before you order.</p>
         <h2>How to choose the right spare part</h2>
         <p>A vehicle model alone is not always enough to identify a replacement part. Engine type, production year and specification can affect fitment. Start with the number printed on your existing part, then compare the details on the product page.</p>
         <h3>1. Search by part number or vehicle make</h3>
