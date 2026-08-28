@@ -17,6 +17,9 @@ export default async function handler(req,res){
       const disposition=String(req.body?.disposition||'QUARANTINE').trim().toUpperCase();
       const notes=String(req.body?.notes||'').trim()||null;
       if(!Number.isInteger(productId)||!Number.isInteger(quantity)||quantity<=0||!reason) return res.status(400).json({error:'Product, quantity and return reason are required.'});
+      const product=await query(`SELECT brand FROM products WHERE id=$1`,[productId]);
+      if(!product.rowCount) return res.status(404).json({error:'Product not found.'});
+      if(session.assignedBrand && product.rows[0].brand!==session.assignedBrand) return res.status(403).json({error:`This account is assigned to ${session.assignedBrand} only.`});
       const no=returnNo();
       const result=await query(`INSERT INTO returns (return_no,product_id,order_id,batch_id,quantity,reason,defect_type,disposition,notes,reported_by)
         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,[no,productId,orderId,batchId,quantity,reason,defectType,disposition,notes,Number(session.sub)]);
