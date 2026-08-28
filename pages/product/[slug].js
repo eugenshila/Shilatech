@@ -9,8 +9,9 @@ export default function Product({ product }) {
   const { addToCart } = useCart();
   if (!product) return <Layout noindex><div className="container section"><h1>Part not found</h1></div></Layout>;
 
-  const title = `${product.name} ${product.partNo} | ${product.brand} Spare Parts Kenya`;
-  const description = `Buy ${product.name} (${product.partNo}) for ${product.brand} in Kenya. ${product.type} part, KSh ${Number(product.price).toLocaleString()}, ${product.stock > 0 ? `${product.stock} currently in stock` : 'contact us for availability'}. VIN fitment support and delivery across Kenya.`;
+  const title = `${product.name} ${product.partNo} | Shilatech Kenya`;
+  const overview = `${product.name}, part number ${product.partNo}, is listed in our ${product.category.toLowerCase()} catalogue for ${product.brand} vehicles. Check the listed model, year and engine details, then confirm the part number and VIN before ordering.`;
+  const description = `${product.name}, part ${product.partNo}, from Shilatech in Kenya. Check listed vehicle compatibility, current price and stock, and ask for VIN fitment support.`;
   const productUrl = `${SITE_URL}/product/${product.slug}`;
   const productSchema = {
     '@context':'https://schema.org',
@@ -18,8 +19,8 @@ export default function Product({ product }) {
     name:product.name,
     sku:product.partNo,
     mpn:product.partNo,
-    brand:{'@type':'Brand',name:product.brand},
-    description,
+    category:product.category,
+    description:overview,
     ...(product.imageUrl ? {image:[product.imageUrl]} : {}),
     offers:{
       '@type':'Offer',
@@ -27,25 +28,39 @@ export default function Product({ product }) {
       priceCurrency:'KES',
       price:String(product.price),
       availability:product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      itemCondition:'https://schema.org/NewCondition',
       seller:{'@type':'Organization',name:'Shilatech Auto Spares'}
     }
   };
 
-  return <Layout title={title} description={description} image={product.imageUrl || undefined} canonicalPath={`/product/${product.slug}`} structuredData={productSchema}>
+  return <Layout title={title} description={description} image={product.imageUrl || undefined} canonicalPath={`/product/${product.slug}`} structuredData={[productSchema, {'@context':'https://schema.org','@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'Home',item:SITE_URL},{'@type':'ListItem',position:2,name:'Auto spare parts',item:`${SITE_URL}/shop`},{'@type':'ListItem',position:3,name:product.name,item:productUrl}]}]}>
     <section className="section"><div className="container productDetail">
       <div className="detailVisual">{product.imageUrl ? <img src={product.imageUrl} alt={`${product.brand} ${product.name} ${product.partNo}`} style={{maxWidth:'100%',maxHeight:360,objectFit:'contain'}}/> : <div className="partGlyph large">{product.category.slice(0,2).toUpperCase()}</div>}<span>{product.brand}</span><small>{product.partNo}</small></div>
       <div className="detailInfo">
-        <Link href="/shop" className="backLink">← Back to catalog</Link>
+        <nav aria-label="Breadcrumb" className="backLink"><Link href="/">Home</Link> / <Link href="/shop">Auto spare parts</Link> / <span>{product.name}</span></nav>
         <div className="productMeta"><span>{product.type}</span><span className={product.stock > 0 ? 'inStock' : ''}>{product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}</span></div>
         <h1>{product.name}</h1>
         <p className="detailPartNo">Part No. <strong>{product.partNo}</strong></p>
         <div className="detailPrice">KSh {Number(product.price).toLocaleString()}</div>
-        <p>Compatible with selected {product.brand} models. Confirm fitment with your VIN before purchase for best accuracy.</p>
-        <div className="specGrid"><div><span>Models</span><b>{product.models.length ? product.models.join(', ') : 'Confirm by VIN'}</b></div><div><span>Years</span><b>{product.years || 'Varies'}</b></div><div><span>Engine</span><b>{product.engine || 'Varies'}</b></div><div><span>Part type</span><b>{product.type}</b></div></div>
+        <p>{overview}</p>
+        <h2 style={{fontSize:24,marginTop:28}}>Listed vehicle compatibility</h2>
+        <div className="specGrid"><div><span>Listed models</span><b>{product.models.length ? product.models.join(', ') : 'Confirm by VIN'}</b></div><div><span>Years</span><b>{product.years || 'Varies'}</b></div><div><span>Engine</span><b>{product.engine || 'Varies'}</b></div><div><span>Part type</span><b>{product.type}</b></div></div>
         <button disabled={product.stock <= 0} className="button primary largeBtn" onClick={()=>addToCart(product)}>{product.stock > 0 ? 'Add to cart' : 'Currently unavailable'}</button>
         <div className="fitmentCallout"><strong>Not sure this fits?</strong><span>Use our VIN checker before ordering.</span><Link href="/vin">Check VIN →</Link></div>
       </div>
+    </div></section>
+    <section className="section"><div className="container narrow prose">
+      <h2>Before ordering {product.name}</h2>
+      <p>Parts can differ between vehicles with the same model name. Check your vehicle year, engine and the number on the existing part against this listing. The compatibility details above are a starting point, not a guarantee of fitment for every vehicle.</p>
+      <ul style={{lineHeight:1.8}}>
+        <li>Quote part number <strong>{product.partNo}</strong> when contacting us.</li>
+        <li>Have your 17-character VIN and vehicle details ready.</li>
+        <li>If the existing part number differs, ask us to confirm a suitable replacement before paying.</li>
+      </ul>
+      <h2>Price, availability and delivery in Kenya</h2>
+      <p>The current listed price is KSh {Number(product.price).toLocaleString()}. {product.stock > 0 ? 'This part is currently listed in stock. Availability may change before your order is confirmed.' : 'This part is currently out of stock. Contact us to ask about availability before planning your repair.'} Confirm delivery charges and timing for your location before ordering.</p>
+      <p><Link href="/delivery-returns">Read delivery and returns information</Link> or <Link href="/contact">contact Shilatech about this part</Link>.</p>
+      <h2>Need help identifying a part?</h2>
+      <p>Start with our <Link href="/vin">VIN lookup</Link>, or send the team your vehicle details and a clear photograph of the existing part and its markings. You can also <Link href={`/shop?brand=${encodeURIComponent(product.brand)}`}>browse other {product.brand} spare parts</Link>.</p>
     </div></section>
   </Layout>
 }

@@ -68,7 +68,7 @@ export default function Shop() {
   const seoDescription = brand ? `Shop available ${brand} spare parts in Nairobi, Kenya. Search genuine and quality aftermarket parts by part number and category, with VIN fitment support and nationwide delivery.` : undefined;
 
   return <Layout title={seoTitle} description={seoDescription}>
-    <section className="pageHero compactHero"><div className="container"><span className="eyebrow">CATALOG</span><h1>{brand ? `${brand} parts` : category ? `${category} parts` : 'Premium parts, precisely matched.'}</h1><p>{brand ? `Browse currently available ${brand} spare parts, then refine by category, availability or part number.` : 'Search live inventory by vehicle, part number or category.'}</p></div></section>
+    <section className="pageHero compactHero"><div className="container"><span className="eyebrow">CATALOG</span><h1>{brand ? `${brand} parts` : category ? `${category} parts` : 'Auto spare parts in Kenya'}</h1><p>{brand ? `Browse ${brand} spare parts, then refine by category, stock status or part number. Check each listing and confirm compatibility with your vehicle.` : 'Browse Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo and Ford parts. Search by part number, compare listed specifications and confirm fitment before ordering.'}</p></div></section>
     <section className="section"><div className="container shopLayout">
       <aside className="filters">
         <h3>Filter parts</h3>
@@ -78,7 +78,7 @@ export default function Shop() {
         <button className="textButton" onClick={clearFilters}>Clear filters</button>
       </aside>
       <div className="catalog">
-        {brand && <div className="fitmentBanner"><strong>{brand} catalog</strong><span>{loading ? 'Checking live inventory…' : `${list.length} available part${list.length===1?'':'s'}`}</span></div>}
+        {brand && <div className="fitmentBanner"><strong>{brand} catalog</strong><span>{loading ? 'Checking live inventory…' : `${list.length} listed part${list.length===1?'':'s'}`}</span></div>}
         {router.query.vin && <div className="fitmentBanner"><strong>VIN-assisted search active</strong><span>{router.query.year} {router.query.brand} {router.query.model}</span></div>}
         <div className="catalogBar">
           <input placeholder="Search part name or number…" value={search} onChange={e=>setSearch(e.target.value)} />

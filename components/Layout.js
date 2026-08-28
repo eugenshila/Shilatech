@@ -44,7 +44,7 @@ const seoByPath = {
   }
 };
 
-const privatePaths = ['/admin','/warehouse','/delivery','/account','/cart','/checkout','/pos','/operations'];
+const privatePaths = ['/admin','/warehouse','/delivery','/account','/cart','/checkout','/pos','/operations','/staff','/staff-login','/staff-password','/staff-garage','/approvals'];
 
 export default function Layout({ children, title, description, image, canonicalPath, noindex = false, structuredData, homeTheme = false }) {
   const router = useRouter();
@@ -99,9 +99,9 @@ export default function Layout({ children, title, description, image, canonicalP
         <meta name="twitter:title" content={pageTitle}/>
         <meta name="twitter:description" content={pageDescription}/>
         <meta name="twitter:image" content={socialImage}/>
-        {!shouldNoindex && <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(businessSchema)}}/>}
-        {!shouldNoindex && router.pathname==='/' && <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(websiteSchema)}}/>}
-        {!shouldNoindex && structuredData && <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(structuredData)}}/>}
+        {!shouldNoindex && <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(businessSchema).replace(/</g, '\\u003c')}}/>}
+        {!shouldNoindex && router.pathname==='/' && <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(websiteSchema).replace(/</g, '\\u003c')}}/>}
+        {!shouldNoindex && structuredData && <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(structuredData).replace(/</g, '\\u003c')}}/>}
       </Head>
 
       <header className={`siteHeader premiumHeader${homeTheme ? ' boldHeader' : ''}`}>

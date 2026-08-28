@@ -13,15 +13,15 @@ const categoryCards = [
 
 export default function Home() {
   return (
-    <Layout homeTheme>
+    <Layout homeTheme title="Auto Spare Parts in Nairobi, Kenya | Shilatech" description="Find Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo and Ford spare parts at Shilatech in Nairobi. Search by part number and ask for fitment support.">
       <div className="boldHome">
       <section className="hero approvedJeepHero">
         <div className="approvedHeroOverlay" />
         <div className="container approvedHeroInner">
           <div className="approvedHeroCopy">
-            <h1>Built for <br/>the <span>road <br/>ahead.</span></h1>
+            <h1>Auto parts for <br/>the <span>road ahead.</span></h1>
             <div className="greenRule" />
-            <p>Genuine & OEM quality auto spare parts in Nairobi, Kenya for Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo & Ford, with delivery across Kenya.</p>
+            <p>Find auto spare parts in Nairobi for Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo and Ford. Search by part number, check vehicle compatibility and ask our team about delivery across Kenya.</p>
             <div className="heroButtons approvedHeroButtons">
               <Link className="button greenPrimary" href="/shop">SHOP PARTS</Link>
               <a className="button vehicleButton" href="https://wa.me/254721802597" target="_blank" rel="noopener noreferrer">WHATSAPP US ↗</a>
@@ -49,16 +49,16 @@ export default function Home() {
 
       <section className="approvedBenefits">
         <div className="container approvedBenefitsGrid">
-          <div className="approvedBenefit"><i>✓</i><div><h3>100% Genuine Parts</h3><p>We stock original and OEM quality parts.</p></div></div>
+          <div className="approvedBenefit"><i>✓</i><div><h3>Parts for your vehicle</h3><p>Compare the listed part type and fitment.</p></div></div>
           <div className="approvedBenefit"><i>▣</i><div><h3>Fast Nationwide Delivery</h3><p>Quick & reliable delivery across Kenya.</p></div></div>
-          <div className="approvedBenefit"><i>★</i><div><h3>Best Prices Guarantee</h3><p>Competitive prices on all parts.</p></div></div>
+          <div className="approvedBenefit"><i>★</i><div><h3>Clear catalogue prices</h3><p>Check the listed price before ordering.</p></div></div>
           <div className="approvedBenefit"><i>◉</i><div><h3>Expert Support</h3><p>We help you find the right part.</p></div></div>
         </div>
       </section>
 
       <section className="section vinBand">
         <div className="container vinGrid">
-          <div><span className="eyebrow">EXACT FITMENT</span><h2>Find the right spare part with your VIN</h2><p>Enter your 17-character VIN. We decode your vehicle details and narrow the catalog to matching parts, helping reduce wrong-part orders.</p></div>
+          <div><span className="eyebrow">EXACT FITMENT</span><h2>Find the right spare part with your VIN</h2><p>Enter your 17-character VIN. Use the decoded vehicle details to guide your search, then confirm the part number and fitment with our team before ordering.</p></div>
           <VinLookup compact />
         </div>
       </section>
@@ -88,10 +88,27 @@ export default function Home() {
         <div className="container">
           <span className="eyebrow">AUTO PARTS SPECIALIST · NAIROBI, KENYA</span>
           <h2>Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo & Ford spare parts in Kenya</h2>
-          <p>Shilatech Auto Spares supplies genuine and quality aftermarket parts for premium European and American vehicles. Search our live inventory by vehicle brand, part number or category, use the VIN checker when you need fitment support, and order for delivery in Nairobi and across Kenya.</p>
+          <p>Shilatech Auto Spares supplies genuine and quality aftermarket parts for premium European and American vehicles. Search our catalogue by vehicle brand, part number or category, use the VIN checker when you need fitment support, and order for delivery in Nairobi and across Kenya.</p>
           <p>Our catalogue covers common service and repair needs including <Link href="/shop?category=Engine">engine parts</Link>, <Link href="/shop?category=Brakes">brake parts</Link>, <Link href="/shop?category=Suspension">suspension parts</Link>, electrical components, filters and other replacement parts. For an exact enquiry, <Link href="/contact">contact Shilatech Auto Spares</Link> with your vehicle details or VIN.</p>
         </div>
       </section>
+      <section className="section"><div className="container narrow prose">
+        <h2>How to choose the right spare part</h2>
+        <p>A vehicle model alone is not always enough to identify a replacement part. Engine type, production year and specification can affect fitment. Start with the number printed on your existing part, then compare the details on the product page.</p>
+        <h3>1. Search by part number or vehicle make</h3>
+        <p>Use the catalogue to browse brake, suspension and engine components. Each product page lists the information available for that part, including its reference number, price and stock status.</p>
+        <h3>2. Confirm compatibility before ordering</h3>
+        <p>Have your VIN, vehicle year and engine details ready. If a part number is missing or different, <Link href="/contact">ask the Shilatech team for help</Link> before placing an order.</p>
+        <h3>3. Plan collection, delivery or a workshop visit</h3>
+        <p>Confirm availability and delivery arrangements for your location. If you need diagnosis or installation advice, <Link href="/workshop">view our workshop services</Link> and discuss your vehicle with the team.</p>
+        <h2>Common questions about buying spare parts</h2>
+        <h3>Can I order a part that is out of stock?</h3>
+        <p>Contact us with the part number and your vehicle details to ask about sourcing and expected availability. An online listing does not mean an out-of-stock item is ready for dispatch.</p>
+        <h3>Does a matching model name guarantee the part will fit?</h3>
+        <p>No. Compare the part number, year and engine information and confirm compatibility before buying. A VIN lookup helps identify the vehicle but does not replace checking the specific part.</p>
+        <h3>What should I check about delivery and returns?</h3>
+        <p>Confirm the destination, delivery charges and timing before ordering. Review our <Link href="/delivery-returns">delivery and returns information</Link> before fitting or using a part.</p>
+      </div></section>
     </div>
     </Layout>
   );
