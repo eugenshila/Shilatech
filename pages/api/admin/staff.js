@@ -12,7 +12,7 @@ export default async function handler(req,res){
    const name=String(b.name||'').trim(),email=String(b.email||'').trim().toLowerCase(),phone=String(b.phone||'').trim()||null,role=String(b.role||'');const password=String(b.password||'');
    if(!name||!email||!roles.has(role)||password.length<8)throw new Error('Name, email, valid role and password of at least 8 characters are required.');
    const ex=await c.query(`SELECT id,role FROM customers WHERE email=$1 FOR UPDATE`,[email]);if(ex.rowCount)throw new Error('That email already belongs to an existing account.');
-   const hash=await bcrypt.hash(password,12);const r=await c.query(`INSERT INTO customers(name,email,phone,password_hash,role,location_id) VALUES($1,$2,$3,$4,$5,main_business_location_id()) RETURNING id,name,email,phone,role`,[name,email,phone,hash,role]);
+   const hash=await bcrypt.hash(password,12);const r=await c.query(`INSERT INTO customers(name,email,phone,password_hash,role,location_id,must_change_password) VALUES($1,$2,$3,$4,$5,main_business_location_id(),TRUE) RETURNING id,name,email,phone,role`,[name,email,phone,hash,role]);
    await c.query(`INSERT INTO warehouse_audit(employee_id,action,entity_type,entity_id,details) VALUES($1,'STAFF_CREATED','customer',$2,$3::jsonb)`,[Number(s.sub),String(r.rows[0].id),JSON.stringify({email,role})]);await c.query('COMMIT');return res.status(201).json({staff:r.rows[0]});
   }
   if(action==='SET_ROLE'){
@@ -21,7 +21,7 @@ export default async function handler(req,res){
    await c.query(`INSERT INTO warehouse_audit(employee_id,action,entity_type,entity_id,details) VALUES($1,'STAFF_ROLE_CHANGED','customer',$2,$3::jsonb)`,[Number(s.sub),String(id),JSON.stringify({role})]);await c.query('COMMIT');return res.json({staff:r.rows[0]});
   }
   if(action==='RESET_PASSWORD'){
-   const id=Number(b.id),password=String(b.password||'');if(!Number.isInteger(id)||password.length<8)throw new Error('Employee and password of at least 8 characters required.');const hash=await bcrypt.hash(password,12);const r=await c.query(`UPDATE customers SET password_hash=$1 WHERE id=$2 AND role<>'admin' RETURNING id`,[hash,id]);if(!r.rowCount)throw new Error('Employee not found.');
+   const id=Number(b.id),password=String(b.password||'');if(!Number.isInteger(id)||password.length<8)throw new Error('Employee and password of at least 8 characters required.');const hash=await bcrypt.hash(password,12);const r=await c.query(`UPDATE customers SET password_hash=$1,password_version=password_version+1,must_change_password=TRUE WHERE id=$2 AND role<>'admin' RETURNING id`,[hash,id]);if(!r.rowCount)throw new Error('Employee not found.');
    await c.query(`INSERT INTO warehouse_audit(employee_id,action,entity_type,entity_id,details) VALUES($1,'STAFF_PASSWORD_RESET','customer',$2,'{}'::jsonb)`,[Number(s.sub),String(id)]);await c.query('COMMIT');return res.json({ok:true});
   }
   throw new Error('Unsupported action.');
