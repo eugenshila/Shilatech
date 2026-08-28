@@ -14,7 +14,7 @@ export default function StaffLogin(){
   let current=true;
   fetch('/api/auth/me').then(async r=>{
    if(!r.ok)return;const data=await r.json();
-   const destination=staffDestination(data.user?.role,router.query.next);
+   const destination=data.user?.mustChangePassword?'/staff-password':staffDestination(data.user?.role,router.query.next);
    if(current&&destination)await router.replace(destination);
   }).catch(()=>{});
   return ()=>{current=false;};
@@ -26,7 +26,7 @@ export default function StaffLogin(){
    const response=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password,staffOnly:true})});
    const data=await response.json();
    if(!response.ok)throw new Error(data.error||'Could not sign in.');
-   const destination=staffDestination(data.user?.role,router.query.next);
+   const destination=data.user?.mustChangePassword?'/staff-password':staffDestination(data.user?.role,router.query.next);
    if(!destination)throw new Error('An authorised staff account is required.');
    setPassword('');await router.replace(destination);
   }catch(e){setError(e.message||'Unable to connect. Please try again.');}

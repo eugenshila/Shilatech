@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     if(req.body?.staffOnly===true&&!staffDestination(role)){
       return res.status(403).json({error:'This is a customer account. Please use an authorised staff account or ask your administrator to arrange access.'});
     }
-    const safeUser = { id: user.id, name: user.name, email: user.email, phone: user.phone, role };
+    const safeUser = { id: user.id, name: user.name, email: user.email, phone: user.phone, role, mustChangePassword: Boolean(user.must_change_password) };
     setSession(res, signSession(safeUser));
     res.status(200).json({ user: safeUser });
   } catch (error) {
