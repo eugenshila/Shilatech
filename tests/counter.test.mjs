@@ -110,3 +110,26 @@ test('migration backfills legacy locations and remains repeatable',async()=>{
  assert.equal(String((await client.query('SELECT location_id FROM orders')).rows[0].location_id),String(user.location_id));
  const p=(await client.query('SELECT * FROM products WHERE id=1')).rows[0];await assertStock(client,p,user.location_id,7);
 });
+
+async function sampleCatalogue(){
+ const seeds=[['06H121026DD',6],['06H905115B',24],['31317603',7],['52060398AC',8],['68212327AA',9],['A2048300018',15],['A2711800109',18],['LR061888',4]];
+ for(const [part,stock] of seeds)await client.query("INSERT INTO products(slug,name,brand,category,part_no,price_kes,stock) VALUES($1,$1,'Jeep','Other',$1,100,$2)",[part,stock]);
+}
+test('confirmed sample correction clears only eight sample balances and is one-time',async()=>{
+ await sampleCatalogue();const sql=await read('../scripts/clear-confirmed-sample-stock.sql');await db.exec(sql);
+ assert.equal((await client.query("SELECT COUNT(*)::int n FROM products WHERE part_no<>'PAD-1' AND stock=0")).rows[0].n,8);
+ assert.equal((await client.query("SELECT stock FROM products WHERE part_no='PAD-1'")).rows[0].stock,10);
+ await client.query("UPDATE products SET stock=3 WHERE part_no='06H121026DD'");await db.exec(sql);
+ assert.equal((await client.query("SELECT stock FROM products WHERE part_no='06H121026DD'")).rows[0].stock,3);
+ assert.equal((await client.query("SELECT COUNT(*)::int n FROM warehouse_audit WHERE action='CLEAR_CONFIRMED_SAMPLE_STOCK'")).rows[0].n,1);
+});
+test('sample correction refuses changed balances and rolls back all changes',async()=>{
+ await sampleCatalogue();await client.query("UPDATE products SET stock=5 WHERE part_no='LR061888'");
+ await assert.rejects(db.exec(await read('../scripts/clear-confirmed-sample-stock.sql')),/has changed/);await client.query('ROLLBACK');
+ assert.equal((await client.query("SELECT stock FROM products WHERE part_no='06H121026DD'")).rows[0].stock,6);
+});
+test('sample correction refuses warehouse history',async()=>{
+ await sampleCatalogue();await client.query("INSERT INTO inventory_batches(product_id,warehouse_id,batch_no,received_qty,available_qty) SELECT id,1,'REAL',6,6 FROM products WHERE part_no='06H121026DD'");
+ await assert.rejects(db.exec(await read('../scripts/clear-confirmed-sample-stock.sql')),/history/);await client.query('ROLLBACK');
+ assert.equal((await client.query("SELECT stock FROM products WHERE part_no='06H121026DD'")).rows[0].stock,6);
+});
