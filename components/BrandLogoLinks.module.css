@@ -1,0 +1,13 @@
+.logos { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; padding: 28px 0; background: #000; }
+.logos .link, .logos .link:hover, .logos .link:focus, .logos .link:active {
+  display: flex; align-items: center; justify-content: center; min-width: 0;
+  padding: 0; border: 0; border-radius: 0; background: #000;
+  box-shadow: none; opacity: 1; filter: none; transform: none; transition: none;
+}
+.logos .link:focus-visible { outline: 2px solid #58b72a; outline-offset: 5px; }
+.logos .image, .logos .link:hover .image, .logos .link:focus .image, .logos .link:active .image {
+  display: block; width: 100%; max-width: 160px; height: 120px;
+  object-fit: contain; border: 0; border-radius: 0; background: #000;
+  opacity: 1; filter: none; transform: none; transition: none;
+}
+@media (max-width: 760px) { .logos { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 12px; } }

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Layout from '../components/Layout';
+import BrandLogoLinks from '../components/BrandLogoLinks';
 import VinLookup from '../components/VinLookup';
 import ProductCard from '../components/ProductCard';
 import { products, brands, categories } from '../data/products';
@@ -38,7 +39,7 @@ export default function Home() {
             <label>Part name / number<input name="q" placeholder="Optional" /></label>
             <button className="button greenPrimary" type="submit">Find parts →</button>
           </form>
-          <div className="boldBrands" aria-label="Shop by vehicle make">{brands.map(brand => <Link key={brand} href={`/shop?brand=${encodeURIComponent(brand)}`}><span className="brandName">{brand}</span><span className={`brandLogoBadge brand-${brand.toLowerCase().replace(/[^a-z]+/g,'-')}`} aria-hidden="true">{brand==='Mercedes-Benz'?'M':brand==='Volkswagen'?'VW':brand==='Land Rover'?'LR':brand==='Range Rover'?'RR':brand==='Volvo'?'V':'J'}</span></Link>)}</div>
+          <BrandLogoLinks />
           <div className="boldCategories">{categoryCards.map(card => <Link className="boldCategory" key={card.category} href={`/shop?category=${card.category}`}>
             <img src={`/images/category-${card.image}.webp`} alt="" width="768" height="512" loading="lazy" />
             <div><h2>{card.name}</h2><p>{card.description}</p><span>Shop now <b aria-hidden="true">↗</b></span></div>
