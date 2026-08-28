@@ -1,5 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
 import Layout from '../components/Layout';
+import FinanceLedger from '../components/FinanceLedger';
 const money=n=>'KSh '+Number(n||0).toLocaleString('en-KE');
 const day=d=>String(d||'').slice(0,10);
 export default function Receivables(){
@@ -31,6 +32,7 @@ export default function Receivables(){
  <h3>Invoice value by month (last six months)</h3>{!data.monthly.length&&<p>No invoices in this period.</p>}{data.monthly.map(m=><div key={m.month}><span>{m.month} · {money(m.amount)}</span><div className="bar" style={{width:Math.max(2,Number(m.amount)/Math.max(...data.monthly.map(x=>Number(x.amount)))*100)+'%'}}/></div>)}
  <h3>Recent payment records</h3>{!data.payments.length&&<p>No payments recorded.</p>}{data.payments.map(p=><p key={p.id}>{day(p.received_on)} · {p.number} · {money(p.amount_kes)} · {p.method} · {p.reference}</p>)}</section>
  </>}
+ {role&&<FinanceLedger role={role}/>}
  <style jsx>{`.receivables{color:#e7ede4;line-height:1.65}h1,h2,h3,a{color:#83ce51}.panel{margin:20px 0;padding:22px;border:1px solid #39512e;border-radius:10px;max-width:1000px}label{display:block;margin:14px 0}input,textarea,select{display:block;width:100%;padding:10px;box-sizing:border-box;background:#101910;border:1px solid #53654b;color:white}button{padding:11px 16px;background:#65bd35;border:0;color:#071003;cursor:pointer;margin:4px}button:disabled{opacity:.5;cursor:not-allowed}small{display:block;overflow-wrap:anywhere}table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:8px;border-bottom:1px solid #39512e}.stats{display:flex;flex-wrap:wrap;gap:24px}.stats strong{text-transform:capitalize}.collectionChart{display:flex;align-items:center;gap:24px}.pie{width:140px;height:140px;border-radius:50%;flex-shrink:0}.bar{height:18px;background:#70c342;margin:4px 0 16px}#commercial-document{background:#fff;color:#111;padding:22px}#commercial-document h3{color:#111}`}</style>
  <style jsx global>{`@media print{body *{visibility:hidden}body:has(#commercial-document) *:not(:has(#commercial-document)):not(#commercial-document):not(#commercial-document *){display:none!important}body *:has(#commercial-document){margin:0!important;padding:0!important;min-height:0!important;border:0!important;background:white!important}#commercial-document,#commercial-document *{visibility:visible;color:black!important;background:white!important}#commercial-document{padding:10mm!important;font-size:10pt;overflow-wrap:anywhere}.noPrint{display:none!important}}`}</style>
  </section></Layout>;

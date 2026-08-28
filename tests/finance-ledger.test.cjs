@@ -1,0 +1,32 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{randomUUID}=require('node:crypto');
+const {PGlite}=require('@electric-sql/pglite'),swc=require('next/dist/build/swc');
+(async()=>{
+ const m=await import('../lib/finance-ledger.mjs'),db=new PGlite();
+ await db.exec("CREATE TABLE customers(id INTEGER PRIMARY KEY,name TEXT,role TEXT);INSERT INTO customers VALUES(1,'Admin','admin'),(2,'Sales','cashier'),(3,'Finance','finance'),(4,'Other sales','cashier'),(5,'Manager','general_manager'); CREATE TABLE counter_sales(id INTEGER PRIMARY KEY,cashier_id INTEGER,total_kes INTEGER,created_at TIMESTAMPTZ DEFAULT NOW()); INSERT INTO counter_sales VALUES(1,2,1000,NOW()),(2,4,9000,NOW()); CREATE TABLE approved_refunds(sale_id INTEGER,amount_kes INTEGER,created_at TIMESTAMPTZ DEFAULT NOW()); INSERT INTO approved_refunds VALUES(1,100,NOW()); CREATE TABLE payroll_entries(id INTEGER PRIMARY KEY,employee_name TEXT,period TEXT,amounts JSONB,status TEXT,reviewed_by INTEGER,approved_by INTEGER); INSERT INTO payroll_entries VALUES(1,'Salary test','2026-08','{\"net\":12345.67}','APPROVED',5,1),(2,'Unapproved','2026-08','{\"net\":999}','PENDING_MANAGER',NULL,NULL);");
+ const admin={id:1,role:'admin'},sales={id:2,role:'cashier'},finance={id:3,role:'finance'},gm={id:5,role:'general_manager'};
+ async function act(s,b){await db.query('BEGIN');try{const r=await m.executeLedger(db,s,{requestKey:randomUUID(),...b});await db.query('COMMIT');return r;}catch(e){await db.query('ROLLBACK');throw e;}}
+ await assert.rejects(act(finance,{action:'SETUP'}));await act(admin,{action:'SETUP'});await act(admin,{action:'SETUP'});
+ for(const v of ['0','-1','1.001','1e3','Infinity',''])assert.throws(()=>m.cents(v));assert.equal(m.cents('10.01'),1001);
+ const bill={action:'BILL',kind:'SUPPLIER',payee:'Test supplier',reference:'BILL1',description:'Sample order reference',amount:'1000.50',dueOn:'2026-09-01',period:'2026-08',requestKey:randomUUID()};
+ const b=await act(finance,bill);assert.equal((await act(finance,bill)).id,b.id);await assert.rejects(act(finance,{...bill,amount:'1'}));await assert.rejects(act(sales,{...bill,requestKey:randomUUID()}));await assert.rejects(act(gm,{...bill,requestKey:randomUUID()}));
+ await assert.rejects(act(finance,{action:'APPROVE',id:b.id,note:'No'}));await assert.rejects(act(admin,{action:'APPROVE',id:b.id,note:'Before manager'}));
+ const day=(await db.query("SELECT to_char((NOW() AT TIME ZONE 'Africa/Nairobi')::date,'YYYY-MM-DD') AS day")).rows[0].day;
+ const payment={action:'SETTLE',id:b.id,amount:'700.25',method:'Bank',reference:'REF-1',paidOn:day,confirmPaid:true,requestKey:randomUUID()};
+ await assert.rejects(act(finance,payment));await act(gm,{action:'REVIEW',id:b.id,note:'Reviewed invoice'});await act(admin,{action:'APPROVE',id:b.id,note:'Approved'});
+ await assert.rejects(act(gm,payment));await assert.rejects(act(finance,{...payment,confirmPaid:false}));await assert.rejects(act(finance,{...payment,paidOn:'2099-01-01'}));await act(finance,payment);await act(finance,payment);
+ assert.equal(Number((await db.query('SELECT paid_cents FROM finance_bills WHERE id=$1',[b.id])).rows[0].paid_cents),70025);
+ await assert.rejects(act(finance,{...payment,requestKey:randomUUID(),reference:'REF-2'}));await assert.rejects(act(finance,{...payment,requestKey:randomUUID(),amount:'10'}));await act(finance,{...payment,requestKey:randomUUID(),amount:'300.25',reference:'REF-2'});
+ await assert.rejects(act(admin,{action:'REJECT',id:b.id,note:'Already approved'}));
+ const salary=await act(finance,{action:'SALARY',payrollId:1,dueOn:day});assert.equal(Number((await db.query('SELECT amount_cents FROM finance_bills WHERE id=$1',[salary.id])).rows[0].amount_cents),1234567);
+ await assert.rejects(act(finance,{action:'SALARY',payrollId:1,dueOn:day}));await assert.rejects(act(finance,{action:'SALARY',payrollId:2,dueOn:day}));
+ const period=day.slice(0,7);await act(admin,{action:'TARGET',employeeId:2,period,amount:'2000',note:'Monthly goal'});await assert.rejects(act(finance,{action:'TARGET',employeeId:2,period,amount:'1',note:'No permission'}));await assert.rejects(act(admin,{action:'TARGET',employeeId:3,period,amount:'1',note:'Not sales'}));
+ const s=await m.readLedger(db,sales,period);assert.equal(s.employees.length,1);assert.equal(s.pos.length,1);assert.equal(s.refunds.length,1);assert.equal(s.bills,undefined);assert.equal(s.events,undefined);assert.equal(s.payroll,undefined);assert.equal(Number(s.pos[0].amount)-Number(s.refunds[0].amount),900);assert.equal(Number(s.targets[0].target_cents),200000);
+ const all=await m.readLedger(db,finance,period);assert.equal(all.bills.length,2);assert.equal(Number(all.totals.find(t=>t.kind==='SUPPLIER').paid_cents),100050);assert.equal(all.settlements.length,2);assert.equal(all.payroll.length,0);assert.ok(all.events.length>=6);
+ await assert.rejects(m.readLedger(db,{id:9,role:'hr'},period));
+ for(const f of ['components/FinanceLedger.js','pages/receivables.js','pages/api/finance-ledger.js'])await swc.transform(fs.readFileSync(path.join(__dirname,'..',f),'utf8'),{filename:f,jsc:{parser:{syntax:'ecmascript',jsx:true}}});
+ const compiled=await swc.transform(fs.readFileSync(path.join(__dirname,'../pages/api/finance-ledger.js'),'utf8'),{filename:'api.js',jsc:{parser:{syntax:'ecmascript'}},module:{type:'commonjs'}});let session;const module={exports:{}};
+ new Function('require','module','exports',compiled.code)(n=>n.endsWith('/db')?{getPool:()=>({connect:async()=>({query:(...a)=>db.query(...a),release(){}})})}:n.endsWith('/auth')?{readSession:async()=>session}:m,module,module.exports);
+ async function request(user,method='GET',body={},headers={}){session=user;const r={code:200,setHeader(){},status(n){this.code=n;return this;},json(v){this.body=v;return this;}};await module.exports.default({method,headers,body,query:{period}},r);return r;}
+ assert.equal((await request(null)).code,401);assert.equal((await request({id:8,role:'hr'})).code,403);assert.equal((await request(finance,'POST',{}, {'content-type':'application/json','sec-fetch-site':'cross-site'})).code,403);assert.equal((await request(sales)).body.bills,undefined);assert.equal((await request(finance)).body.bills.length,2);
+ await db.close();console.log('PASS: finance setup, decimal precision, approval sequencing, duplicate protection, overpayments, payroll source validation, staff isolation, target permissions, reports and API checks.');
+})().catch(e=>{console.error(e);process.exit(1)});
