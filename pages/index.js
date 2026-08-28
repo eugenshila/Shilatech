@@ -38,7 +38,7 @@ export default function Home() {
             <label>Part name / number<input name="q" placeholder="Optional" /></label>
             <button className="button greenPrimary" type="submit">Find parts →</button>
           </form>
-          <div className="boldBrands" aria-label="Shop by vehicle make">{brands.map(brand => <Link key={brand} href={`/shop?brand=${encodeURIComponent(brand)}`}>{brand}</Link>)}</div>
+          <div className="boldBrands" aria-label="Shop by vehicle make">{brands.map(brand => <Link key={brand} href={`/shop?brand=${encodeURIComponent(brand)}`}><span className={`brandWordmark brand-${brand.toLowerCase().replace(/[^a-z]+/g,'-')}`}>{brand}</span></Link>)}</div>
           <div className="boldCategories">{categoryCards.map(card => <Link className="boldCategory" key={card.category} href={`/shop?category=${card.category}`}>
             <img src={`/images/category-${card.image}.webp`} alt="" width="768" height="512" loading="lazy" />
             <div><h2>{card.name}</h2><p>{card.description}</p><span>Shop now <b aria-hidden="true">↗</b></span></div>
@@ -95,4 +95,5 @@ export default function Home() {
     </Layout>
   );
 }
+
 
