@@ -3,7 +3,7 @@ import { requireWarehouseStaff } from '../../../lib/warehouse-auth';
 
 export default async function handler(req,res){
   if(req.method!=='GET') return res.status(405).json({error:'Method not allowed'});
-  if(!await requireWarehouseStaff(req,res)) return;
+  const session=await requireWarehouseStaff(req,res); if(!session)return;
   try{
     const [metrics,batches,preorders,returns,products,warehouses,brandSummary,warehouseOrders]=await Promise.all([
       query(`SELECT COALESCE(SUM(available_qty),0)::int AS units_on_hand,COUNT(*) FILTER (WHERE available_qty>0)::int AS active_batches,COUNT(*) FILTER (WHERE available_qty>0 AND received_at<NOW()-INTERVAL '180 days')::int AS aged_batches FROM inventory_batches`),
@@ -18,6 +18,8 @@ export default async function handler(req,res){
         FROM warehouse_orders wo JOIN orders o ON o.id=wo.order_id LEFT JOIN warehouse_order_items wi ON wi.warehouse_order_id=wo.id LEFT JOIN warehouses w ON w.id=wi.storage_area_id
         WHERE wo.status NOT IN ('COMPLETED','CANCELLED') GROUP BY wo.id,o.id ORDER BY wo.created_at ASC LIMIT 50`)
     ]);
-    res.status(200).json({metrics:metrics.rows[0],batches:batches.rows,preorders:preorders.rows,returns:returns.rows,products:products.rows,warehouses:warehouses.rows,brandSummary:brandSummary.rows,warehouseOrders:warehouseOrders.rows});
+    const brand=session.assignedBrand;
+    const onlyBrand=rows=>brand?rows.filter(r=>r.brand===brand||r.brand_code===brand||(r.items||[]).some(i=>i.brand===brand)):rows;
+    res.status(200).json({metrics:metrics.rows[0],batches:onlyBrand(batches.rows),preorders:onlyBrand(preorders.rows),returns:onlyBrand(returns.rows),products:onlyBrand(products.rows),warehouses:onlyBrand(warehouses.rows),brandSummary:onlyBrand(brandSummary.rows),warehouseOrders:onlyBrand(warehouseOrders.rows),assignedBrand:brand});
   }catch(error){console.error(error);res.status(500).json({error:'Could not load warehouse dashboard.'});}
 }
