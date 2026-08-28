@@ -1,10 +1,10 @@
 import bcrypt from 'bcryptjs';
 import { getPool,query } from '../../../lib/db';
 import { readSession } from '../../../lib/auth';
-const roles=new Set(['warehouse_manager','warehouse_clerk','picker','packer','dispatch','finance','auditor','delivery_driver','cashier']);
-function admin(req,res){const s=readSession(req);if(!s){res.status(401).json({error:'Sign in required.'});return null;}if(s.role!=='admin'){res.status(403).json({error:'Administrator access required.'});return null;}return s;}
+const roles=new Set(['general_manager','garage_staff','warehouse_manager','warehouse_clerk','picker','packer','dispatch','finance','auditor','delivery_driver','cashier']);
+async function admin(req,res){const s=await readSession(req);if(!s){res.status(401).json({error:'Sign in required.'});return null;}if(s.role!=='admin'){res.status(403).json({error:'Administrator access required.'});return null;}return s;}
 export default async function handler(req,res){
- const s=admin(req,res);if(!s)return;
+ const s=await admin(req,res);if(!s)return;
  if(req.method==='GET')try{const r=await query(`SELECT id,name,email,phone,role,created_at FROM customers WHERE role<>'customer' ORDER BY role,name,email`);return res.json({staff:r.rows,roles:[...roles]});}catch(e){console.error(e);return res.status(500).json({error:'Could not load employees.'});}
  if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});
  const b=req.body||{};const action=String(b.action||'').toUpperCase();const c=await getPool().connect();try{await c.query('BEGIN');

@@ -4,7 +4,7 @@ import { requireWarehouseStaff } from '../../../lib/warehouse-auth';
 
 export default async function handler(req,res){
   if(req.method!=='GET') return res.status(405).json({error:'Method not allowed'});
-  if(!requireWarehouseStaff(req,res)) return;
+  if(!await requireWarehouseStaff(req,res)) return;
   try{
     const id=Number(req.query.id);
     const partNo=String(req.query.partNo||'').trim();

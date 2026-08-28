@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import Layout from '../components/Layout';
 
-const deliveryRoles=new Set(['admin','warehouse_manager','dispatch','delivery_driver']);
-const managementRoles=new Set(['admin','warehouse_manager','dispatch']);
+const deliveryRoles=new Set(['admin','general_manager','dispatch','delivery_driver']);
+const managementRoles=new Set(['admin','general_manager','dispatch']);
 const paid=j=>String(j?.payment_status||'').toLowerCase()==='paid';
 const needsMpesa=j=>String(j?.payment_method||'').toLowerCase()==='m-pesa'&&!paid(j);
 

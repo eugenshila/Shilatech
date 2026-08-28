@@ -4,7 +4,7 @@ import { readSession } from '../../lib/auth';
 const validVin = vin => /^[A-HJ-NPR-Z0-9]{17}$/.test(String(vin || '').toUpperCase());
 
 export default async function handler(req, res) {
-  const session = readSession(req);
+  const session = await readSession(req);
   if (!session) return res.status(401).json({ error: 'Sign in required.' });
 
   try {

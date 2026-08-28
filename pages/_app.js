@@ -8,11 +8,13 @@ import '../styles/workshop.css';
 import '../styles/bold-home.css';
 import '../styles/counter.css';
 import { CartProvider } from '../components/CartContext';
+import StaffBoundary from '../components/StaffBoundary';
+import '../styles/staff.css';
 
 export default function App({ Component, pageProps }) {
   return (
     <CartProvider>
-      <Component {...pageProps} />
+      <StaffBoundary><Component {...pageProps} /></StaffBoundary>
     </CartProvider>
   );
 }

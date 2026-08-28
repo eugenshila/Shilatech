@@ -5,7 +5,9 @@ import { randomUUID } from 'node:crypto';
 import { PGlite } from '@electric-sql/pglite';
 import { normalizeItems,createCounterSale,requireCounterUser,assertStock } from '../lib/counter.mjs';
 import { cancelUnpickedOrder } from '../lib/cancel-order.mjs';
-import { staffDestination } from '../lib/staff-access.mjs';
+import { staffDestination,canViewStaffPage } from '../lib/staff-access.mjs';
+import { createRequest,decideRequest,recordRefundPayout } from '../lib/approvals.mjs';
+import { saveGarageJob } from '../lib/garage-jobs.mjs';
 
 let db,client,user;
 const read=path=>readFile(new URL(path,import.meta.url),'utf8');
@@ -17,6 +19,8 @@ before(async()=>{
  }
  await db.exec(await read('../scripts/locations-pos.sql'));
  await db.exec(await read('../scripts/locations-pos.sql'));
+ await db.exec(await read('../scripts/staff-workflows.sql'));
+ await db.exec(await read('../scripts/staff-workflows.sql'));
 });
 after(async()=>{await db?.close();});
 beforeEach(async()=>{
@@ -141,4 +145,125 @@ test('sample correction refuses warehouse history',async()=>{
  await sampleCatalogue();await client.query("INSERT INTO inventory_batches(product_id,warehouse_id,batch_no,received_qty,available_qty) SELECT id,1,'REAL',6,6 FROM products WHERE part_no='06H121026DD'");
  await assert.rejects(db.exec(await read('../scripts/clear-confirmed-sample-stock.sql')),/history/);await client.query('ROLLBACK');
  assert.equal((await client.query("SELECT stock FROM products WHERE part_no='06H121026DD'")).rows[0].stock,6);
+});
+
+async function team(){
+ for(const [name,role] of [['Manager','general_manager'],['Administrator','admin'],['Mechanic','garage_staff'],['Receiver','warehouse_clerk']])await client.query('INSERT INTO customers(name,email,password_hash,role,location_id) VALUES($1,$2,$3,$4,main_business_location_id())',[name,name+'@example.invalid','test',role]);
+ return {manager:{id:2},admin:{id:3},garage:{id:4},warehouse:{id:5}};
+}
+const proposal=(kind,targetId,payload)=>({requestKey:randomUUID(),kind,targetId,payload,reason:'Verified test exception'});
+const request=(actor,p)=>transact(()=>createRequest(client,actor,p));
+const decide=(actor,id,action='APPROVE')=>transact(()=>decideRequest(client,actor,id,action,'Reviewed supporting evidence'));
+
+test('department page rules isolate staff and allow management visibility',()=>{
+ for(const path of ['/pos','/warehouse','/staff-garage','/admin','/operations']){
+  assert.equal(canViewStaffPage('admin',path),true);assert.equal(canViewStaffPage('general_manager',path),true);
+ }
+ assert.equal(canViewStaffPage('garage_staff','/pos'),false);
+ assert.equal(canViewStaffPage('cashier','/warehouse'),false);
+ assert.equal(canViewStaffPage('warehouse_manager','/pos'),false);
+ assert.equal(canViewStaffPage('warehouse_clerk','/warehouse/jeep'),true);
+ assert.equal(canViewStaffPage('customer','/approvals'),false);
+ assert.equal(staffDestination('general_manager'),'/staff');
+ assert.equal(staffDestination('garage_staff','/pos'),'/staff-garage');
+});
+test('price request changes nothing until manager review and administrator apply; cannot apply twice',async()=>{
+ const {manager,admin}=await team();const p=proposal('PRICE_CHANGE',1,{priceKes:120});
+ const r=await request(user,p);const retry=await request(user,p);assert.equal(retry.id,r.id);
+ assert.equal((await client.query('SELECT price_kes FROM products WHERE id=1')).rows[0].price_kes,100);
+ await assert.rejects(decide(admin,r.id),/not awaiting/);
+ assert.equal((await decide(manager,r.id)).status,'PENDING_ADMIN');
+ assert.equal((await client.query('SELECT price_kes FROM products WHERE id=1')).rows[0].price_kes,100);
+ assert.equal((await decide(admin,r.id)).status,'APPLIED');
+ assert.equal((await client.query('SELECT price_kes FROM products WHERE id=1')).rows[0].price_kes,120);
+ await assert.rejects(decide(admin,r.id),/not awaiting/);
+ assert.equal((await client.query("SELECT COUNT(*)::int n FROM warehouse_audit WHERE action='REQUEST_APPLIED'")).rows[0].n,1);
+});
+test('general manager requests need administrator; staff cannot approve; stale changes require a new request',async()=>{
+ const {manager,admin}=await team();const r=await request(manager,proposal('PRICE_CHANGE',1,{priceKes:90}));
+ assert.equal(r.status,'PENDING_ADMIN');
+ await assert.rejects(decide(manager,r.id),/not awaiting/);await assert.rejects(decide(user,r.id),/not awaiting/);
+ await client.query('UPDATE products SET price_kes=101 WHERE id=1');
+ await assert.rejects(decide(admin,r.id),/original record changed/);
+ assert.equal((await decide(admin,r.id,'REJECT')).status,'REJECTED');
+ assert.equal((await client.query('SELECT price_kes FROM products WHERE id=1')).rows[0].price_kes,101);
+});
+test('administrator requests still need independent manager review',async()=>{
+ const {manager,admin}=await team();const r=await request(admin,proposal('PRICE_CHANGE',1,{priceKes:110}));
+ await assert.rejects(decide(admin,r.id),/not awaiting/);
+ await decide(manager,r.id);assert.equal((await decide(admin,r.id)).status,'APPLIED');
+});
+test('current database role controls requests and sales even with a stale actor object',async()=>{
+ const {manager,garage}=await team();
+ await assert.rejects(request(garage,proposal('PRICE_CHANGE',1,{priceKes:1})),/department/);
+ await assert.rejects(request(user,proposal('STOCK_ADJUSTMENT',1,{quantity:0})),/department/);
+ await assert.rejects(transact(()=>createCounterSale(client,manager,body())),/cannot create sales/);
+ await client.query("UPDATE customers SET role='garage_staff' WHERE id=1");
+ await assert.rejects(sell(body()),/denied/);
+ await assert.rejects(request(user,proposal('PRICE_CHANGE',1,{priceKes:1})),/department/);
+});
+test('stock adjustment is audited, preserves reservations and refuses a stale physical count',async()=>{
+ const {manager,admin,warehouse}=await team();await reserve(3);
+ const r=await request(warehouse,proposal('STOCK_ADJUSTMENT',1,{quantity:2}));
+ assert.equal((await client.query('SELECT stock FROM products')).rows[0].stock,7);
+ await decide(manager,r.id);await decide(admin,r.id);
+ assert.equal((await client.query('SELECT stock FROM products')).rows[0].stock,5);
+ assert.equal((await client.query('SELECT available_qty FROM inventory_batches WHERE id=1')).rows[0].available_qty,2);
+ assert.equal((await client.query("SELECT quantity FROM inventory_movements WHERE movement_type='ADJUSTMENT'")).rows[0].quantity,-2);
+ const pending=await request(warehouse,proposal('STOCK_ADJUSTMENT',2,{quantity:5}));await decide(manager,pending.id);
+ await sell(body({items:[{id:1,quantity:1}],tenderedKes:100}));
+ await assert.rejects(decide(admin,pending.id),/original record changed/);
+ await assert.rejects(request(warehouse,proposal('STOCK_ADJUSTMENT',2,{quantity:0})),/Insufficient/);
+});
+test('refund approval creates credit without restocking or sending payment; payout recording is admin-only and idempotent',async()=>{
+ const {manager,admin}=await team();const sale=await sell(body());
+ const r=await request(user,proposal('REFUND',sale.id,{source:'POS',amountKes:200}));
+ await decide(manager,r.id);await decide(admin,r.id);
+ const f=(await client.query('SELECT * FROM approved_refunds')).rows[0];assert.equal(f.status,'AWAITING_PAYOUT');assert.equal(f.amount_kes,200);
+ assert.equal((await client.query('SELECT stock FROM products')).rows[0].stock,5);
+ await assert.rejects(request(user,proposal('REFUND',sale.id,{source:'POS',amountKes:301})),/exceeds/);
+ await assert.rejects(transact(()=>recordRefundPayout(client,manager,f.id,'CASH-VOUCHER-1')),/Only the administrator/);
+ const a=await transact(()=>recordRefundPayout(client,admin,f.id,'CASH-VOUCHER-1'));
+ assert.equal(a.status,'PAID');assert.equal((await transact(()=>recordRefundPayout(client,admin,f.id,'CASH-VOUCHER-1'))).id,a.id);
+ await assert.rejects(transact(()=>recordRefundPayout(client,admin,f.id,'OTHER')),/already recorded/);
+});
+test('sale corrections are restricted, stale reviews cannot overwrite newer values',async()=>{
+ const {manager,admin}=await team();const sale=await sell(body());
+ const r=await request(user,proposal('SALE_CORRECTION',sale.id,{field:'customer_name',value:'Corrected Customer'}));
+ await decide(manager,r.id);await decide(admin,r.id);
+ assert.equal((await client.query('SELECT customer_name FROM counter_sales')).rows[0].customer_name,'Corrected Customer');
+ await assert.rejects(request(user,proposal('SALE_CORRECTION',sale.id,{field:'total_kes',value:'1'})),/Choose/);
+ await assert.rejects(request(user,proposal('SALE_CORRECTION',sale.id,{field:'payment_reference',value:'REF'})),/Cash sales/);
+});
+test('garage booking, idempotency, notes and forward progress work; manager writes and direct correction fail',async()=>{
+ const {manager,admin,garage}=await team();const b={action:'CREATE',requestKey:randomUUID(),customerName:'Test Client',phone:'0700000000',vehicle:'Jeep',registration:'TEST 001',service:'Inspect brakes'};
+ const save=(actor,data)=>transact(()=>saveGarageJob(client,actor,data));
+ await assert.rejects(save(manager,b),/editing access/);await assert.rejects(save(user,b),/editing access/);
+ const j=await save(garage,b);assert.equal((await save(garage,b)).id,j.id);
+ await assert.rejects(save(garage,{...b,customerName:'Changed'}),/already used/);
+ const progressed=await save(garage,{action:'PROGRESS',id:j.id,version:1,status:'INSPECTION',note:'Vehicle checked in'});
+ assert.equal(progressed.status,'INSPECTION');
+ await assert.rejects(save(garage,{action:'NOTE',id:j.id,version:1,note:'stale'}),/changed/);
+ await assert.rejects(save(garage,{action:'PROGRESS',id:j.id,version:2,status:'BOOKED',note:'undo'}),/require approval/);
+ const r=await request(garage,proposal('GARAGE_CORRECTION',j.id,{field:'registration',value:'TEST 002'}));
+ await decide(manager,r.id);await decide(admin,r.id);
+ assert.equal((await client.query('SELECT registration FROM garage_jobs')).rows[0].registration,'TEST 002');
+ assert.equal((await client.query('SELECT stock FROM products')).rows[0].stock,10);
+});
+
+test('online refunds require paid orders and prevent payment rewrites after a credit',async()=>{
+ const {manager,admin}=await team();await reserve(3);
+ await assert.rejects(request(manager,proposal('REFUND',1,{source:'ONLINE',amountKes:100})),/paid online/);
+ await client.query("UPDATE orders SET payment_status='Paid' WHERE id=1");
+ const r=await request(manager,proposal('REFUND',1,{source:'ONLINE',amountKes:100}));await decide(admin,r.id);
+ await assert.rejects(request(manager,proposal('ORDER_CORRECTION',1,{paymentStatus:'Failed'})),/cannot be rewritten/);
+ assert.equal((await client.query('SELECT stock FROM products')).rows[0].stock,7);
+});
+test('approved online cancellation restores unpicked reservations once',async()=>{
+ const {manager,admin}=await team();await reserve(3);
+ const r=await request(manager,proposal('ORDER_CORRECTION',1,{status:'Cancelled'}));
+ await decide(admin,r.id);await assert.rejects(decide(admin,r.id),/not awaiting/);
+ assert.equal((await client.query('SELECT stock FROM products')).rows[0].stock,10);
+ assert.equal((await client.query('SELECT status FROM orders')).rows[0].status,'Cancelled');
+ await assert.rejects(request(manager,proposal('ORDER_CORRECTION',1,{status:'Pending'})),/cannot be reopened/);
 });

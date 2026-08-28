@@ -3,7 +3,7 @@ import { requireDeliveryStaff } from '../../../lib/delivery-auth';
 
 export default async function handler(req,res){
   if(req.method!=='POST') return res.status(405).json({error:'Method not allowed'});
-  const session=requireDeliveryStaff(req,res); if(!session) return;
+  const session=await requireDeliveryStaff(req,res); if(!session) return;
   const deliveryId=Number(req.body?.deliveryId);
   const recipientName=String(req.body?.recipientName||'').trim();
   const signatureData=String(req.body?.signatureData||'').trim();

@@ -7,7 +7,7 @@ function slugify(value){
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-  const session = requireWarehouseStaff(req, res, ['warehouse_manager','warehouse_clerk']);
+  const session = await requireWarehouseStaff(req, res, ['warehouse_manager','warehouse_clerk']);
   if (!session) return;
 
   const createNew = Boolean(req.body?.createNew);

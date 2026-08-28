@@ -3,7 +3,7 @@ import { requireDeliveryStaff } from '../../../lib/delivery-auth';
 
 export default async function handler(req,res){
   if(req.method!=='GET') return res.status(405).json({error:'Method not allowed'});
-  const session=requireDeliveryStaff(req,res); if(!session) return;
+  const session=await requireDeliveryStaff(req,res); if(!session) return;
   try{
     const driverFilter=session.role==='delivery_driver'?'AND dj.driver_id=$1':'';
     const params=session.role==='delivery_driver'?[Number(session.sub)]:[];

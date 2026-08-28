@@ -37,7 +37,7 @@ export default function StaffLogin(){
    <form className="counterCard" style={{maxWidth:480,margin:'32px auto'}} onSubmit={submit}>
     <span className="eyebrow" style={{color:'#486477'}}>SHILATECH · EMPLOYEE ACCESS</span>
     <h1 style={{fontSize:30,margin:'12px 0'}}>Staff sign in</h1>
-    <p>Use your existing staff email and password. Cashiers and managers return to the sales counter after signing in.</p>
+    <p>Use your existing staff email and password. You will be taken to the tools allowed for your staff role.</p>
     {error&&<p className="counterError" role="alert">{error}</p>}
     <label htmlFor="staffEmail">Staff email</label>
     <input id="staffEmail" type="email" autoComplete="username" required autoFocus value={email} onChange={e=>setEmail(e.target.value)} disabled={busy}/>

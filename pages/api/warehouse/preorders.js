@@ -2,7 +2,7 @@ import { query } from '../../../lib/db';
 import { requireWarehouseStaff } from '../../../lib/warehouse-auth';
 
 export default async function handler(req,res){
-  const session=requireWarehouseStaff(req,res,['warehouse_manager','warehouse_clerk','finance']);
+  const session=await requireWarehouseStaff(req,res,['warehouse_manager','warehouse_clerk','finance']);
   if(!session) return;
   try{
     if(req.method==='POST'){

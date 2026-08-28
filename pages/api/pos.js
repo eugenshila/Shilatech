@@ -5,11 +5,12 @@ import { requireCounterUser,createCounterSale,saleReceipt } from '../../lib/coun
 export default async function handler(req,res){
  res.setHeader('Cache-Control','private, no-store');
  if(!['GET','POST'].includes(req.method))return res.status(405).json({error:'Method not allowed.'});
- const session=readSession(req);if(!session)return res.status(401).json({error:'Sign in with your staff account.'});
+ const session=await readSession(req);if(!session)return res.status(401).json({error:'Sign in with your staff account.'});
  const client=await getPool().connect();
  try{
   let user;
   try{user=await requireCounterUser(client,session.sub);}catch(e){return res.status(403).json({error:e.message});}
+  if(req.method==='POST'&&user.role==='general_manager')return res.status(403).json({error:'General manager access is read-only.'});
   if(req.method==='POST'){
    await client.query('BEGIN');
    const receipt=await createCounterSale(client,user,req.body||{});
@@ -31,7 +32,8 @@ export default async function handler(req,res){
    WHERE location_id=$1 AND (created_at AT TIME ZONE 'Africa/Nairobi')::date=(NOW() AT TIME ZONE 'Africa/Nairobi')::date
    AND ($2<>'cashier' OR cashier_id=$3) GROUP BY payment_method`,[user.location_id,user.role,user.id]);
   const recent=await client.query(`SELECT id,sale_no,total_kes,payment_method,created_at FROM counter_sales WHERE location_id=$1 AND ($2<>'cashier' OR cashier_id=$3) ORDER BY created_at DESC LIMIT 15`,[user.location_id,user.role,user.id]);
-  return res.json({user,products:products.rows,daily:daily.rows,recent:recent.rows});
+  const refunds=await client.query(`SELECT COALESCE(SUM(f.amount_kes),0)::int amount FROM approved_refunds f JOIN counter_sales s ON s.id=f.sale_id WHERE s.location_id=$1 AND ($2<>'cashier' OR s.cashier_id=$3) AND (f.created_at AT TIME ZONE 'Africa/Nairobi')::date=(NOW() AT TIME ZONE 'Africa/Nairobi')::date`,[user.location_id,user.role,user.id]);
+  return res.json({refundCredits:refunds.rows[0].amount,user,products:products.rows,daily:daily.rows,recent:recent.rows});
  }catch(error){
   if(req.method==='POST')await client.query('ROLLBACK');
   console.error(error);

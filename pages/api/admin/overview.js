@@ -1,19 +1,19 @@
 import { query } from '../../../lib/db';
 import { readSession } from '../../../lib/auth';
 
-function requireAdmin(req, res) {
-  const session = readSession(req);
+async function requireAdmin(req, res) {
+  const session = await readSession(req);
   if (!session) { res.status(401).json({ error: 'Sign in required.' }); return null; }
-  if (session.role !== 'admin') { res.status(403).json({ error: 'Admin access required.' }); return null; }
+  if (!['admin','general_manager'].includes(session.role)) { res.status(403).json({ error: 'Admin access required.' }); return null; }
   return session;
 }
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
-  if (!requireAdmin(req, res)) return;
+  if (!await requireAdmin(req, res)) return;
   try {
     const [sales, openOrders, lowStock, customers, recentOrders, products] = await Promise.all([
-      query(`SELECT COALESCE(SUM(total_kes),0) AS total FROM (SELECT total_kes,created_at FROM orders WHERE payment_status IN ('Paid','Completed') UNION ALL SELECT total_kes,created_at FROM counter_sales) sales WHERE (created_at AT TIME ZONE 'Africa/Nairobi')::date=(NOW() AT TIME ZONE 'Africa/Nairobi')::date`),
+      query(`SELECT COALESCE(SUM(total_kes),0) AS total FROM (SELECT total_kes,created_at FROM orders WHERE payment_status IN ('Paid','Completed') UNION ALL SELECT total_kes,created_at FROM counter_sales UNION ALL SELECT -amount_kes AS total_kes,created_at FROM approved_refunds) sales WHERE (created_at AT TIME ZONE 'Africa/Nairobi')::date=(NOW() AT TIME ZONE 'Africa/Nairobi')::date`),
       query(`SELECT COUNT(*)::int AS total FROM orders WHERE status NOT IN ('Delivered','Cancelled')`),
       query(`SELECT COUNT(*)::int AS total FROM products WHERE active=TRUE AND stock <= 5`),
       query(`SELECT COUNT(*)::int AS total FROM customers`),

@@ -4,7 +4,7 @@ import { sendStkPush } from '../../../../lib/mpesa';
 
 export default async function handler(req,res){
   if(req.method!=='POST') return res.status(405).json({error:'Method not allowed'});
-  const session=requireDeliveryStaff(req,res); if(!session) return;
+  const session=await requireDeliveryStaff(req,res); if(!session) return;
   const deliveryId=Number(req.body?.deliveryId); const phone=String(req.body?.phone||'').trim();
   if(!Number.isInteger(deliveryId)) return res.status(400).json({error:'Delivery job is required.'});
   const pool=getPool(); const client=await pool.connect();

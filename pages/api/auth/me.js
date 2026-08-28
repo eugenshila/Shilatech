@@ -2,8 +2,9 @@ import { readSession } from '../../../lib/auth';
 import { query } from '../../../lib/db';
 
 export default async function handler(req, res) {
+  res.setHeader('Cache-Control','private, no-store');
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
-  const session = readSession(req);
+  const session = await readSession(req);
   if (!session) return res.status(401).json({ user: null });
   try {
     const result = await query('SELECT id,name,email,phone,role FROM customers WHERE id=$1 LIMIT 1', [session.sub]);

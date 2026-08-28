@@ -20,7 +20,8 @@ async function calculateShipping(client,{deliveryServiceCode,destinationCountry,
 }
 
 export default async function handler(req,res){
-  const session=readSession(req);
+  const session=await readSession(req);
+  if(req.method==='POST'&&session&&session.role!=='customer')return res.status(403).json({error:'Staff must use their authorised department workflow. Customer checkout is for customer accounts.'});
   if(req.method==='GET'){
     if(!session)return res.status(401).json({error:'Sign in required.'});
     try{const result=await query(`SELECT id,order_no AS "orderNo",customer_name AS "customerName",total_kes AS total,payment_method AS "paymentMethod",payment_status AS "paymentStatus",status,delivery_service_code AS "deliveryServiceCode",delivery_eta AS "deliveryEta",destination_country AS "destinationCountry",created_at AS "createdAt" FROM orders WHERE customer_id=$1 ORDER BY created_at DESC LIMIT 100`,[session.sub]);return res.status(200).json({orders:result.rows});}

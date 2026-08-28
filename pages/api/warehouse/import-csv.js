@@ -14,7 +14,7 @@ const integer=(value,label,row,{min=0,optional=false}={})=>{
 
 export default async function handler(req,res){
   if(req.method!=='POST') return res.status(405).json({error:'Method not allowed'});
-  const session=requireWarehouseStaff(req,res,['warehouse_manager','warehouse_clerk']);
+  const session=await requireWarehouseStaff(req,res,['warehouse_manager','warehouse_clerk']);
   if(!session) return;
   const rows=Array.isArray(req.body?.rows)?req.body.rows:[];
   if(!rows.length||rows.length>500) return res.status(400).json({error:'Provide between 1 and 500 CSV rows.'});

@@ -2,10 +2,10 @@ import bcrypt from 'bcryptjs';
 import { getPool } from '../../../lib/db';
 import { requireDeliveryStaff } from '../../../lib/delivery-auth';
 
-const managementRoles = new Set(['admin','warehouse_manager','dispatch']);
+const managementRoles = new Set(['admin','general_manager','dispatch']);
 
 export default async function handler(req,res){
-  const session=requireDeliveryStaff(req,res); if(!session) return;
+  const session=await requireDeliveryStaff(req,res); if(!session) return;
   if(!managementRoles.has(session.role)) return res.status(403).json({error:'Delivery management access denied.'});
 
   const pool=getPool();
@@ -39,7 +39,7 @@ export default async function handler(req,res){
   try{
     await client.query('BEGIN');
     if(action==='CREATE_DRIVER'){
-      if(!['admin','warehouse_manager'].includes(session.role)) throw new Error('Only an administrator or warehouse manager can create driver accounts.');
+      if(session.role!=='admin') throw new Error('Only an administrator can create driver accounts.');
       const name=String(req.body?.name||'').trim();
       const email=String(req.body?.email||'').trim().toLowerCase();
       const phone=String(req.body?.phone||'').trim()||null;

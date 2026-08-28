@@ -5,7 +5,7 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 
 export default async function handler(req,res){
   if(req.method!=='GET') return res.status(405).send('Method not allowed');
-  if(!requireWarehouseStaff(req,res)) return;
+  if(!await requireWarehouseStaff(req,res)) return;
   const jobId=Number(req.query.jobId); const type=String(req.query.type||'pick').toLowerCase();
   if(!Number.isInteger(jobId)||!['pick','packing','dispatch'].includes(type)) return res.status(400).send('Invalid document request');
   try{

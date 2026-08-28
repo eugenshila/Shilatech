@@ -3,7 +3,7 @@ import { requireWarehouseStaff } from '../../../lib/warehouse-auth';
 
 export default async function handler(req,res){
   if(req.method!=='GET') return res.status(405).json({error:'Method not allowed'});
-  if(!requireWarehouseStaff(req,res)) return;
+  if(!await requireWarehouseStaff(req,res)) return;
   try{
     const [metrics,batches,preorders,returns,products,warehouses,brandSummary,warehouseOrders]=await Promise.all([
       query(`SELECT COALESCE(SUM(available_qty),0)::int AS units_on_hand,COUNT(*) FILTER (WHERE available_qty>0)::int AS active_batches,COUNT(*) FILTER (WHERE available_qty>0 AND received_at<NOW()-INTERVAL '180 days')::int AS aged_batches FROM inventory_batches`),

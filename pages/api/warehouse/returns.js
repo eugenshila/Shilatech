@@ -4,7 +4,7 @@ import { requireWarehouseStaff } from '../../../lib/warehouse-auth';
 function returnNo(){return `RET-${Date.now().toString(36).toUpperCase()}`;}
 
 export default async function handler(req,res){
-  const session=requireWarehouseStaff(req,res,['warehouse_manager','warehouse_clerk','dispatch']);
+  const session=await requireWarehouseStaff(req,res,['warehouse_manager','warehouse_clerk','dispatch']);
   if(!session) return;
   try{
     if(req.method==='POST'){

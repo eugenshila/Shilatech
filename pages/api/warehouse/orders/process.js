@@ -12,7 +12,7 @@ const actionRoles={
 export default async function handler(req,res){
   if(req.method!=='POST') return res.status(405).json({error:'Method not allowed'});
   const action=String(req.body?.action||'').trim().toUpperCase();
-  const session=requireWarehouseStaff(req,res,actionRoles[action]||['warehouse_manager']);
+  const session=await requireWarehouseStaff(req,res,actionRoles[action]||['warehouse_manager']);
   if(!session) return;
   const jobId=Number(req.body?.jobId);
   if(!Number.isInteger(jobId)) return res.status(400).json({error:'Warehouse job is required.'});

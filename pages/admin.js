@@ -34,24 +34,17 @@ export default function Admin(){
     finally{ setSaving(false); }
   }
 
-  async function updateOrder(id,status){
-    const r=await fetch('/api/admin/orders',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,status})});
-    const j=await r.json();
-    if(!r.ok){ setError(j.error||'Could not update order.'); return; }
-    await load();
-  }
-
   return <Layout>
-    <section className="pageHero compactHero"><div className="container"><span className="eyebrow">DEALER CONTROL CENTER</span><h1>Admin dashboard</h1><p>Live inventory, orders, customers and sales performance.</p></div></section>
+    <section className="pageHero compactHero"><div className="container"><span className="eyebrow">DEALER CONTROL CENTER</span><h1>Admin dashboard</h1><p>Live inventory, orders, customers and sales performance. Net sales subtract approved refund credits; payouts are tracked separately.</p></div></section>
     <section className="section"><div className="container">
       {loading && <div className="panel"><p>Loading dashboard…</p></div>}
       {error && <div className="panel adminError"><h3>Admin access</h3><p>{error}</p>{error.toLowerCase().includes('sign in') && <a className="button primary" href="/staff-login?next=/admin">Staff / admin sign in</a>}</div>}
       {data && <>
-        <div className="metrics"><div><span>Sales today</span><strong>KSh {Number(data.metrics.salesToday||0).toLocaleString()}</strong></div><div><span>Open orders</span><strong>{data.metrics.openOrders}</strong></div><div><span>Low stock</span><strong>{data.metrics.lowStock}</strong></div><div><span>Customers</span><strong>{data.metrics.customers}</strong></div></div>
+        <div className="metrics"><div><span>Net sales today</span><strong>KSh {Number(data.metrics.salesToday||0).toLocaleString()}</strong></div><div><span>Open orders</span><strong>{data.metrics.openOrders}</strong></div><div><span>Low stock</span><strong>{data.metrics.lowStock}</strong></div><div><span>Customers</span><strong>{data.metrics.customers}</strong></div></div>
 
         <div className="adminSectionGrid">
           <div className="panel">
-            <h2>Add product</h2>
+            <h2>Add product</h2><p><a href="/approvals">Price changes, refunds and corrections require approval.</a></p>
             <form className="adminForm" onSubmit={addProduct}>
               <input required placeholder="Product name" value={product.name} onChange={e=>setProduct({...product,name:e.target.value})}/>
               <div className="adminFormRow"><select value={product.brand} onChange={e=>setProduct({...product,brand:e.target.value})}><option>Mercedes-Benz</option><option>Jeep</option><option>Volkswagen</option><option>Range Rover</option><option>Volvo</option></select><select value={product.category} onChange={e=>setProduct({...product,category:e.target.value})}><option>Engine</option><option>Brakes</option><option>Suspension</option><option>Electrical</option><option>Body</option><option>Interior</option></select></div>
@@ -66,7 +59,7 @@ export default function Admin(){
 
           <div className="panel adminWide">
             <div className="adminHeading"><div><span className="eyebrow">ORDERS</span><h2>Recent order pipeline</h2></div><button className="button secondary" onClick={load}>Refresh</button></div>
-            {!data.recentOrders.length ? <p>No orders yet.</p> : <div className="adminTableWrap"><table className="adminTable"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th><th>Created</th></tr></thead><tbody>{data.recentOrders.map(o=><tr key={o.id}><td><strong>{o.order_no}</strong></td><td>{o.customer_name}</td><td>KSh {Number(o.total_kes).toLocaleString()}</td><td>{o.payment_status}<br/><small>{o.payment_method}</small></td><td><select value={o.status} onChange={e=>updateOrder(o.id,e.target.value)}><option>Pending</option><option>Processing</option><option>Shipped</option><option>Out for Delivery</option><option>Delivered</option><option>Cancelled</option></select></td><td>{new Date(o.created_at).toLocaleDateString()}</td></tr>)}</tbody></table></div>}
+            {!data.recentOrders.length ? <p>No orders yet.</p> : <div className="adminTableWrap"><table className="adminTable"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th><th>Created</th></tr></thead><tbody>{data.recentOrders.map(o=><tr key={o.id}><td><strong>{o.order_no}</strong></td><td>{o.customer_name}</td><td>KSh {Number(o.total_kes).toLocaleString()}</td><td>{o.payment_status}<br/><small>{o.payment_method}</small></td><td><span>{o.status}</span><br/><a href="/approvals">Request correction</a></td><td>{new Date(o.created_at).toLocaleDateString()}</td></tr>)}</tbody></table></div>}
           </div>
         </div>
 
