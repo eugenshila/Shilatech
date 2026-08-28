@@ -33,20 +33,47 @@ export default function StaffLogin(){
   finally{submitting.current=false;setBusy(false);}
  }
  return <Layout title="Staff Sign In | Shilatech" noindex>
-  <section className="counterShell" style={{minHeight:'65vh'}}>
-   <form className="counterCard" style={{maxWidth:480,margin:'32px auto'}} onSubmit={submit}>
-    <span className="eyebrow" style={{color:'#486477'}}>SHILATECH · EMPLOYEE ACCESS</span>
-    <h1 style={{fontSize:30,margin:'12px 0'}}>Staff sign in</h1>
+  <section className="staffLoginTheme">
+   <form className="staffLoginCard" onSubmit={submit}>
+    <span className="loginEyebrow">SHILATECH · EMPLOYEE ACCESS</span>
+    <h1>Staff sign in</h1>
     <p>Use your existing staff email and password. You will be taken to the tools allowed for your staff role.</p>
-    {error&&<p className="counterError" role="alert">{error}</p>}
+    {error&&<p className="loginError" role="alert">{error}</p>}
     <label htmlFor="staffEmail">Staff email</label>
     <input id="staffEmail" type="email" autoComplete="username" required autoFocus value={email} onChange={e=>setEmail(e.target.value)} disabled={busy}/>
     <label htmlFor="staffPassword">Password</label>
     <input id="staffPassword" type="password" autoComplete="current-password" required value={password} onChange={e=>setPassword(e.target.value)} disabled={busy}/>
-    <button className="button primary counterPay" style={{marginTop:24}} disabled={busy}>{busy?'Signing in…':'Sign in to staff portal'}</button>
+    <button className="loginSubmit" disabled={busy}>{busy?'Signing in…':'Sign in to staff portal'}</button>
     <p>Staff accounts are created by your administrator. Customer accounts cannot access staff tools.</p>
     <Link href="/account">Customer login instead</Link>
    </form>
+   <section className="loginBrands" aria-label="Vehicle brands">
+    <p>THE BRANDS WE SPECIALISE IN</p>
+    <div className="loginLogos">
+     {[['Jeep','jeep-black.jpg'],['Mercedes-Benz','mercedes-benz-black.png'],['Volkswagen','volkswagen-black.png'],['Land Rover and Range Rover','land-rover-black.png'],['Volvo','volvo-black.png'],['Ford','ford.png']].map(([name,file])=><img key={name} src={'/images/brand-logos/'+file} alt={name+' logo'} width="160" height="112"/>)}
+    </div>
+   </section>
   </section>
+  <style jsx>{`
+   .staffLoginTheme{background:#050805;color:#e7eee3;padding:56px 24px;min-height:65vh;font-family:inherit}
+   .staffLoginCard{box-sizing:border-box;width:100%;max-width:520px;margin:0 auto;background:linear-gradient(120deg,#101a0c,#080d08);border:1px solid #304427;border-radius:18px;padding:36px}
+   .loginEyebrow{color:#90c86b;font-size:11px;letter-spacing:.16em}
+   h1{color:#72bf38;font-size:34px;margin:20px 0;line-height:1.25}
+   p{color:#d6dfd1;line-height:1.7}
+   label{display:block;margin:18px 0 8px;color:#e7eee3}
+   input{display:block;box-sizing:border-box;width:100%;background:#080d08;color:#f3f8ef;border:1px solid #526b43;border-radius:6px;padding:13px;font:inherit}
+   input:focus-visible{outline:2px solid #90c86b;outline-offset:3px}
+   input:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px #101a0c inset;-webkit-text-fill-color:#f3f8ef;caret-color:#f3f8ef}
+   .loginSubmit{display:block;width:100%;margin-top:24px;padding:14px 20px;background:#63b522;color:#071003;border:1px solid #63b522;border-radius:6px;font:inherit;font-weight:700;cursor:pointer}
+   .loginSubmit:focus-visible{outline:3px solid #b9e899;outline-offset:4px}
+   .loginSubmit:disabled{opacity:.7;cursor:wait}
+   .staffLoginCard :global(a){color:#a7d68b;text-decoration:underline;text-underline-offset:4px}
+   .loginError{background:#321b17;color:#ffd6ca;border:1px solid #b77c64;padding:12px;border-radius:6px}
+   .loginBrands{max-width:1100px;margin:40px auto 0}
+   .loginBrands p{color:#a6b79b;font-size:11px;letter-spacing:.18em;margin-bottom:22px;text-align:center}
+   .loginLogos{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:20px;background:#000;padding:24px 12px;border-radius:12px}
+   .loginLogos img{display:block;width:100%;height:112px;object-fit:contain;background:#000}
+   @media(max-width:680px){.staffLoginTheme{padding:32px 18px}.staffLoginCard{padding:28px 22px}.loginLogos{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.loginLogos img{height:82px}}
+  `}</style>
  </Layout>;
 }
