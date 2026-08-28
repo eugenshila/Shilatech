@@ -19,7 +19,7 @@ export default async function handler(req,res) {
   try {
     if(req.method==='GET') {
       const leaves=await c.query('SELECT l.*,u.name AS employee_name FROM hr_leave_requests l JOIN customers u ON u.id=l.employee_id WHERE l.employee_id=$1 OR $2=ANY($3::text[]) ORDER BY l.created_at DESC LIMIT 100',[session.id,session.role,MANAGERS]);
-      const payslips=await c.query("SELECT id,period,employee_name,status,amounts FROM payroll_entries WHERE employee_id=$1 AND status='APPROVED' ORDER BY period DESC LIMIT 50",[session.id]);
+      const hasPayroll=await c.query("SELECT to_regclass('public.payroll_entries') AS table_name");const payslips=hasPayroll.rows[0].table_name?await c.query("SELECT id,period,employee_name,status,amounts FROM payroll_entries WHERE employee_id=$1 AND status='APPROVED' ORDER BY period DESC LIMIT 50",[session.id]):{rows:[]};
       return res.json({role:session.role,leaves:leaves.rows,payslips:payslips.rows});
     }
     if(req.method!=='POST') return res.status(405).json({error:'Method not allowed.'});
