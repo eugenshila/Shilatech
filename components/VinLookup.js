@@ -25,7 +25,9 @@ export default function VinLookup({ compact=false }) {
         vin: clean,
         brand: data.make || '',
         model: data.model || '',
-        year: data.year || ''
+        year: data.year || '',
+        vehicleId: data.vehicleId || '',
+        vinSource: data.source || ''
       }).toString();
       router.push(`/shop?${q}`);
     } catch (e) {
