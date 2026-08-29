@@ -8,7 +8,7 @@ export default function FinanceAnalysis({role}){
  return <>
   {view==='profit-loss-analysis'&&<section className="panel"><h2>Profit &amp; loss analysis</h2><p>Management view for {d.pnl.period}. Revenue combines recorded POS sales and open commercial invoices. Cost of sales uses recorded inventory batch costs; approved liabilities are operating expenses.</p><table><tbody><tr><th>Revenue</th><td>{money(d.pnl.revenueCents)}</td></tr><tr><th>Cost of sales</th><td>{money(d.pnl.cogsCents)}</td></tr><tr><th>Gross profit</th><td>{money(d.pnl.grossProfitCents)}</td></tr><tr><th>Approved expenses</th><td>{money(d.pnl.operatingExpensesCents)}</td></tr><tr><th>Net operating result</th><td>{money(d.pnl.netOperatingCents)}</td></tr></tbody></table><p>Management accounts only; review with your accountant before statutory use.</p></section>}
   {view==='forecast-analysis'&&<section className="panel"><h2>Forecast analysis</h2><p>Planning estimate based on the selected month’s recorded results. It is not a guarantee or cash-flow forecast.</p>{d.forecast?.map(x=><p key={x.month}>{x.month}: revenue {money(x.revenueCents)} · expenses {money(x.expensesCents)} · net {money(x.netCents)}</p>)}</section>}
-  {view&&<style jsx global>{`[aria-label="Finance functions"],[aria-label="Financial analysis"]{display:none!important}`}</style>}
+  {view&&<style>{`[aria-label="Finance functions"],[aria-label="Financial analysis"]{display:none!important}`}</style>}
   <style jsx>{`table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px;border-bottom:1px solid #39512e}`}</style>
  </>;
 }
