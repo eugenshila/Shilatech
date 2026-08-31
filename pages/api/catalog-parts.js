@@ -9,12 +9,16 @@ export default async function handler(req,res){
  res.setHeader('Cache-Control','private, max-age=300');
  const ip=String(req.headers['x-forwarded-for']||req.socket?.remoteAddress||'unknown').split(',')[0].trim();
  if(rateLimited(ip))return res.status(429).json({error:'Too many catalogue searches. Please wait one minute'});
- const vehicleId=String(req.query.vehicleId||'').trim(),search=String(req.query.q||'').trim();
- if(!/^\d{1,10}$/.test(vehicleId)||search.length<2||search.length>80)return res.status(400).json({error:'Enter a valid part description'});
+ const vehicleId=String(req.query.vehicleId||'').trim(),search=String(req.query.q||'').trim(),categoryId=String(req.query.categoryId||'').trim();
+ if(!/^\d{1,10}$/.test(vehicleId))return res.status(400).json({error:'Enter a valid vehicle'});
+ if(categoryId&&!/^\d{1,10}$/.test(categoryId))return res.status(400).json({error:'Enter a valid category'});
+ if(!categoryId&&(search.length<2||search.length>80))return res.status(400).json({error:'Enter a valid part description'});
  const key=process.env.AUTO_PARTS_API_KEY;
  if(!key)return res.status(503).json({error:'Parts catalogue is not configured'});
  const base=String(process.env.AUTO_PARTS_API_BASE_URL||'https://auto-parts-catalog.apiprofile.com').replace(/\/$/,'');
- const url=`${base}/api/articles-oem/selecting-oem-parts-vehicle-modification-description-product-group/type-id/1/vehicle-id/${vehicleId}/lang-id/4/search-param/${encodeURIComponent(search)}`;
+ const url=categoryId
+  ?`${base}/api/articles/list/type-id/1/vehicle-id/${vehicleId}/category-id/${categoryId}/lang-id/4`
+  :`${base}/api/articles-oem/selecting-oem-parts-vehicle-modification-description-product-group/type-id/1/vehicle-id/${vehicleId}/lang-id/4/search-param/${encodeURIComponent(search)}`;
  try{
   const response=await fetch(url,{headers:{'x-apiprofile-key':key,accept:'application/json'},signal:AbortSignal.timeout(12000),cache:'no-store'});
   if(response.status===404)return res.json({parts:[],source:'Auto Parts Catalog'});
@@ -22,3 +26,4 @@ export default async function handler(req,res){
   const payload=await response.json(),parts=normalise(payload);return res.json({parts,source:'Auto Parts Catalog'});
  }catch(error){console.error('Catalog parts lookup failed:',error.message);return res.status(502).json({error:'Compatible-parts service is temporarily unavailable'});}
 }
+
