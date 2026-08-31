@@ -17,6 +17,15 @@ export default function Shop() {
   const [catalogParts,setCatalogParts]=useState([]);
   const [catalogLoading,setCatalogLoading]=useState(false);
   const [catalogError,setCatalogError]=useState('');
+  const [catalogCategories,setCatalogCategories]=useState([]);
+  const [categoriesLoading,setCategoriesLoading]=useState(false);
+
+  useEffect(()=>{
+    const vehicleId=String(router.query.vehicleId||'');
+    if(!vehicleId) return;
+    setCategoriesLoading(true);
+    fetch(`/api/catalog-categories?vehicleId=${encodeURIComponent(vehicleId)}`).then(r=>r.json()).then(data=>setCatalogCategories(data.categories||[])).catch(()=>setCatalogCategories([])).finally(()=>setCategoriesLoading(false));
+  },[router.query.vehicleId]);
 
   useEffect(()=>{
     if (!router.isReady) return;
@@ -82,6 +91,12 @@ export default function Shop() {
     }catch(error){setCatalogError(error.message);}finally{setCatalogLoading(false);}
   }
 
+  async function browseCategory(selected) {
+    const vehicleId=String(router.query.vehicleId||'');
+    setCatalogQuery(selected.name);setCatalogLoading(true);setCatalogError('');setCatalogParts([]);
+    try{const r=await fetch(`/api/catalog-parts?vehicleId=${encodeURIComponent(vehicleId)}&categoryId=${encodeURIComponent(selected.id)}`);const data=await r.json();if(!r.ok)throw new Error(data.error||'Catalogue category failed');setCatalogParts(data.parts||[]);}catch(error){setCatalogError(error.message);}finally{setCatalogLoading(false);}
+  }
+
   const seoTitle = brand ? `${brand} Spare Parts Kenya | Shilatech Auto Spares` : category ? `${category} Auto Parts Kenya | Shilatech Auto Spares` : undefined;
   const seoDescription = brand ? `Shop available ${brand} spare parts in Nairobi, Kenya. Search genuine and quality aftermarket parts by part number and category, with VIN fitment support and nationwide delivery.` : undefined;
 
@@ -98,7 +113,7 @@ export default function Shop() {
       <div className="catalog">
         {brand && <div className="fitmentBanner"><strong>{brand} catalog</strong><span>{loading ? 'Checking live inventory…' : `${list.length} listed part${list.length===1?'':'s'}`}</span></div>}
         {router.query.vin && <div className="fitmentBanner"><strong>VIN-assisted search active</strong><span>{router.query.year} {router.query.brand} {router.query.model}</span></div>}
-        {router.query.vehicleId && <section className="compatibleCatalog" aria-label="VIN compatible parts catalogue"><div className="catalogIntro"><div><span className="eyebrow">COMPATIBILITY REFERENCE</span><h2>Search parts for this vehicle</h2><p>Search the external automotive catalogue by a part description such as brake pads, oil filter or control arm. Results show compatibility references only; Shilatech stock, price and final VIN fitment must be confirmed before ordering.</p></div><form onSubmit={searchCompatibleParts}><input aria-label="Compatible part description" placeholder="e.g. brake pads" value={catalogQuery} onChange={e=>setCatalogQuery(e.target.value)}/><button className="button primary" disabled={catalogLoading}>{catalogLoading?'Searching…':'Search compatible parts'}</button></form>{catalogError&&<p className="catalogError" role="alert">{catalogError}</p>}</div>
+        {router.query.vehicleId && <section className="compatibleCatalog" aria-label="VIN compatible parts catalogue"><div className="catalogIntro"><div><span className="eyebrow">COMPATIBILITY REFERENCE</span><h2>Browse the full catalogue for this vehicle</h2><p>Choose a category or search by description. Results are compatibility references only; Shilatech stock, price and final VIN fitment must be confirmed before ordering.</p></div>{(categoriesLoading||catalogCategories.length>0)&&<div className="catalogCategories" aria-label="Vehicle part categories">{categoriesLoading?<span>Loading categories…</span>:catalogCategories.map(c=><button type="button" key={c.id} disabled={catalogLoading} onClick={()=>browseCategory(c)}>{c.name}</button>)}</div>}<form id="compatible-search" onSubmit={searchCompatibleParts}><input aria-label="Compatible part description" placeholder="e.g. brake pads" value={catalogQuery} onChange={e=>setCatalogQuery(e.target.value)}/><button className="button primary" disabled={catalogLoading}>{catalogLoading?'Searching…':'Search compatible parts'}</button></form>{catalogError&&<p className="catalogError" role="alert">{catalogError}</p>}</div>
         {!!catalogParts.length&&<div className="externalGrid">{catalogParts.map(part=><article key={part.id+'-'+part.partNo}><div className="externalImage">{part.imageUrl?<img src={part.imageUrl} alt={part.name} loading="lazy" referrerPolicy="no-referrer" onError={e=>{e.currentTarget.style.display="none";e.currentTarget.parentElement.classList.add("imageMissing")}}/>:<span>IMAGE NOT AVAILABLE</span>}</div><div className="externalBody"><small>{part.brand}</small><h3>{part.name}</h3><p>Reference: <strong>{part.partNo}</strong></p><p className="notStocked">Catalogue reference — stock and price not confirmed</p><a className="button ghost" href={`/contact?part=${encodeURIComponent(part.partNo)}&vin=${encodeURIComponent(String(router.query.vin||''))}`}>Request this part</a></div></article>)}</div>}
         {!catalogLoading&&!catalogError&&catalogQuery&&catalogParts.length===0&&<p className="catalogEmpty">No compatible catalogue references found for that description. Try a shorter term or contact Shilatech with the VIN.</p>}</section>}
         <div className="catalogBar">
@@ -113,3 +128,4 @@ export default function Shop() {
     <style jsx>{`.compatibleCatalog{grid-column:1/-1;margin:18px 0 30px;border:1px solid #2d5830;border-radius:12px;background:linear-gradient(145deg,#101811,#070b08);padding:24px}.catalogIntro{display:grid;gap:14px}.catalogIntro h2{margin:0;color:#78c94b}.catalogIntro p{color:#c1cbc0;line-height:1.6;max-width:900px}.catalogIntro form{display:grid;grid-template-columns:1fr auto;gap:10px}.catalogIntro input{width:100%;background:#070a08;color:#fff;border:1px solid #40533e;border-radius:6px;padding:13px}.catalogError{color:#ff9b8e}.externalGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:22px}.externalGrid article{overflow:hidden;border:1px solid #31442f;border-radius:9px;background:#090d0a}.externalImage{height:170px;display:grid;place-items:center;background:#fff;color:#445;font-size:11px}.externalImage img{width:100%;height:100%;object-fit:contain}.externalImage.imageMissing::after{content:"Catalogue image unavailable";color:#667064;font-size:12px}.externalBody{padding:17px}.externalBody small{color:#79c94b;text-transform:uppercase;letter-spacing:.08em}.externalBody h3{font-size:16px;line-height:1.4;margin:9px 0}.externalBody p{font-size:13px;color:#c3cbc1}.externalBody .notStocked{color:#e7bd65}.externalBody .button{margin-top:8px}.catalogEmpty{color:#c8d0c5}@media(max-width:900px){.externalGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.catalogIntro form,.externalGrid{grid-template-columns:1fr}.compatibleCatalog{padding:18px}}`}</style>
   </Layout>
 }
+
