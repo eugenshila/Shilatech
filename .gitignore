@@ -1,7 +1,9 @@
 node_modules/
+.pnpm-store/
 .next/
 .env
 .env.local
 .env.*.local
 npm-debug.log*
+
 
