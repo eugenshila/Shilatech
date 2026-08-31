@@ -20,11 +20,15 @@ export default function Shop() {
   const [catalogCategories,setCatalogCategories]=useState([]);
   const [categoriesLoading,setCategoriesLoading]=useState(false);
 
-  useEffect(()=>{
+  async function loadCatalogCategories() {
     const vehicleId=String(router.query.vehicleId||'');
     if(!vehicleId) return;
-    setCategoriesLoading(true);
-    fetch(`/api/catalog-categories?vehicleId=${encodeURIComponent(vehicleId)}`).then(r=>r.json()).then(data=>setCatalogCategories(data.categories||[])).catch(()=>setCatalogCategories([])).finally(()=>setCategoriesLoading(false));
+    setCategoriesLoading(true);setCatalogError('');
+    try{const r=await fetch(`/api/catalog-categories?vehicleId=${encodeURIComponent(vehicleId)}`);const data=await r.json();if(!r.ok)throw new Error(data.error||'Catalogue categories failed');setCatalogCategories(data.categories||[]);if(!(data.categories||[]).length)setCatalogError('No catalogue categories were returned for this vehicle. Search by part description below.');}catch(error){setCatalogCategories([]);setCatalogError(error.message);}finally{setCategoriesLoading(false);}
+  }
+
+  useEffect(()=>{
+    loadCatalogCategories();
   },[router.query.vehicleId]);
 
   useEffect(()=>{
@@ -113,7 +117,7 @@ export default function Shop() {
       <div className="catalog">
         {brand && <div className="fitmentBanner"><strong>{brand} catalog</strong><span>{loading ? 'Checking live inventory…' : `${list.length} listed part${list.length===1?'':'s'}`}</span></div>}
         {router.query.vin && <div className="fitmentBanner"><strong>VIN-assisted search active</strong><span>{router.query.year} {router.query.brand} {router.query.model}</span></div>}
-        {router.query.vehicleId && <section className="compatibleCatalog" aria-label="VIN compatible parts catalogue"><div className="catalogIntro"><div><span className="eyebrow">COMPATIBILITY REFERENCE</span><h2>Browse the full catalogue for this vehicle</h2><p>Choose a category or search by description. Results are compatibility references only; Shilatech stock, price and final VIN fitment must be confirmed before ordering.</p></div>{(categoriesLoading||catalogCategories.length>0)&&<div className="catalogCategories" aria-label="Vehicle part categories">{categoriesLoading?<span>Loading categories…</span>:catalogCategories.map(c=><button type="button" key={c.id} disabled={catalogLoading} onClick={()=>browseCategory(c)}>{c.name}</button>)}</div>}<form id="compatible-search" onSubmit={searchCompatibleParts}><input aria-label="Compatible part description" placeholder="e.g. brake pads" value={catalogQuery} onChange={e=>setCatalogQuery(e.target.value)}/><button className="button primary" disabled={catalogLoading}>{catalogLoading?'Searching…':'Search compatible parts'}</button></form>{catalogError&&<p className="catalogError" role="alert">{catalogError}</p>}</div>
+        {router.query.vehicleId && <section className="compatibleCatalog" aria-label="VIN compatible parts catalogue"><div className="catalogIntro"><div><span className="eyebrow">COMPATIBILITY REFERENCE</span><h2>Parts catalogue for this vehicle</h2><p>Choose a category or search by description. Results are compatibility references only; Shilatech stock, price and final VIN fitment must be confirmed before ordering.</p><button type="button" className="button ghost" disabled={categoriesLoading} onClick={loadCatalogCategories}>{categoriesLoading?'Loading catalogue…':'Browse full catalogue'}</button></div>{catalogCategories.length>0&&<div className="catalogCategories" aria-label="Vehicle part categories">{catalogCategories.map(c=><button type="button" key={c.id} disabled={catalogLoading} onClick={()=>browseCategory(c)}>{c.name}</button>)}</div>}<form id="compatible-search" onSubmit={searchCompatibleParts}><input aria-label="Compatible part description" placeholder="e.g. brake pads" value={catalogQuery} onChange={e=>setCatalogQuery(e.target.value)}/><button className="button primary" disabled={catalogLoading}>{catalogLoading?'Searching…':'Search compatible parts'}</button></form>{catalogError&&<p className="catalogError" role="alert">{catalogError}</p>}</div>
         {!!catalogParts.length&&<div className="externalGrid">{catalogParts.map(part=><article key={part.id+'-'+part.partNo}><div className="externalImage">{part.imageUrl?<img src={part.imageUrl} alt={part.name} loading="lazy" referrerPolicy="no-referrer" onError={e=>{e.currentTarget.style.display="none";e.currentTarget.parentElement.classList.add("imageMissing")}}/>:<span>IMAGE NOT AVAILABLE</span>}</div><div className="externalBody"><small>{part.brand}</small><h3>{part.name}</h3><p>Reference: <strong>{part.partNo}</strong></p><p className="notStocked">Catalogue reference — stock and price not confirmed</p><a className="button ghost" href={`/contact?part=${encodeURIComponent(part.partNo)}&vin=${encodeURIComponent(String(router.query.vin||''))}`}>Request this part</a></div></article>)}</div>}
         {!catalogLoading&&!catalogError&&catalogQuery&&catalogParts.length===0&&<p className="catalogEmpty">No compatible catalogue references found for that description. Try a shorter term or contact Shilatech with the VIN.</p>}</section>}
         <div className="catalogBar">
