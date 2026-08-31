@@ -20,11 +20,16 @@ export default function Shop() {
   const [catalogCategories,setCatalogCategories]=useState([]);
   const [categoriesLoading,setCategoriesLoading]=useState(false);
 
+  async function readCatalogueResponse(response) {
+    const body=await response.text();
+    try{return JSON.parse(body);}catch{throw new Error('The catalogue service returned an invalid response. Please try again.');}
+  }
+
   async function loadCatalogCategories() {
     const vehicleId=String(router.query.vehicleId||'');
     if(!vehicleId) return;
     setCategoriesLoading(true);setCatalogError('');
-    try{const r=await fetch(`/api/catalog-categories?vehicleId=${encodeURIComponent(vehicleId)}`);const data=await r.json();if(!r.ok)throw new Error(data.error||'Catalogue categories failed');setCatalogCategories(data.categories||[]);if(!(data.categories||[]).length)setCatalogError('No catalogue categories were returned for this vehicle. Search by part description below.');}catch(error){setCatalogCategories([]);setCatalogError(error.message);}finally{setCategoriesLoading(false);}
+    try{const r=await fetch(`/api/catalog-categories?vehicleId=${encodeURIComponent(vehicleId)}`);const data=await readCatalogueResponse(r);if(!r.ok)throw new Error(data.error||'Catalogue categories failed');setCatalogCategories(data.categories||[]);if(!(data.categories||[]).length)setCatalogError('No catalogue categories were returned for this vehicle. Search by part description below.');}catch(error){setCatalogCategories([]);setCatalogError(error.message);}finally{setCategoriesLoading(false);}
   }
 
   useEffect(()=>{
@@ -89,7 +94,7 @@ export default function Shop() {
     setCatalogLoading(true);setCatalogError('');
     try{
       const r=await fetch(`/api/catalog-parts?vehicleId=${encodeURIComponent(vehicleId)}&q=${encodeURIComponent(q)}`);
-      const data=await r.json();
+      const data=await readCatalogueResponse(r);
       if(!r.ok)throw new Error(data.error||'Catalogue search failed');
       setCatalogParts(data.parts||[]);
     }catch(error){setCatalogError(error.message);}finally{setCatalogLoading(false);}
@@ -98,7 +103,7 @@ export default function Shop() {
   async function browseCategory(selected) {
     const vehicleId=String(router.query.vehicleId||'');
     setCatalogQuery(selected.name);setCatalogLoading(true);setCatalogError('');setCatalogParts([]);
-    try{const r=await fetch(`/api/catalog-parts?vehicleId=${encodeURIComponent(vehicleId)}&categoryId=${encodeURIComponent(selected.id)}`);const data=await r.json();if(!r.ok)throw new Error(data.error||'Catalogue category failed');setCatalogParts(data.parts||[]);}catch(error){setCatalogError(error.message);}finally{setCatalogLoading(false);}
+    try{const r=await fetch(`/api/catalog-parts?vehicleId=${encodeURIComponent(vehicleId)}&categoryId=${encodeURIComponent(selected.id)}`);const data=await readCatalogueResponse(r);if(!r.ok)throw new Error(data.error||'Catalogue category failed');setCatalogParts(data.parts||[]);}catch(error){setCatalogError(error.message);}finally{setCatalogLoading(false);}
   }
 
   const seoTitle = brand ? `${brand} Spare Parts Kenya | Shilatech Auto Spares` : category ? `${category} Auto Parts Kenya | Shilatech Auto Spares` : undefined;
