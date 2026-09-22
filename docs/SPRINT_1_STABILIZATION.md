@@ -78,3 +78,35 @@ Acceptance criteria:
 
 ## Sprint exit criteria
 Sprint 1 closes only after critical stock/sales workflows pass and the release checklist is signed off. Any P0 defect discovered during testing remains in this sprint until fixed or release is stopped.
+
+
+## Sprint status update — 2026-09-22
+
+### Completed
+- Full Node test discovery fixed so both .mjs and .cjs suites execute.
+- GitHub Actions CI added for Node 20.
+- Complete CI run passed: dependency install, full test suite, and production build.
+- Finance reporting hardened so missing legacy POS allocation tables do not crash reporting.
+- Finance staff dashboard corrected so finance-role department access stays restricted while personal HR shortcuts remain available.
+- Existing stock reconciliation script reviewed and confirmed read-only.
+
+### Production findings
+- Railway project: giving-joy / Shilatech Auto Spares.
+- Production service currently reports a failed latest deployment.
+- The failed 2026-08-31 build was caused by an older catalog-parts.js syntax error that was fixed by later commits.
+- Later Railway deployments for the fixed main-branch commits are currently marked REMOVED.
+- Production pre-deploy is configured to run db:migrate:pos, clear-confirmed-sample-stock.mjs, and db:check-stock.
+
+### Open release blocker
+The production stock reconciliation has not yet been executed in this audit. Railway's agent feature is unavailable because the account trial has expired, and the connected Railway integration redacts DATABASE_URL values. Do not merge/release solely on CI success. Before release, run:
+
+```bash
+npm run db:check-stock
+```
+
+against the production/staging database connection and confirm:
+- 0 stock discrepancies;
+- 0 unassigned pending warehouse order lines;
+- no reserved quantity exceeds physical quantity.
+
+If any discrepancy appears, stop release and reconcile against physical stock and order history. Do not auto-correct balances.
