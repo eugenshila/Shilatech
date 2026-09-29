@@ -105,4 +105,42 @@ CREATE TABLE IF NOT EXISTS counter_sale_allocations (
  PRIMARY KEY(sale_item_id,batch_id)
 );
 CREATE INDEX IF NOT EXISTS idx_counter_sales_location_date ON counter_sales(location_id,created_at);
+-- One-time administrator login for initial Vercel/Supabase verification.
+-- The temporary password is intentionally weak only because must_change_password
+-- blocks staff tools until the user replaces it with a strong private password.
+DO $
+DECLARE
+  v_id BIGINT;
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM warehouse_audit
+    WHERE action='ONETIME_ADMIN_SETUP'
+      AND entity_id='shilatech-onetime-admin-v1'
+  ) THEN
+    INSERT INTO customers(name,email,phone,password_hash,role,location_id,must_change_password)
+    VALUES (
+      'Shilatech One-Time Administrator',
+      'shilatech.onetime.admin@example.invalid',
+      NULL,
+      '$2a$12$US00g/uMhoSBm.HiuieBjeMtoN69SN.GE25fCpldebzkryUyopws6',
+      'admin',
+      main_business_location_id(),
+      TRUE
+    )
+    ON CONFLICT (email) DO NOTHING
+    RETURNING id INTO v_id;
+
+    IF v_id IS NOT NULL THEN
+      INSERT INTO warehouse_audit(employee_id,action,entity_type,entity_id,details)
+      VALUES (
+        v_id,
+        'ONETIME_ADMIN_SETUP',
+        'account_setup',
+        'shilatech-onetime-admin-v1',
+        '{"source":"Vercel/Supabase initial verification","must_change_password":true}'::jsonb
+      );
+    END IF;
+  END IF;
+END $;
+
 COMMIT;
