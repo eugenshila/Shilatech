@@ -108,7 +108,7 @@ CREATE INDEX IF NOT EXISTS idx_counter_sales_location_date ON counter_sales(loca
 -- One-time administrator login for initial Vercel/Supabase verification.
 -- The temporary password is intentionally weak only because must_change_password
 -- blocks staff tools until the user replaces it with a strong private password.
-DO $
+DO $$
 DECLARE
   v_id BIGINT;
 BEGIN
@@ -141,6 +141,6 @@ BEGIN
       );
     END IF;
   END IF;
-END $;
+END $$;
 
 COMMIT;
