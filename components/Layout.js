@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useCart } from './CartContext';
 
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://shilatech-auto-spares-production.up.railway.app').replace(/\/$/, '');
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://shilatechautospares.de5.net').replace(/\/$/, '');
 
 const seoByPath = {
   '/': {
