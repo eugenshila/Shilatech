@@ -1,6 +1,6 @@
 import { query } from '../lib/db';
 
-const SITE_URL=(process.env.NEXT_PUBLIC_SITE_URL||'https://shilatech-auto-spares-production.up.railway.app').replace(/\/$/,'');
+const SITE_URL=(process.env.NEXT_PUBLIC_SITE_URL||'https://shilatechautospares.de5.net').replace(/\/$/,'');
 
 function escapeXml(value=''){return String(value).replace(/[<>&'\"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;',"'":'&apos;','\"':'&quot;'}[c]));}
 
