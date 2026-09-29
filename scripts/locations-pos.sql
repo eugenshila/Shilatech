@@ -22,6 +22,34 @@ UPDATE orders SET location_id=(SELECT id FROM business_locations WHERE code='MAI
 ALTER TABLE orders ALTER COLUMN location_id SET DEFAULT main_business_location_id();
 CREATE INDEX IF NOT EXISTS idx_warehouses_location ON warehouses(location_id);
 
+-- One-time, idempotent opening-stock backfill for the warehouse/POS model.
+-- Legacy products.stock is the existing opening balance; preserve it by creating
+-- an AVAILABLE opening batch in the matching active brand warehouse.
+INSERT INTO inventory_batches (
+  product_id, warehouse_id, batch_no, supplier_name, received_qty, available_qty, status
+)
+SELECT
+  p.id,
+  w.id,
+  'OPENING-MIGRATION-' || p.id,
+  'Legacy product stock opening balance',
+  p.stock,
+  p.stock,
+  'AVAILABLE'
+FROM products p
+JOIN warehouses w
+  ON w.brand_code = p.brand
+ AND w.storage_type = 'BRAND'
+ AND w.active
+WHERE p.stock > 0
+  AND NOT EXISTS (
+    SELECT 1
+    FROM inventory_batches existing
+    WHERE existing.product_id = p.id
+      AND existing.warehouse_id = w.id
+      AND existing.batch_no = 'OPENING-MIGRATION-' || p.id
+  );
+
 CREATE OR REPLACE VIEW location_stock AS
 WITH physical AS (
  SELECT b.product_id,w.location_id,SUM(b.available_qty)::bigint AS physical_qty
