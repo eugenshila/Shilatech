@@ -5,19 +5,19 @@ Premium e-commerce platform for Jeep, Mercedes-Benz, Volkswagen, Range Rover and
 ## Production stack
 
 - Next.js / React
-- Railway hosting
-- PostgreSQL on Railway
+- Vercel hosting
+- PostgreSQL on Supabase
 - Database-backed catalog, customers, My Garage and orders
 - VIN decoding with catalog fitment filtering foundation
 
 ## Required environment variables
 
-- `DATABASE_URL` — Railway Postgres connection
+- `DATABASE_URL` — PostgreSQL connection (Supabase or another PostgreSQL provider)
 - `JWT_SECRET` — secure session signing secret (32+ characters)
 
 ## Database
 
-Railway runs `npm run db:migrate` before deployment to create/update the schema and seed starter inventory.
+Run `npm run db:migrate` against the configured PostgreSQL database to create/update the schema and seed starter inventory.
 
 ## Payments
 
