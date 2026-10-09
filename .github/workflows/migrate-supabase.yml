@@ -45,6 +45,10 @@ jobs:
           tail -n 80 migrate-output.txt >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           cat migrate-output.txt
+          if [ "$status" -ne 0 ]; then
+            msg=$(tail -n 30 migrate-output.txt | tr '\n' ' | ' | tr -d '\r')
+            echo "::error::Migration failed: ${msg}"
+          fi
           exit $status
 
       - name: Verify stock reconciliation script is available
