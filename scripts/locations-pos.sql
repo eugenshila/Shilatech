@@ -105,59 +105,7 @@ CREATE TABLE IF NOT EXISTS counter_sale_allocations (
  PRIMARY KEY(sale_item_id,batch_id)
 );
 CREATE INDEX IF NOT EXISTS idx_counter_sales_location_date ON counter_sales(location_id,created_at);
-ALTER TABLE customers ADD COLUMN IF NOT EXISTS password_version INTEGER NOT NULL DEFAULT 0;
-ALTER TABLE customers ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN NOT NULL DEFAULT FALSE;
--- One-time administrator login for initial Vercel/Supabase verification.
--- Temporary password is for first sign-in only; staff tools stay blocked until
--- it is replaced. The plaintext is not stored in this repository.
-DO $$
-DECLARE
-  v_id BIGINT;
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM warehouse_audit
-    WHERE action='ONETIME_ADMIN_SETUP'
-      AND entity_id='shilatech-onetime-admin-v2'
-  ) THEN
-    INSERT INTO customers(name,email,phone,password_hash,role,location_id,must_change_password,password_version)
-    VALUES (
-      'Shilatech One-Time Administrator',
-      'admin@shilatech.local',
-      NULL,
-      '$2b$12$2pR1uCMA15Sh/DGW.zjqp.x2D8FMTw5V1JQ.89xMEYdhmENtSogSC',
-      'admin',
-      main_business_location_id(),
-      TRUE,
-      0
-    )
-    ON CONFLICT (email) DO UPDATE SET
-      name='Shilatech One-Time Administrator',
-      password_hash=EXCLUDED.password_hash,
-      role='admin',
-      must_change_password=TRUE,
-      password_version=customers.password_version+1,
-      location_id=COALESCE(customers.location_id, main_business_location_id())
-    RETURNING id INTO v_id;
-
-    IF v_id IS NOT NULL THEN
-      INSERT INTO warehouse_audit(employee_id,action,entity_type,entity_id,details)
-      VALUES (
-        v_id,
-        'ONETIME_ADMIN_SETUP',
-        'account_setup',
-        'shilatech-onetime-admin-v2',
-        '{"source":"Vercel/Supabase admin bootstrap v2","must_change_password":true}'::jsonb
-      );
-    END IF;
-
-    UPDATE customers
-    SET password_hash='$2b$12$2pR1uCMA15Sh/DGW.zjqp.x2D8FMTw5V1JQ.89xMEYdhmENtSogSC',
-        role='admin',
-        must_change_password=TRUE,
-        password_version=password_version+1,
-        location_id=COALESCE(location_id, main_business_location_id())
-    WHERE email='shilatech.onetime.admin@example.invalid';
-  END IF;
-END $$;
+-- One-time administrator bootstrap v2 runs from migrate-locations-pos.mjs
+-- using parameterized SQL so bcrypt hashes are not parsed as Postgres arguments.
 
 COMMIT;

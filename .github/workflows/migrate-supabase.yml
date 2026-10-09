@@ -5,6 +5,8 @@ on:
   push:
     paths:
       - 'scripts/locations-pos.sql'
+      - 'scripts/migrate-locations-pos.mjs'
+      - 'lib/account-security.mjs'
       - '.github/workflows/migrate-supabase.yml'
 
 jobs:
