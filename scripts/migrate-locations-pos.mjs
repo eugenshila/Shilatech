@@ -16,6 +16,7 @@ try {
   const reset=await bootstrapAdministrator(client,process.env);
   await client.query('COMMIT');
   if(reset)console.log('Authorised administrator setup applied once. Password change required on sign-in.');
- }
+ } catch(e){try{await client.query('ROLLBACK');}catch{}throw e;}
+ finally{client.release();}
  console.log('Location and counter POS migration complete. Run the stock reconciliation check before selling.');
 } finally { await pool.end(); }
