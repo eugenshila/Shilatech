@@ -107,5 +107,6 @@ CREATE TABLE IF NOT EXISTS counter_sale_allocations (
 CREATE INDEX IF NOT EXISTS idx_counter_sales_location_date ON counter_sales(location_id,created_at);
 -- One-time administrator bootstrap v2 runs from migrate-locations-pos.mjs
 -- using parameterized SQL so bcrypt hashes are not parsed as Postgres arguments.
+-- Re-run after Supabase project was brought back online.
 
 COMMIT;
