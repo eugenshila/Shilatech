@@ -36,7 +36,16 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run complete Shilatech database migration
-        run: pnpm db:migrate
+        run: |
+          set +e
+          pnpm db:migrate > migrate-output.txt 2>&1
+          status=$?
+          echo '## Migration output' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          tail -n 80 migrate-output.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat migrate-output.txt
+          exit $status
 
       - name: Verify stock reconciliation script is available
         run: pnpm db:check-stock
