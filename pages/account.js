@@ -15,6 +15,7 @@ export default function Account(){
     const me=await fetch('/api/auth/me');
     if(!me.ok){setUser(null);return;}
     const meData=await me.json();
+    if(meData.user?.mustChangePassword){window.location.href='/staff-password';return;}
     setUser(meData.user);
     const [o,g]=await Promise.all([fetch('/api/orders'),fetch('/api/garage')]);
     if(o.ok) setOrders((await o.json()).orders||[]);
