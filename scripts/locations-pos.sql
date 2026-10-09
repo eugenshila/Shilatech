@@ -105,6 +105,9 @@ CREATE TABLE IF NOT EXISTS counter_sale_allocations (
  PRIMARY KEY(sale_item_id,batch_id)
 );
 CREATE INDEX IF NOT EXISTS idx_counter_sales_location_date ON counter_sales(location_id,created_at);
+-- This column is also created by staff-workflows.sql, but the one-time admin
+-- below needs it first when a fresh database runs the full migration chain.
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN NOT NULL DEFAULT FALSE;
 -- One-time administrator login for initial Vercel/Supabase verification.
 -- The temporary password is intentionally weak only because must_change_password
 -- blocks staff tools until the user replaces it with a strong private password.
