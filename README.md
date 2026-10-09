@@ -19,6 +19,10 @@ Premium e-commerce platform for Jeep, Mercedes-Benz, Volkswagen, Range Rover and
 
 Run `npm run db:migrate` against the configured PostgreSQL database to create/update the schema and seed starter inventory.
 
+### Set up a local administrator
+
+After migrating a **new local-only PostgreSQL database**, put `DATABASE_URL` and `JWT_SECRET` in the ignored `.env.local` file, then run `npm run admin:bootstrap:local -- your-email@example.com` (in Windows PowerShell, use `npm.cmd` instead of `npm` if script execution is restricted). The command reads `.env.local`, refuses non-local or production database URLs, creates a new administrator account with a randomly generated one-time password, and prints it once in your own terminal. Do not paste that password in chat, take a screenshot of it, or commit it. Sign in at `/staff-login` and change it immediately. This command will **not** overwrite an existing account or reset its password. Other staff accounts are created by the signed-in administrator under `/admin` → Add staff; staff sign-in does not offer public registration.
+
 ## Payments
 
 Checkout supports M-Pesa, card and PayPal selection. Live gateway charges remain disabled until official payment-provider credentials are configured.

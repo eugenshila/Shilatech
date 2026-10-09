@@ -42,12 +42,13 @@ JOIN warehouses w
  AND w.storage_type = 'BRAND'
  AND w.active
 WHERE p.stock > 0
+  -- Never duplicate stock for a product that already has warehouse batches.
+  -- Existing batches must be reconciled, not topped up from products.stock.
   AND NOT EXISTS (
     SELECT 1
     FROM inventory_batches existing
     WHERE existing.product_id = p.id
       AND existing.warehouse_id = w.id
-      AND existing.batch_no = 'OPENING-MIGRATION-' || p.id
   );
 
 CREATE OR REPLACE VIEW location_stock AS
