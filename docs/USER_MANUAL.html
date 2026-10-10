@@ -1,0 +1,961 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Shilatech Auto Spares — User Manual</title><style>body{font:15px/1.6 -apple-system,Segoe UI,Roboto,Arial,sans-serif;max-width:920px;margin:32px auto;padding:0 20px;color:#1b1f1a}
+h1{color:#2f6f12;border-bottom:3px solid #63b522;padding-bottom:6px;margin-top:2.2em}h2{color:#2f6f12;margin-top:1.8em}h3{color:#3d7f1a}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13.5px}th,td{border:1px solid #c9d3c4;padding:6px 9px;text-align:left;vertical-align:top}th{background:#eef5e9}
+blockquote{border-left:4px solid #63b522;background:#f4f9f0;margin:12px 0;padding:6px 14px}code{background:#eef1ec;padding:1px 5px;border-radius:3px}
+a{color:#2a6b12}hr{border:0;border-top:1px solid #d5ddd1;margin:28px 0}
+img{max-width:100%;height:auto;border:1px solid #cfd8ca;border-radius:6px;display:block;margin:14px auto 2px;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+img+em,p>em:only-child{display:block;text-align:center;color:#5a6657;font-size:12.5px;margin-bottom:16px}
+@media print{body{max-width:none;margin:0;font-size:10.5pt}h1{page-break-before:always}h1:first-of-type{page-break-before:avoid}table,blockquote,img{page-break-inside:avoid}h2,h3{page-break-after:avoid}img{max-height:230mm;width:auto;max-width:100%}}</style></head><body><h1 id="shilatech-auto-spares-website-staff-portal-user-manual">Shilatech Auto Spares — Website &amp; Staff Portal User Manual</h1>
+<p>This manual explains how to use the Shilatech Auto Spares website.</p>
+<ul>
+<li><strong>Part 1</strong> is for customers and visitors.</li>
+<li><strong>Part 2</strong> is for staff (warehouse, sales counter, garage, delivery, finance, HR, managers and administrators).</li>
+<li><strong>Part 3</strong> is a quick reference and troubleshooting guide.</li>
+</ul>
+<blockquote>
+<p><strong>How this manual was written.</strong> It was prepared from the application's source code (pages, role rules and workflow documents in <code>docs/</code>). Screen names and button labels match the code. If your deployment has been customised, small differences are possible.</p>
+</blockquote>
+<hr />
+<h2 id="contents">Contents</h2>
+<ol>
+<li><a href="#part-1--customer-website">Part 1 — Customer website</a></li>
+<li><a href="#11-finding-your-way-around">1.1 Finding your way around</a></li>
+<li><a href="#12-home-page">1.2 Home page</a></li>
+<li><a href="#13-shop-searching-and-filtering-parts">1.3 Shop: searching and filtering parts</a></li>
+<li><a href="#14-product-page">1.4 Product page</a></li>
+<li><a href="#15-brands">1.5 Brands</a></li>
+<li><a href="#16-vin-checker">1.6 VIN checker</a></li>
+<li><a href="#17-cart-and-checkout">1.7 Cart and checkout</a></li>
+<li><a href="#18-customer-account-and-my-garage">1.8 Customer account and My Garage</a></li>
+<li><a href="#19-workshop-booking">1.9 Workshop booking</a></li>
+<li><a href="#110-contact-faq-delivery--returns-about-facility">1.10 Contact, FAQ, Delivery &amp; Returns, About, Facility</a></li>
+<li><a href="#part-2--staff-portal">Part 2 — Staff portal</a></li>
+<li><a href="#21-signing-in-for-the-first-time">2.1 Signing in for the first time</a></li>
+<li><a href="#22-the-staff-bar-and-staff-centre">2.2 The staff bar and Staff centre</a></li>
+<li><a href="#23-who-can-open-what-roles">2.3 Who can open what (roles)</a></li>
+<li><a href="#24-warehouse">2.4 Warehouse</a></li>
+<li><a href="#25-sales-counter-pos">2.5 Sales counter (POS)</a></li>
+<li><a href="#26-garage-jobs">2.6 Garage jobs</a></li>
+<li><a href="#27-delivery">2.7 Delivery</a></li>
+<li><a href="#28-requests--approvals">2.8 Requests &amp; approvals</a></li>
+<li><a href="#29-sales--customer-accounts-receivables-and-finance-workspace">2.9 Sales &amp; customer accounts (Receivables) and Finance workspace</a></li>
+<li><a href="#210-erp--payroll">2.10 ERP &amp; payroll</a></li>
+<li><a href="#211-my-hr">2.11 My HR</a></li>
+<li><a href="#212-reports--administration-admin-dashboard">2.12 Reports &amp; administration (Admin dashboard)</a></li>
+<li><a href="#213-operations--staff-management">2.13 Operations &amp; staff (management)</a></li>
+<li><a href="#part-3--quick-reference">Part 3 — Quick reference</a></li>
+<li><a href="#31-page-address-url-list">3.1 Page address (URL) list</a></li>
+<li><a href="#32-troubleshooting">3.2 Troubleshooting</a></li>
+<li><a href="#33-things-that-are-not-connected-yet">3.3 Things that are not connected yet</a></li>
+<li><a href="#34-known-issues-for-the-administrator--it">3.4 Known issues (for the administrator / IT)</a></li>
+</ol>
+<hr />
+<h1 id="part-1-customer-website">Part 1 — Customer website</h1>
+<h2 id="11-finding-your-way-around">1.1 Finding your way around</h2>
+<p><img alt="Every public page has the same header (menu, search, account, cart) and footer." src="images/manual/15-about.jpg" /></p>
+<p><em>Every public page has the same header (menu, search, account, cart) and footer.</em></p>
+<p>Every public page has the same header and footer.</p>
+<p><strong>Top bar (very top of the page):</strong> phone number, email address, and delivery / original-parts / secure-payment reminders.</p>
+<p><strong>Main menu:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Menu item</th>
+<th>Takes you to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Home</strong></td>
+<td>Home page</td>
+</tr>
+<tr>
+<td><strong>Shop</strong></td>
+<td>The full parts catalogue</td>
+</tr>
+<tr>
+<td><strong>Brands</strong></td>
+<td>Jeep, Mercedes-Benz, Volkswagen, Range Rover, Volvo and Ford</td>
+</tr>
+<tr>
+<td><strong>Workshop</strong></td>
+<td>Garage services and booking form</td>
+</tr>
+<tr>
+<td><strong>Facility</strong></td>
+<td>Photos and concept of the flagship facility</td>
+</tr>
+<tr>
+<td><strong>About Us</strong></td>
+<td>The Shilatech story</td>
+</tr>
+<tr>
+<td><strong>Contact</strong></td>
+<td>Parts enquiry page</td>
+</tr>
+<tr>
+<td><strong>Staff portal</strong></td>
+<td>Staff sign-in (staff only — see Part 2)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Right-hand side of the header:</strong></p>
+<ul>
+<li><strong>Search box</strong> ("Search parts, brands…") — type a part name, brand or part number and press Enter. You are taken to the Shop with your search applied.</li>
+<li><strong>♙ (person icon)</strong> — your customer account.</li>
+<li><strong>🛒 (cart icon)</strong> — your cart. The number shows how many items it holds.</li>
+</ul>
+<p><strong>Footer:</strong> shortcuts to <em>Shop</em> (All parts, Vehicle brands, VIN checker, Cart), <em>Support</em> (Book a repair, FAQ, Delivery &amp; Returns, Contact) and <em>Dealer</em> (Admin dashboard, Staff sales counter — staff only).</p>
+<p>The site works on phones, tablets and computers.</p>
+<h2 id="12-home-page">1.2 Home page</h2>
+<p><img alt="Home page with the VIN / make / category search." src="images/manual/01-home.jpg" /></p>
+<p><em>Home page with the VIN / make / category search.</em></p>
+<p>The home page is the starting point. It contains:</p>
+<ul>
+<li>A <strong>VIN search</strong> ("Find parts for your vehicle") — see <a href="#16-vin-checker">1.6</a>.</li>
+<li>Quick category links (<strong>Brakes, Engine, Suspension</strong>) that open the Shop already filtered.</li>
+<li><strong>Featured auto spare parts.</strong></li>
+<li>A <strong>Workshop</strong> section with a <em>Book a workshop visit</em> button.</li>
+<li>A <strong>WhatsApp</strong> link (+254 721 802 597) for quick enquiries.</li>
+<li>Short guides on choosing the right part and common questions.</li>
+</ul>
+<h2 id="13-shop-searching-and-filtering-parts">1.3 Shop: searching and filtering parts</h2>
+<p><img alt="Shop: filters on the left, search and sorting above the results." src="images/manual/02-shop.jpg" /></p>
+<p><em>Shop: filters on the left, search and sorting above the results.</em></p>
+<p><img alt="Shop opened from Brands, filtered to Jeep." src="images/manual/03-shop-brand-filter.jpg" /></p>
+<p><em>Shop opened from Brands, filtered to Jeep.</em></p>
+<p>Open <strong>Shop</strong> from the menu. The page heading changes to match what you are viewing (for example "Jeep parts").</p>
+<p><strong>Filter panel (left side):</strong></p>
+<ol>
+<li><strong>Vehicle make</strong> — choose a brand or leave on <em>All makes</em>.</li>
+<li><strong>Category</strong> — for example Engine, Brakes, Suspension, Electrical, Body, Interior.</li>
+<li><strong>Availability</strong> — <em>All stock</em> or <em>In stock</em> only.</li>
+<li><strong>Clear filters</strong> — resets everything.</li>
+</ol>
+<p><strong>Above the results:</strong></p>
+<ul>
+<li><strong>Search part name or number…</strong> — results update as you type.</li>
+<li><strong>Sort</strong> — <em>Featured</em>, <em>Price: Low to high</em>, <em>Price: High to low</em>.</li>
+<li>A line such as "<strong>12 parts found</strong>" tells you how many results match.</li>
+</ul>
+<p><strong>Each part card shows:</strong> brand, part type (OEM / Aftermarket / Genuine), whether it is <em>In stock</em> or <em>Backorder</em>, the name, the part number and the price in KSh. Click the name or picture to open the product page, or press <strong>Add to cart</strong>.</p>
+<p><strong>Tip:</strong> if nothing is listed, the page suggests contacting Shilatech with your VIN and the part you need — parts that are not listed online can often be sourced.</p>
+<h2 id="14-product-page">1.4 Product page</h2>
+<p><img alt="Product page with part number, price, stock and compatibility." src="images/manual/04-product.jpg" /></p>
+<p><em>Product page with part number, price, stock and compatibility.</em></p>
+<p>Click any part to see its full page.</p>
+<ul>
+<li><strong>Breadcrumb</strong> at the top (Home / Auto spare parts / part name) to go back.</li>
+<li>Part type, stock level ("12 in stock" or "Out of stock"), name and <strong>part number</strong>.</li>
+<li>Compatible models, years and engine where recorded, and a short overview.</li>
+<li><strong>Add to cart</strong> button.</li>
+</ul>
+<p>Always check the part number and your VIN before ordering.</p>
+<h2 id="15-brands">1.5 Brands</h2>
+<p><img alt="Brands page." src="images/manual/05-brands.jpg" /></p>
+<p><em>Brands page.</em></p>
+<p>The <strong>Brands</strong> page lists the six makes we specialise in with the main models for each. Click <strong>Browse [brand] parts →</strong> to open the Shop filtered to that make. The <strong>Find parts by VIN</strong> button takes you to the VIN checker.</p>
+<h2 id="16-vin-checker">1.6 VIN checker</h2>
+<p><img alt="VIN checker." src="images/manual/06-vin.jpg" /></p>
+<p><em>VIN checker.</em></p>
+<p>Use your <strong>VIN</strong> (Vehicle Identification Number) for the best part matching. It is 17 characters and is found on the dashboard (visible through the windscreen), on the door frame, or in the logbook.</p>
+<ol>
+<li>Open <strong>VIN</strong> (from the home page search or the footer link <em>VIN checker</em>).</li>
+<li>Type or paste the 17 characters. <strong>Rules:</strong> numbers and capital letters only; the letters <strong>I, O and Q are never used</strong>.</li>
+<li>Press the search button. The site identifies make, model, year and engine.</li>
+<li>You are taken to the <strong>Shop</strong> with a banner "VIN-assisted search active".</li>
+<li>In the <strong>Parts catalogue for this vehicle</strong> box you can:</li>
+<li>Press <strong>Browse full catalogue</strong> and click a <strong>category</strong> button, or</li>
+<li>Type a description such as <em>brake pads</em> and search.</li>
+<li>Catalogue results are <strong>references only</strong> — stock and price are <em>not</em> confirmed. Press <strong>Request this part</strong> to send us the part number (and your VIN) through the Contact page.</li>
+</ol>
+<p>If the VIN is not recognised, use <strong>Search manually</strong> to browse by make, model and category.</p>
+<h2 id="17-cart-and-checkout">1.7 Cart and checkout</h2>
+<p><img alt="Shopping cart." src="images/manual/07-cart.jpg" /></p>
+<p><em>Shopping cart.</em></p>
+<p><img alt="Checkout: customer details, delivery speed and payment method." src="images/manual/08-checkout.jpg" /></p>
+<p><em>Checkout: customer details, delivery speed and payment method.</em></p>
+<p><strong>Cart (🛒):</strong></p>
+<ul>
+<li>Change the <strong>quantity</strong> in the number box, or press <strong>×</strong> to remove an item.</li>
+<li>The summary shows the subtotal. Delivery is calculated at checkout.</li>
+<li>Press <strong>Proceed to checkout</strong>. (The button is disabled while the cart is empty.)</li>
+</ul>
+<p><strong>Checkout — "Delivery &amp; payment":</strong></p>
+<ol>
+<li>Enter <strong>Full name, Email, Phone number</strong> and <strong>Delivery address</strong>.</li>
+<li><strong>Destination country</strong> — leave as <em>Kenya</em> for local delivery.</li>
+<li><strong>Delivery speed</strong> (Kenya only):</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Cost</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2 Hour Delivery</td>
+<td>KSh 1,200</td>
+<td>Within 2 hours</td>
+</tr>
+<tr>
+<td>4 Hour Delivery</td>
+<td>KSh 900</td>
+<td>Within 4 hours</td>
+</tr>
+<tr>
+<td>8 Hour Delivery</td>
+<td>KSh 700</td>
+<td>Within 8 hours</td>
+</tr>
+<tr>
+<td>Next Day Delivery</td>
+<td>KSh 500</td>
+<td>Next business day</td>
+</tr>
+</tbody>
+</table>
+<p>For any other country an <strong>international estimate</strong> is shown instead: courier (minimum KSh 4,500, or 8% of the order) plus a customs/tax provision (20%). These are estimates only; final charges depend on the destination.
+4. <strong>Payment method</strong> — <em>M-Pesa</em>, <em>Card</em> or <em>PayPal</em>.
+5. Check the <strong>Order summary</strong> on the right, then press <strong>Place order</strong>.</p>
+<p>After ordering you see an <strong>Order received</strong> page with your order number, total, delivery details and payment status. Press <strong>View my account</strong> to track it.</p>
+<blockquote>
+<p><strong>Note:</strong> live card/PayPal charges require provider credentials to be set up. Until then, an order is created with its payment status shown on the confirmation page, and the team follows up with you.</p>
+</blockquote>
+<h2 id="18-customer-account-and-my-garage">1.8 Customer account and My Garage</h2>
+<p><img alt="Customer account sign-in / registration." src="images/manual/09-account-login.jpg" /></p>
+<p><em>Customer account sign-in / registration.</em></p>
+<p>Open <strong>♙</strong> (or the <em>Account</em> page).</p>
+<ul>
+<li><strong>New customer:</strong> press <strong>Create an account</strong>, then enter full name, phone number, email and a password.</li>
+<li><strong>Returning customer:</strong> enter email and password. Use <strong>I already have an account</strong> to switch back from the sign-up form.</li>
+<li>The page shows three tiles: <strong>Orders</strong> (your purchase history), <strong>My Garage</strong> (saved vehicles) and <strong>Account</strong> (your email).</li>
+<li><strong>My Garage:</strong> enter a VIN and save it. Saved vehicles make later fitment searches faster.</li>
+<li>Press <strong>Sign out</strong> when you finish on a shared computer.</li>
+</ul>
+<p><strong>Staff must not use this page to sign in.</strong> Customer accounts cannot open staff tools. Staff use <em>Staff portal</em> (<a href="#21-signing-in-for-the-first-time">2.1</a>).</p>
+<h2 id="19-workshop-booking">1.9 Workshop booking</h2>
+<p><img alt="Workshop page." src="images/manual/10-workshop.jpg" /></p>
+<p><em>Workshop page.</em></p>
+<p><img alt="Booking form (opens WhatsApp with your details)." src="images/manual/11-workshop-booking.jpg" /></p>
+<p><em>Booking form (opens WhatsApp with your details).</em></p>
+<p>The <strong>Workshop</strong> page describes the garage services: computer diagnostics, routine servicing, brakes &amp; suspension, engine &amp; cooling, electrical repairs and pre-purchase inspection. It also explains the four steps: <strong>Book → Inspect → Approve → Repair &amp; test</strong>.</p>
+<p>To book:</p>
+<ol>
+<li>Press <strong>Book a workshop visit</strong> (or scroll to <em>Request a booking</em>).</li>
+<li>Fill in name, phone, vehicle (model and year), registration or VIN (optional), the service, preferred date and any details.</li>
+<li>Press the submit button. <strong>WhatsApp opens</strong> with your details already typed in. Press send in WhatsApp to complete the booking request.</li>
+</ol>
+<p>You can also call <strong>+254 721 802 597</strong>. For faster diagnosis, include the registration or VIN and a photo of any dashboard warning.</p>
+<h2 id="110-contact-faq-delivery-returns-about-facility">1.10 Contact, FAQ, Delivery &amp; Returns, About, Facility</h2>
+<p><img alt="Contact page." src="images/manual/12-contact.jpg" /></p>
+<p><em>Contact page.</em></p>
+<p><img alt="FAQ." src="images/manual/13-faq.jpg" /></p>
+<p><em>FAQ.</em></p>
+<p><img alt="Delivery &amp; Returns." src="images/manual/14-delivery-returns.jpg" /></p>
+<p><em>Delivery &amp; Returns.</em></p>
+<ul>
+<li><strong>Contact</strong> — shows the parts enquiry form and the Shilatech details.<blockquote>
+<p>The on-page <strong>Send enquiry</strong> button does not send anything yet. For now, contact us by <strong>phone, email or WhatsApp</strong> (+254 721 802 597, info@shilatechautospares.co.ke). See <a href="#33-things-that-are-not-connected-yet">3.3</a>.</p>
+</blockquote>
+</li>
+<li><strong>FAQ</strong> — click a question to expand the answer.</li>
+<li><strong>Delivery &amp; Returns</strong> — delivery, returns, warranty and order-tracking information.</li>
+<li><strong>About Us</strong> — the Shilatech story, specialist focus and promise.</li>
+<li><strong>Facility</strong> — the proposed flagship facility concept.</li>
+</ul>
+<hr />
+<h1 id="part-2-staff-portal">Part 2 — Staff portal</h1>
+<p>Staff tools are private. They never appear in search engines and cannot be opened without a staff account.</p>
+<h2 id="21-signing-in-for-the-first-time">2.1 Signing in for the first time</h2>
+<p><img alt="Staff sign-in page." src="images/manual/20-staff-login.jpg" /></p>
+<p><em>Staff sign-in page.</em></p>
+<p><img alt="Change-password page shown for a temporary password." src="images/manual/21c-change-password.jpg" /></p>
+<p><em>Change-password page shown for a temporary password.</em></p>
+<ol>
+<li>On the website menu press <strong>Staff portal</strong> (or go to <code>/staff-login</code>).</li>
+<li>Enter your <strong>Staff email</strong> and <strong>Password</strong>, then press <strong>Sign in to staff portal</strong>.</li>
+<li>You are sent straight to the tools for your role (for example a cashier opens the Sales counter).</li>
+</ol>
+<p><strong>Temporary password.</strong> Accounts created by the administrator (and accounts whose password was reset) start with a <em>temporary</em> password. On first sign-in you will see <strong>"Change your temporary password"</strong>:</p>
+<ol>
+<li>Press <strong>Change password</strong> (page <code>/staff-password</code>).</li>
+<li>Enter the <strong>current / temporary password</strong>, then the <strong>new password</strong> twice. The new password must be <strong>at least 12 characters</strong>.</li>
+<li>Press <strong>Save my new password</strong>. This signs out any other sessions on your account. You are then taken to your department.</li>
+</ol>
+<p><strong>Note:</strong> the app only forces this screen when you sign in through <code>/staff-login</code>. Until the password is changed, the system refuses every staff action even if a page opens, so always sign in through <em>Staff portal</em>.</p>
+<p><strong>Signing out:</strong> press <strong>Sign out</strong> at the right of the staff bar. Always sign out on shared computers.</p>
+<p><strong>If you see "Welcome to the staff portal / available only to authorised staff":</strong> you are either not signed in or your role does not include that page. Press the button on the screen (<em>Staff sign in</em> or <em>Open my department</em>).</p>
+<p><strong>Customer accounts cannot sign in here.</strong> Staff accounts are created by the administrator — ask them if you do not have one.</p>
+<h2 id="22-the-staff-bar-and-staff-centre">2.2 The staff bar and Staff centre</h2>
+<p><img alt="Staff centre for an administrator: staff bar on top, one card per department." src="images/manual/22-staff-centre.jpg" /></p>
+<p><em>Staff centre for an administrator: staff bar on top, one card per department.</em></p>
+<p><img alt="A department dashboard (Reports &amp; administration): function cards under *On this page*." src="images/manual/21-staff-dashboard-cards.jpg" /></p>
+<p><em>A department dashboard (Reports &amp; administration): function cards under </em>On this page<em>.</em></p>
+<p>Once signed in, a <strong>staff bar</strong> is shown at the top of every staff page:</p>
+<ul>
+<li>On the left: <strong>your name and role</strong>.</li>
+<li>In the middle: a link for each page you may open (for example <em>Warehouse</em>, <em>Sales counter</em>, <em>Requests &amp; approvals</em>, <em>My HR</em>). The current page is highlighted.</li>
+<li>On the right: <strong>Sign out</strong>.</li>
+</ul>
+<p><strong>Staff centre (<code>/staff</code>)</strong> is the home page for administrators and general managers. It shows one tile for every department; press a tile (<em>Open department →</em>) to enter it.</p>
+<p><strong>Department dashboard.</strong> Every department opens on a <strong>"What would you like to do?"</strong> screen made of cards:</p>
+<ul>
+<li><strong>On this page</strong> — the functions of that department (for example <em>Pick, pack &amp; dispatch</em>, <em>Receive parts</em>, <em>Create counter sale</em>, <em>New garage booking</em>).</li>
+<li><strong>Departments &amp; personal services</strong> — shortcuts to the other departments you may use, plus your personal HR services (<em>Leave applications, My payslips, Employee documents, Medical insurance, Email</em>).</li>
+</ul>
+<p>Press a card to open only that function. Use the <strong>Back to dashboard</strong> button to return and pick another. Anything you have started typing is kept when you switch functions.</p>
+<h2 id="23-who-can-open-what-roles">2.3 Who can open what (roles)</h2>
+<p><img alt="General manager's Staff centre — same departments as the administrator, view only." src="images/manual/91-gm-staff-centre.jpg" /></p>
+<p><em>General manager's Staff centre — same departments as the administrator, view only.</em></p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Pages available</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Administrator</strong> (<code>admin</code>)</td>
+<td>Everything: Staff home, Reports &amp; administration, Operations &amp; staff, Warehouse, Delivery, Sales counter, Garage jobs, Requests &amp; approvals, ERP &amp; payroll, My HR — plus Sales &amp; customer accounts / Finance workspace by typing <code>/receivables</code></td>
+</tr>
+<tr>
+<td><strong>General manager</strong> (<code>general_manager</code>)</td>
+<td>Same pages as the administrator, but <strong>view only</strong> — except Requests &amp; approvals, payroll review and leave decisions. Cannot directly change stock, prices or sales</td>
+</tr>
+<tr>
+<td><strong>Warehouse manager</strong> (<code>warehouse_manager</code>)</td>
+<td>Warehouse, Requests &amp; approvals, My HR</td>
+</tr>
+<tr>
+<td><strong>Warehouse clerk</strong> (<code>warehouse_clerk</code>)</td>
+<td>Warehouse (receiving, imports, returns, preorders), Requests &amp; approvals, My HR</td>
+</tr>
+<tr>
+<td><strong>Picker</strong> (<code>picker</code>)</td>
+<td>Warehouse (start picking, scan &amp; pick), Requests &amp; approvals, My HR</td>
+</tr>
+<tr>
+<td><strong>Packer</strong> (<code>packer</code>)</td>
+<td>Warehouse (start packing, ready for dispatch), Requests &amp; approvals, My HR</td>
+</tr>
+<tr>
+<td><strong>Dispatch</strong> (<code>dispatch</code>)</td>
+<td>Warehouse (ready for dispatch, mark dispatched, returns), Delivery, Requests &amp; approvals, My HR</td>
+</tr>
+<tr>
+<td><strong>Auditor</strong> (<code>auditor</code>)</td>
+<td>Warehouse (viewing), Requests &amp; approvals, My HR</td>
+</tr>
+<tr>
+<td><strong>Cashier</strong> (<code>cashier</code>)</td>
+<td>Sales counter, Requests &amp; approvals, My HR; also uses <em>Sales &amp; customer accounts</em> (<code>/receivables</code>) for their own documents</td>
+</tr>
+<tr>
+<td><strong>Garage staff</strong> (<code>garage_staff</code>)</td>
+<td>Garage jobs, Requests &amp; approvals, My HR</td>
+</tr>
+<tr>
+<td><strong>Delivery driver</strong> (<code>delivery_driver</code>)</td>
+<td>Delivery (own jobs only), Requests &amp; approvals, My HR</td>
+</tr>
+<tr>
+<td><strong>Finance</strong> (<code>finance</code>)</td>
+<td>Sales &amp; customer accounts and Finance workspace only (<code>/receivables</code>, opens automatically after sign-in)</td>
+</tr>
+<tr>
+<td><strong>HR</strong> (<code>hr</code>)</td>
+<td>My HR only (HR administration)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Brand-assigned warehouse accounts.</strong> A warehouse account whose email starts with a brand name — for example <code>jeep@…</code>, <code>mercedesbenz@…</code>, <code>volkswagen@…</code>, <code>rangerrover@…</code>, <code>volvo@…</code>, <code>ford@…</code> — can see and work on <strong>that brand's storage area only</strong>.</p>
+<h2 id="24-warehouse">2.4 Warehouse</h2>
+<p><img alt="Warehouse dashboard (warehouse manager)." src="images/manual/40-wh-landing.jpg" /></p>
+<p><em>Warehouse dashboard (warehouse manager).</em></p>
+<p><img alt="Brand warehouses: one storage area per vehicle brand." src="images/manual/42-wh-brand-storage.jpg" /></p>
+<p><em>Brand warehouses: one storage area per vehicle brand.</em></p>
+<p><strong>Open:</strong> staff bar → <strong>Warehouse</strong> (<code>/warehouse</code>). Roles: warehouse manager, clerk, picker, packer, dispatch, auditor; administrator and general manager (view only).</p>
+<p>The warehouse has <strong>six brand storage areas</strong> — one for each vehicle brand. Parts are automatically assigned to the correct brand zone. Press a brand tile to focus on that brand; press <strong>← Back to all warehouses</strong> to return.</p>
+<p>Functions (cards):</p>
+<h3 id="customer-order-fulfilment-queue-pick-pack-dispatch">Customer order fulfilment queue — <em>Pick, pack &amp; dispatch</em></h3>
+<p><img alt="Fulfilment queue: Start picking → Scan &amp; pick → Start packing → Ready for dispatch → Mark dispatched." src="images/manual/41-wh-fulfilment.jpg" /></p>
+<p><em>Fulfilment queue: Start picking → Scan &amp; pick → Start packing → Ready for dispatch → Mark dispatched.</em>
+Handles every website order from picking through dispatch.</p>
+<ol>
+<li><strong>Start picking</strong> (picker / warehouse manager).</li>
+<li><strong>Scan &amp; pick</strong> each item. The barcode scan is checked and stock is issued using <strong>FIFO</strong> (oldest stock first).</li>
+<li><strong>Start packing</strong> (packer / warehouse manager).</li>
+<li><strong>Ready for dispatch</strong> (packer, dispatch or warehouse manager).</li>
+<li><strong>Mark dispatched</strong> (dispatch or warehouse manager).</li>
+</ol>
+<h3 id="receive-stock-receive-parts">Receive stock — <em>Receive parts</em></h3>
+<p><img alt="Receive stock form." src="images/manual/43-wh-receive.jpg" /></p>
+<p><em>Receive stock form.</em>
+(Warehouse manager or clerk.)</p>
+<ol>
+<li>Choose <strong>Existing part</strong> (pick it from the list) or <strong>+ Create new part</strong> (enter vehicle brand, part number / SKU, name, category, OEM / Aftermarket / Genuine, selling price, compatible models, years, engine, optional image URL). A new part is published online immediately.</li>
+<li>Choose the <strong>Dedicated storage area</strong>, <strong>Quantity</strong>, <strong>Batch / GRN number</strong>, <strong>Bin code</strong>, <strong>Supplier</strong>, <strong>Supplier reference</strong> and <strong>Unit cost (KSh)</strong>.</li>
+<li>Save. Each delivery becomes its own stock <strong>batch</strong>.</li>
+</ol>
+<blockquote>
+<p>Products created in Reports &amp; administration start with <strong>zero stock</strong>. Stock is added only by receiving it here, so that every unit has a batch history.</p>
+</blockquote>
+<h3 id="upload-parts-from-csv-bulk-receiving">Upload parts from CSV — <em>Bulk receiving</em></h3>
+<p><img alt="Bulk CSV import." src="images/manual/44-wh-csv.jpg" /></p>
+<p><em>Bulk CSV import.</em>
+(Warehouse manager or clerk.) Press <strong>Download CSV template</strong>, fill it in, then <strong>Select completed CSV file</strong> and upload. Every row goes to its brand warehouse and its own FIFO batch.</p>
+<h3 id="create-preorder">Create preorder</h3>
+<p><img alt="Create preorder." src="images/manual/45-wh-preorder.jpg" /></p>
+<p><em>Create preorder.</em>
+Records demand for stock that has not arrived yet: customer name, phone, expected date, notes. Press <strong>Save preorder</strong>. Open preorders are listed under <em>Open preorders</em>.</p>
+<h3 id="return-factory-defect-receive-returns">Return / factory defect — <em>Receive returns</em></h3>
+<p><img alt="Return / factory defect form." src="images/manual/46-wh-return.jpg" /></p>
+<p><em>Return / factory defect form.</em>
+Choose the reason (<em>Factory defect</em>, <em>Customer return</em>, <em>Wrong part</em>) and record it. <strong>Defective parts go to quarantine.</strong> Open items appear under <em>Open returns &amp; defects</em>.</p>
+<h3 id="stock-batches-labels">Stock batches &amp; labels</h3>
+<p><img alt="FIFO stock batches with *Print label* links." src="images/manual/47-wh-batches.jpg" /></p>
+<p><em>FIFO stock batches with </em>Print label<em> links.</em>
+Shows FIFO stock batches. Barcode labels can be generated for received parts.</p>
+<p><strong>Rules to remember</strong></p>
+<ul>
+<li>You cannot edit a product's stock number directly. Receive new stock, or raise a <strong>Stock adjustment</strong> request (<a href="#28-requests--approvals">2.8</a>) after a physical count.</li>
+<li>If the system warns that stock needs <em>reconciliation</em>, <strong>stop selling that part</strong> and tell a manager — nothing is auto-corrected.</li>
+</ul>
+<h2 id="25-sales-counter-pos">2.5 Sales counter (POS)</h2>
+<p><img alt="Sales counter dashboard (cashier)." src="images/manual/50-pos-landing.jpg" /></p>
+<p><em>Sales counter dashboard (cashier).</em></p>
+<p><strong>Open:</strong> staff bar → <strong>Sales counter</strong> (<code>/pos</code>). Roles: cashier and administrator can sell; general manager can view.</p>
+<h3 id="making-a-sale">Making a sale</h3>
+<p><img alt="Find a part (left) and Counter sale (right)." src="images/manual/51-pos-find.jpg" /></p>
+<p><em>Find a part (left) and Counter sale (right).</em></p>
+<p><img alt="A cash sale ready to record: part added, customer name and cash received entered." src="images/manual/54-pos-sale-filled.jpg" /></p>
+<p><em>A cash sale ready to record: part added, customer name and cash received entered.</em></p>
+<p><img alt="The receipt after pressing *Record paid sale*; press *Print receipt*." src="images/manual/55b-pos-receipt.jpg" /></p>
+<p><em>The receipt after pressing </em>Record paid sale<em>; press </em>Print receipt<em>.</em></p>
+<ol>
+<li><strong>Find a part</strong> — type the part name, number or <strong>scan the barcode</strong>, press <strong>Search</strong>. The list shows availability (physical stock minus quantities reserved by online orders). Press <strong>Add</strong> to put a part on the sale.</li>
+<li><strong>Counter sale</strong> panel — set the quantity (<strong>Qty</strong>) for each line, or press <strong>×</strong> to remove one.</li>
+<li>Enter <strong>Customer name</strong> (optional).</li>
+<li>Choose <strong>Payment method</strong>:</li>
+<li><strong>Cash</strong> — enter <em>Cash received</em>. The screen shows the <strong>change</strong>.</li>
+<li><strong>M-Pesa</strong> or <strong>Card</strong> — enter the <strong>Confirmed payment reference</strong>. This records a payment you have <strong>already received and checked yourself</strong>; the system does not charge or verify M-Pesa/card payments.</li>
+<li>Press <strong>Record paid sale</strong>.</li>
+<li>The <strong>receipt</strong> opens. Press <strong>Print receipt</strong>. Receipts are <em>sales receipts, not tax invoices</em>.</li>
+</ol>
+<h3 id="recent-receipts">Recent receipts</h3>
+<p><img alt="Recent receipts: click one to reopen and reprint." src="images/manual/53-pos-receipts.jpg" /></p>
+<p><em>Recent receipts: click one to reopen and reprint.</em>
+Use <strong>Recent receipts</strong> to reopen and reprint a receipt (for example if the window was closed). Cashiers see their own receipts.</p>
+<h3 id="important-safety-rules">Important safety rules</h3>
+<p><img alt="General manager's view of the counter: inputs are greyed out (read-only)." src="images/manual/90-gm-readonly-pos.jpg" /></p>
+<p><em>General manager's view of the counter: inputs are greyed out (read-only).</em></p>
+<ul>
+<li>If a <strong>"pending sale"</strong> warning appears, the result is uncertain. <strong>Retry the same sale</strong> with the same details to retrieve its receipt — <strong>never collect payment twice</strong>.</li>
+<li>Do not start the same sale in two browser tabs.</li>
+<li>If stock looks wrong, stop and tell the warehouse manager.</li>
+<li>Completed sales cannot be edited. For a refund or correction, raise a request in <strong>Requests &amp; approvals</strong> (<a href="#28-requests--approvals">2.8</a>).</li>
+<li>The page header shows approved refund credits for the day.</li>
+</ul>
+<h2 id="26-garage-jobs">2.6 Garage jobs</h2>
+<p><img alt="Garage dashboard." src="images/manual/55-garage-landing.jpg" /></p>
+<p><em>Garage dashboard.</em></p>
+<p><strong>Open:</strong> staff bar → <strong>Garage jobs</strong> (<code>/staff-garage</code>). Roles: garage staff and administrator; general manager can view.</p>
+<p>Use it to enter workshop bookings received by WhatsApp or at the counter, and to track repairs. It does <strong>not</strong> import WhatsApp messages.</p>
+<h3 id="new-booking">New booking</h3>
+<p><img alt="New garage booking form." src="images/manual/56-garage-booking.jpg" /></p>
+<p><em>New garage booking form.</em>
+Open <strong>New booking</strong> and fill in customer name, phone, vehicle / model, registration or VIN, requested service and preferred date. Save to create a <strong>job card</strong> (with a job number).</p>
+<h3 id="job-cards">Job cards</h3>
+<p><img alt="Job cards with notes and *Move to …* buttons." src="images/manual/57-garage-jobs.jpg" /></p>
+<p><em>Job cards with notes and </em>Move to …<em> buttons.</em>
+Each job card shows the job number, registration, customer, vehicle, service, status and a history of notes.</p>
+<ol>
+<li>Type in <strong>Progress / parts-required note</strong> (work done, customer authorisation reference, or parts needed).</li>
+<li>Press <strong>Add note</strong> to save the note only, <strong>or</strong> press <strong>Move to …</strong> to advance the status and save the note.</li>
+<li>A note is <strong>required</strong> to save or move a job. Notes can only be added, never edited.</li>
+</ol>
+<p><strong>Job progress order:</strong> Booked → Inspection → Awaiting customer / In progress → Ready → Completed.
+(From <em>Inspection</em> you can go to <em>Awaiting customer</em> or <em>In progress</em>; from <em>Awaiting customer</em> to <em>In progress</em>.)</p>
+<p>Parts you write in notes <strong>do not</strong> reduce stock or charge the customer. Sell or issue parts through the warehouse or sales counter.</p>
+<p>To <strong>cancel, reopen or correct</strong> a job, press <strong>Request a correction, cancellation or reopening</strong> (goes to <a href="#28-requests--approvals">Requests &amp; approvals</a>).</p>
+<h2 id="27-delivery">2.7 Delivery</h2>
+<p><img alt="Delivery dashboard for dispatch." src="images/manual/58-delivery-manager.jpg" /></p>
+<p><em>Delivery dashboard for dispatch.</em></p>
+<p><strong>Open:</strong> staff bar → <strong>Delivery</strong> (<code>/delivery</code>). Roles: delivery drivers, dispatch, administrator; general manager can view.</p>
+<p>The delivery portal is designed to work on a <strong>phone or PDA</strong>.</p>
+<h3 id="for-managers-dispatch-delivery-control-centre">For managers / dispatch — "Delivery Control Centre"</h3>
+<p><img alt="Assign deliveries." src="images/manual/59-delivery-assign.jpg" /></p>
+<p><em>Assign deliveries.</em></p>
+<ul>
+<li><strong>Driver accounts</strong> — create a secure login for each driver (<strong>administrator only</strong>; press <strong>Save driver</strong>).</li>
+<li><strong>Assign deliveries</strong> — for each waiting job, pick the driver from the list and press <strong>Apply</strong> (dispatch and administrator).</li>
+<li><strong>Active delivery queue</strong> — watch jobs in progress.</li>
+</ul>
+<h3 id="for-drivers-my-assigned-deliveries">For drivers — "My Assigned Deliveries"</h3>
+<p><img alt="Delivery dashboard for a driver." src="images/manual/59b-delivery-driver.jpg" /></p>
+<p><em>Delivery dashboard for a driver.</em></p>
+<ol>
+<li>Open your <strong>delivery queue</strong> — only jobs assigned to you appear.</li>
+<li>Use <strong>Call customer</strong> and <strong>Open address</strong> (opens your maps app).</li>
+<li>If the customer is paying by M-Pesa, press <strong>Prompt Customer to Pay</strong>, then <strong>Refresh payment status</strong> until paid. <strong>Proof of delivery is blocked while payment is pending.</strong></li>
+<li>At handover, open the proof form: confirm the <strong>Recipient name</strong>, have the customer sign in the <strong>Customer signature</strong> box (<strong>Clear signature</strong> to retry), add <strong>Delivery notes</strong> if needed, and submit. Allow the browser to share your <strong>location</strong> when asked.</li>
+</ol>
+<h2 id="28-requests-approvals">2.8 Requests &amp; approvals</h2>
+<p><img alt="Requests &amp; approvals dashboard." src="images/manual/70-approvals-landing.jpg" /></p>
+<p><em>Requests &amp; approvals dashboard.</em></p>
+<p><strong>Open:</strong> staff bar → <strong>Requests &amp; approvals</strong> (<code>/approvals</code>). Available to every operational role.</p>
+<p>Ordinary sales and receiving never need approval. <strong>Exceptions</strong> do. The approval chain is:</p>
+<blockquote>
+<p><strong>Staff member requests → General manager reviews → Administrator applies.</strong>
+A request made by the general manager goes straight to the administrator. A request made by the administrator still needs general manager review before the administrator applies it.</p>
+</blockquote>
+<p>Nothing changes until the administrator applies it. Pending requests never change prices, stock or completed sales.</p>
+<h3 id="what-each-role-can-ask-for">What each role can ask for</h3>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Request types</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cashier</td>
+<td>Price change, Refund, Sale correction (own counter sales only)</td>
+</tr>
+<tr>
+<td>Garage staff</td>
+<td>Garage correction (cancel, reopen or correct a job)</td>
+</tr>
+<tr>
+<td>Warehouse roles</td>
+<td>Stock adjustment</td>
+</tr>
+<tr>
+<td>General manager, Administrator</td>
+<td>All types, including Order correction</td>
+</tr>
+</tbody>
+</table>
+<h3 id="submitting-a-request">Submitting a request</h3>
+<blockquote>
+<p><strong>Known issue:</strong> the <em>Submit an exception request</em> form has no card on the dashboard in the current version, so it can't be opened yet — see <a href="#34-known-issues-for-the-administrator--it">3.4</a>. The steps below describe how it is meant to work.</p>
+</blockquote>
+<ol>
+<li>Open <strong>Submit an exception request</strong>.</li>
+<li>Choose the <strong>Request type</strong>. Depending on the type, also choose the <strong>Sale type</strong> (POS or ONLINE), the <strong>record</strong>, the <strong>field</strong> to change, the new value (for example <em>Order status</em> or <em>Payment record status</em>).</li>
+<li>Write the <strong>Reason and supporting reference</strong> — explain the original error and the exact correction.</li>
+<li>Press <strong>Submit for approval</strong>.</li>
+</ol>
+<h3 id="following-a-request">Following a request</h3>
+<p><img alt="Requests &amp; decisions." src="images/manual/71-approvals-history.jpg" /></p>
+<p><em>Requests &amp; decisions.</em>
+<strong>Requests &amp; decisions</strong> (card <em>Requests &amp; decisions</em>) lists every request, who requested and reviewed it, and the notes. Reviewers add a <strong>Decision note</strong> and approve, reject or apply.</p>
+<h3 id="refunds">Refunds</h3>
+<ul>
+<li>An approved refund creates a <strong>credit</strong> only. It <strong>does not send money</strong> and does <strong>not return stock</strong>.</li>
+<li>Pay the customer <strong>outside</strong> the system (M-Pesa, bank or cash). Then the administrator opens <strong>Approved refunds</strong> and uses <strong>Record completed external payout</strong>, entering the <strong>actual transfer reference / cash voucher</strong>. Never pay twice.</li>
+<li>A stock return after a refund is a separate <strong>Stock adjustment</strong> request after a physical count.</li>
+</ul>
+<h2 id="29-sales-customer-accounts-receivables-and-finance-workspace">2.9 Sales &amp; customer accounts (Receivables) and Finance workspace</h2>
+<p><img alt="Sales &amp; customer accounts page (note: normal website header, no staff bar)." src="images/manual/80-receivables.jpg" /></p>
+<p><em>Sales &amp; customer accounts page (note: normal website header, no staff bar).</em></p>
+<p><img alt="Finance workspace → Supplier and government bills." src="images/manual/80b-finance-bills.jpg" /></p>
+<p><em>Finance workspace → Supplier and government bills.</em></p>
+<p><img alt="Finance workspace → Payment reports." src="images/manual/80e-finance-reports.jpg" /></p>
+<p><em>Finance workspace → Payment reports.</em></p>
+<p><img alt="Finance workspace → Profit &amp; loss analysis." src="images/manual/80f-finance-pnl.jpg" /></p>
+<p><em>Finance workspace → Profit &amp; loss analysis.</em></p>
+<p><strong>Open:</strong> type <code>/receivables</code> after the website address (for example <code>https://your-site/receivables</code>). <strong>Finance</strong> staff land here automatically after signing in. There is <strong>no link to it in the staff bar</strong>, and this page shows the normal website header rather than the staff bar. Use the browser's Back button or return to <code>/staff</code> to leave.</p>
+<p>Roles: <strong>administrator</strong> and <strong>finance</strong> (everything), <strong>cashier</strong> (own documents and own sales performance), <strong>general manager</strong> (view).</p>
+<p><strong>First use:</strong> if you see <strong>Enable sales and finance records</strong> or <strong>Enable extended finance</strong>, ask the administrator to press the button once (it only creates empty records).</p>
+<p>The page opens on <strong>Finance workspace — "Choose a function to continue."</strong> Press a card to open that function. Use <strong>Back to finance dashboard</strong> to return.</p>
+<table>
+<thead>
+<tr>
+<th>Card</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Supplier and government bills</strong></td>
+<td>Record a supplier invoice or an assessed government obligation: type, payee, reference, amount, accounting month, due date and details. Press <strong>Submit liability for review</strong>. Flow: <em>general manager review → administrator approval → finance records external payment.</em> No government payment is sent and no return is filed.</td>
+</tr>
+<tr>
+<td><strong>Salary payments</strong></td>
+<td>Import an already approved payroll once with <strong>Add approved salary to payments</strong>, then pay by bank/M-Pesa outside the system.</td>
+</tr>
+<tr>
+<td><strong>Payment settlements</strong></td>
+<td>Finance or administrator records a completed payment: pick the approved liability, amount, method, the <strong>unique bank / payment receipt reference</strong> and date.</td>
+</tr>
+<tr>
+<td><strong>Payment reports</strong></td>
+<td>Totals (approved, paid, outstanding, overdue), outgoing payments, the liability register and payment receipts, with <strong>CSV downloads</strong>.</td>
+</tr>
+<tr>
+<td><strong>Sales targets &amp; KPIs</strong></td>
+<td>Monthly counter-sales targets per salesperson (set by the administrator). Cashiers see their own performance.</td>
+</tr>
+<tr>
+<td><strong>Finance audit trail</strong></td>
+<td>Review finance decisions.</td>
+</tr>
+<tr>
+<td><strong>Profit &amp; loss analysis</strong></td>
+<td>Revenue (POS sales and open commercial invoices), cost of sales, gross profit, approved expenses and net operating result for the month. Management view only — check with your accountant.</td>
+</tr>
+<tr>
+<td><strong>Forecast analysis</strong></td>
+<td>A three-month planning estimate. Not a guarantee or cash-flow forecast.</td>
+</tr>
+</tbody>
+</table>
+<p>Reviewers (general manager, then administrator) approve or reject pending liabilities with a decision reason. Settled records can't be edited or deleted.</p>
+<h3 id="customer-accounts-quotations-and-invoices">Customer accounts, quotations and invoices</h3>
+<p>The same page also contains an <strong>account-customer register</strong> for companies and garages that buy on quotation or credit: <em>Add account customer, Approve customer credit</em> (administrator), <em>Create quotation</em> (catalogue prices, valid 14 days, stock not reserved), <em>Create invoice from quotation</em> (payment on issue, or 30 days for approved-credit customers), <em>Record invoice payment</em> (finance/administrator), <em>Document history</em> (print/save as PDF; administrator can void an unpaid document) and <em>Receivables reports</em>. These documents are <strong>internal commercial records — not eTIMS tax invoices</strong>, and they do not reserve or dispatch stock.</p>
+<blockquote>
+<p><strong>Known issue:</strong> in the current version these customer, quotation and invoice forms are hidden by the finance function view and cannot be opened. See <a href="#34-known-issues-for-the-administrator--it">3.4</a>.</p>
+</blockquote>
+<h2 id="210-erp-payroll">2.10 ERP &amp; payroll</h2>
+<p><img alt="ERP &amp; payroll dashboard." src="images/manual/62-payroll-landing.jpg" /></p>
+<p><em>ERP &amp; payroll dashboard.</em></p>
+<p><img alt="Prepare a salary record." src="images/manual/60-payroll-prepare.jpg" /></p>
+<p><em>Prepare a salary record.</em></p>
+<p><img alt="Salary records." src="images/manual/61-payroll-records.jpg" /></p>
+<p><em>Salary records.</em></p>
+<p><strong>Open:</strong> staff bar → <strong>ERP &amp; payroll</strong> (<code>/payroll</code>). <strong>Administrator and general manager only.</strong> Nobody else can see salary data.</p>
+<p>Workflow: <strong>Administrator prepares → General manager reviews → Administrator approves.</strong></p>
+<ol>
+<li><strong>First use:</strong> the administrator presses <strong>Initialise payroll</strong> (creates empty tables only).</li>
+<li><strong>Prepare a salary record</strong> (administrator): choose the <strong>Employee</strong>, <strong>Month</strong>, <strong>Basic pay</strong>, <strong>Regular cash allowances</strong>, <strong>Preferred payment method</strong> (<em>Bank transfer</em> or <em>M-Pesa</em>) and <strong>Tax residency</strong>. A <strong>Calculation preview</strong> shows NSSF, SHIF, housing levy, PAYE and net pay. Press <strong>Submit for general manager review</strong>.</li>
+<li>The <strong>general manager</strong> opens the record under <strong>Salary records</strong>, adds a <strong>Review note</strong> and approves or rejects it. The preparer cannot review their own record.</li>
+<li>The <strong>administrator</strong> gives final approval.</li>
+<li>After approval, press <strong>Print approved payslip (A5)</strong>. In the print window choose <strong>A5, portrait, 100% scale</strong>, and turn off browser headers and footers.</li>
+</ol>
+<p><strong>Important:</strong> approval <strong>does not pay employees</strong> or remit statutory deductions. Payslips say "approved — payment not sent". Rejected records can be replaced; submitted amounts can't be edited. Rules cover <strong>February–December 2026</strong> regular monthly cash pay only. A qualified person must verify the figures before real payments or tax filing.</p>
+<h2 id="211-my-hr">2.11 My HR</h2>
+<p><img alt="My HR dashboard." src="images/manual/85-myhr-landing.jpg" /></p>
+<p><em>My HR dashboard.</em></p>
+<p><img alt="Apply for leave." src="images/manual/83-myhr-leave.jpg" /></p>
+<p><em>Apply for leave.</em></p>
+<p><img alt="HR administration view (HR role)." src="images/manual/84-hr-admin.jpg" /></p>
+<p><em>HR administration view (HR role).</em></p>
+<p><strong>Open:</strong> staff bar → <strong>My HR</strong> (<code>/my-hr</code>). Every staff member has it. For the <strong>HR</strong> role it is the only page and is titled <strong>HR administration</strong>.</p>
+<p>Sections (jump links at the top): <strong>Leave applications · My payslips · Email · Employee documents · Medical insurance · Staff directory</strong> (managers/HR only).</p>
+<ul>
+<li><strong>Apply for leave:</strong> choose start and end dates, leave type (<em>Annual</em>, <em>Sick</em>, <em>Unpaid</em>), give a reason, press <strong>Submit leave application</strong>. Track it under <strong>My leave requests</strong>.</li>
+<li><strong>Leave approval flow:</strong> the request goes to <strong>HR</strong>, who adds a note and presses <strong>Forward to general manager</strong>; the <strong>general manager</strong> then presses <strong>Approve leave</strong> or <strong>Reject leave</strong>. A review note is required each time. No administrator approval is needed.</li>
+<li><strong>My approved payslips:</strong> press <strong>View payslip [period]</strong> to see it; <strong>Print / Save payslip as PDF (A5)</strong> to print. Only your own payslips appear.</li>
+<li><strong>Employee documents:</strong> staff can view their own. HR and the administrator <strong>upload private documents</strong> (choose staff member, document type, file up to 2 MB). Downloads are logged.</li>
+<li><strong>Medical insurance applications:</strong> HR creates a draft for a staff member, attaches supporting documents, and forwards it to the general manager. Internal approval does <strong>not</strong> enrol anyone with an insurer.</li>
+<li><strong>Email:</strong> placeholder only — no mailbox is connected.</li>
+<li><strong>First use:</strong> HR or the administrator may need to press <strong>Enable HR records</strong> once.</li>
+</ul>
+<h2 id="212-reports-administration-admin-dashboard">2.12 Reports &amp; administration (Admin dashboard)</h2>
+<p><img alt="Reports &amp; administration dashboard." src="images/manual/23-admin-dashboard.jpg" /></p>
+<p><em>Reports &amp; administration dashboard.</em></p>
+<p><img alt="Add staff account (press *Add staff* to open the form)." src="images/manual/26-admin-add-staff.jpg" /></p>
+<p><em>Add staff account (press </em>Add staff<em> to open the form).</em></p>
+<p><img alt="Add product." src="images/manual/27-admin-add-product.jpg" /></p>
+<p><em>Add product.</em></p>
+<p><img alt="Recent order pipeline." src="images/manual/28-admin-orders.jpg" /></p>
+<p><em>Recent order pipeline.</em></p>
+<p><img alt="Products table." src="images/manual/29-admin-products.jpg" /></p>
+<p><em>Products table.</em></p>
+<p><strong>Open:</strong> staff bar → <strong>Reports &amp; administration</strong> (<code>/admin</code>). Administrator (general manager: view only).</p>
+<p>Shows live inventory, orders, customers and sales performance. <em>Net sales</em> = online + counter sales, less approved refund credits.</p>
+<ul>
+<li><strong>Add staff account</strong> — create accounts for every department; the selected <strong>role</strong> controls what that person can open. New accounts start with a temporary password and must change it at first sign-in.</li>
+<li><strong>Add product</strong> — choose brand, category, OEM/Aftermarket, and details. Products are created with <strong>zero stock</strong>; add stock in the Warehouse.</li>
+<li><strong>Recent order pipeline</strong> — online orders with customer, total, payment, status and date. Press <strong>Refresh</strong> to reload. Orders can be updated here by the administrator, subject to the approval rules for corrections and refunds.</li>
+<li><strong>Products</strong> table — part, brand, category, price, stock and state.</li>
+</ul>
+<h2 id="213-operations-staff-management">2.13 Operations &amp; staff (management)</h2>
+<p><img alt="Operations &amp; staff dashboard." src="images/manual/24-operations.jpg" /></p>
+<p><em>Operations &amp; staff dashboard.</em></p>
+<p><img alt="Add supplier." src="images/manual/30-ops-suppliers.jpg" /></p>
+<p><em>Add supplier.</em></p>
+<p><img alt="Create purchase order." src="images/manual/31-ops-purchase-order.jpg" /></p>
+<p><em>Create purchase order.</em></p>
+<p><img alt="Create employee." src="images/manual/32-ops-create-employee.jpg" /></p>
+<p><em>Create employee.</em></p>
+<p><img alt="Low stock alerts." src="images/manual/33-ops-low-stock.jpg" /></p>
+<p><em>Low stock alerts.</em></p>
+<p><img alt="Employee access: change role or reset password." src="images/manual/34-ops-staff-access.jpg" /></p>
+<p><em>Employee access: change role or reset password.</em></p>
+<p><strong>Open:</strong> staff bar → <strong>Operations &amp; staff</strong> (<code>/operations</code>). Administrator (general manager: view only).</p>
+<p>Title: <strong>Management Operations Centre.</strong></p>
+<ul>
+<li><strong>Add supplier</strong> → <strong>Save supplier.</strong></li>
+<li><strong>Create purchase order</strong> — choose supplier and part, enter quantity, press <strong>Create PO</strong>. See them under <strong>Recent purchase orders</strong>.</li>
+<li><strong>Low stock alerts</strong> — parts at or below their reorder level, with a <em>Suggested order</em>. Edit <strong>Reorder level</strong> / order quantity and press <strong>Save</strong>.</li>
+<li><strong>Create employee</strong> — name, email, phone, <strong>role</strong>, temporary password (minimum 8 characters). The new person must change it at first sign-in.</li>
+<li><strong>Employee access</strong> — for each staff member you can:</li>
+<li>change their <strong>Staff role</strong> (the administrator's own role cannot be changed here), and</li>
+<li><strong>Reset password</strong> — set a new temporary password. They must change it at next sign-in, and their existing sessions are signed out.</li>
+</ul>
+<p><strong>Tip:</strong> create a <strong>general manager</strong> account here before submitting administrator requests — the approval chain needs one.</p>
+<hr />
+<h1 id="part-3-quick-reference">Part 3 — Quick reference</h1>
+<h2 id="31-page-address-url-list">3.1 Page address (URL) list</h2>
+<p><strong>Public</strong></p>
+<table>
+<thead>
+<tr>
+<th>Address</th>
+<th>Page</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/</code></td>
+<td>Home</td>
+</tr>
+<tr>
+<td><code>/shop</code></td>
+<td>Parts catalogue (<code>/shop?brand=Jeep</code>, <code>/shop?category=Brakes</code>, <code>/shop?q=…</code>)</td>
+</tr>
+<tr>
+<td><code>/product/&lt;name&gt;</code></td>
+<td>Product page</td>
+</tr>
+<tr>
+<td><code>/brands</code></td>
+<td>Brands</td>
+</tr>
+<tr>
+<td><code>/vin</code></td>
+<td>VIN checker</td>
+</tr>
+<tr>
+<td><code>/cart</code> , <code>/checkout</code></td>
+<td>Cart and checkout</td>
+</tr>
+<tr>
+<td><code>/account</code></td>
+<td>Customer account and My Garage</td>
+</tr>
+<tr>
+<td><code>/workshop</code></td>
+<td>Garage services and booking</td>
+</tr>
+<tr>
+<td><code>/facility</code> , <code>/about</code> , <code>/contact</code> , <code>/faq</code> , <code>/delivery-returns</code></td>
+<td>Information pages</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Staff</strong></p>
+<table>
+<thead>
+<tr>
+<th>Address</th>
+<th>Page</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/staff-login</code></td>
+<td>Staff sign-in</td>
+</tr>
+<tr>
+<td><code>/staff-password</code></td>
+<td>Change password</td>
+</tr>
+<tr>
+<td><code>/staff</code></td>
+<td>Staff centre</td>
+</tr>
+<tr>
+<td><code>/warehouse</code></td>
+<td>Warehouse</td>
+</tr>
+<tr>
+<td><code>/pos</code></td>
+<td>Sales counter</td>
+</tr>
+<tr>
+<td><code>/staff-garage</code></td>
+<td>Garage jobs</td>
+</tr>
+<tr>
+<td><code>/delivery</code></td>
+<td>Delivery</td>
+</tr>
+<tr>
+<td><code>/approvals</code></td>
+<td>Requests &amp; approvals</td>
+</tr>
+<tr>
+<td><code>/receivables</code></td>
+<td>Sales &amp; customer accounts + Finance workspace</td>
+</tr>
+<tr>
+<td><code>/payroll</code></td>
+<td>ERP &amp; payroll</td>
+</tr>
+<tr>
+<td><code>/my-hr</code></td>
+<td>My HR</td>
+</tr>
+<tr>
+<td><code>/admin</code></td>
+<td>Reports &amp; administration</td>
+</tr>
+<tr>
+<td><code>/operations</code></td>
+<td>Operations &amp; staff</td>
+</tr>
+<tr>
+<td><code>/api/health</code></td>
+<td>Technical check that the database is reachable (for IT)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="32-troubleshooting">3.2 Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Welcome to the staff portal… available only to authorised staff"</td>
+<td>Sign in at <code>/staff-login</code>, or use <em>Open my department</em> if your role does not include that page.</td>
+</tr>
+<tr>
+<td>"Change your temporary password" screen</td>
+<td>Press <strong>Change password</strong>; use at least 12 characters.</td>
+</tr>
+<tr>
+<td>Cannot sign in</td>
+<td>Check email and password. Staff and customer accounts are separate. Ask the administrator to reset your password in <strong>Operations &amp; staff → Employee access</strong>.</td>
+</tr>
+<tr>
+<td>A page shows greyed-out / "viewing only"</td>
+<td>You are a <strong>general manager</strong>. Use <strong>Requests &amp; approvals</strong> to propose changes.</td>
+</tr>
+<tr>
+<td>Warehouse shows only one brand</td>
+<td>Your account is assigned to that brand (email begins with the brand name).</td>
+</tr>
+<tr>
+<td>Receipt window closed before printing</td>
+<td>Sales counter → <strong>Recent receipts</strong> → reopen and <strong>Print receipt</strong>.</td>
+</tr>
+<tr>
+<td>"Pending sale" warning at the counter</td>
+<td>Retry the <strong>same</strong> sale. Never take payment again.</td>
+</tr>
+<tr>
+<td>"Stock reconciliation required"</td>
+<td>Stop selling that part. Tell the warehouse manager; stock needs a physical count and, if needed, a Stock adjustment request.</td>
+</tr>
+<tr>
+<td>Proof of delivery blocked</td>
+<td>Customer's M-Pesa payment is still pending. Press <strong>Prompt Customer to Pay</strong>, then <strong>Refresh payment status</strong>.</td>
+</tr>
+<tr>
+<td>"Enable HR records" / "Initialise payroll" / "Enable sales and finance records" buttons</td>
+<td>A one-time setup by the administrator. Ask them.</td>
+</tr>
+<tr>
+<td>VIN rejected</td>
+<td>It must be 17 characters; no I, O or Q. If it still fails, search manually in the Shop.</td>
+</tr>
+<tr>
+<td>Website is slow to load after being idle</td>
+<td>Reload the page and sign in again if asked.</td>
+</tr>
+<tr>
+<td>Database error / <code>/api/health</code> shows "unavailable"</td>
+<td>Tell IT: the database connection or setup (migrations) needs attention.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="33-things-that-are-not-connected-yet">3.3 Things that are not connected yet</h2>
+<p>So nobody is misled, these are <strong>not</strong> automatic at the moment:</p>
+<ul>
+<li><strong>Contact page form</strong> — "Send enquiry" does not send; use phone, email or WhatsApp.</li>
+<li><strong>Card and PayPal payments</strong> — selectable at checkout, but live charging needs provider credentials. M-Pesa online prompts also need provider credentials.</li>
+<li><strong>M-Pesa / card at the sales counter</strong> — you record a payment you have already verified; the system does not check it.</li>
+<li><strong>Refunds and payroll</strong> — approval records the decision only. No money is sent to customers or employees; statutory deductions are not remitted.</li>
+<li><strong>KRA eTIMS tax invoices</strong> — documents are internal records only.</li>
+<li><strong>Email (staff)</strong> — placeholder; no mailbox connected.</li>
+<li><strong>Branch counters</strong> — only the Main business location is active.</li>
+<li><strong>WhatsApp bookings</strong> — the website opens WhatsApp for the customer; bookings are <strong>not</strong> imported. Garage staff enter them manually.</li>
+<li><strong>Malware scanning</strong> of HR document uploads is not connected — upload only necessary files.</li>
+</ul>
+<h2 id="34-known-issues-for-the-administrator-it">3.4 Known issues (for the administrator / IT)</h2>
+<p>These were found while preparing this manual by running the site against a test database. They are application problems, not user mistakes.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Where</th>
+<th>What happens</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Requests &amp; approvals</td>
+<td>The <em>Submit an exception request</em> form has no dashboard card (the card list expects a heading called "New request").</td>
+<td>Staff cannot raise price, refund, stock, sale, order or garage correction requests from the screen.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Sales &amp; customer accounts (<code>/receivables</code>)</td>
+<td>All customer / quotation / invoice panels are hidden whenever the Finance workspace is shown.</td>
+<td>Quotations, invoices and credit limits can't be used. Finance functions work.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Temporary password</td>
+<td>The staff session check does not report the "must change password" flag to the page, so the <em>Change your temporary password</em> screen doesn't appear when a page is opened directly.</td>
+<td>Server still blocks actions, but staff may see confusing errors. Signing in through <em>Staff portal</em> works correctly.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Public pages at about 1366 px wide</td>
+<td>The page is slightly wider than the screen (about 1450 px).</td>
+<td>The account and cart icons at the far right of the header can be pushed off-screen. Zoom out (Ctrl and minus) or widen the window.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Sales counter and Garage jobs</td>
+<td>Some headings and notes are dark text on a dark background.</td>
+<td>Hard to read; the buttons and inputs still work.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Brand warehouses</td>
+<td>Brand logo images show as broken pictures.</td>
+<td>Cosmetic.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>New database setup</td>
+<td><code>pnpm db:migrate</code> fails on a brand-new empty database at the last step (<code>must_change_password</code> column used before it is created).</td>
+<td>Only affects setting up a fresh database, not the live one.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Contact page</td>
+<td>"Send enquiry" button does nothing.</td>
+<td>Use phone, email or WhatsApp.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Shilatech Auto Spares — Nairobi, Kenya · +254 721 802 597 · info@shilatechautospares.co.ke</em></p></body></html>
