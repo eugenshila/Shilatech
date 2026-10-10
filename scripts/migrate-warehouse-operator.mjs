@@ -1,7 +1,7 @@
 // Converts legacy picker/packer staff accounts into the warehouse_operator role.
 // Safe to run repeatedly: once converted, no picker/packer rows remain.
-import pg from 'pg';
 import { pathToFileURL } from 'node:url';
+import { createDatabasePool } from '../lib/db-env.mjs';
 
 export const LEGACY_ROLES = ['picker', 'packer'];
 
@@ -26,11 +26,7 @@ export async function migrateWarehouseOperator(db) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is required');
-  const pool = new pg.Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-  });
+  const pool = createDatabasePool();
   const client = await pool.connect();
   try {
     await client.query('BEGIN');

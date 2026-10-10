@@ -1,6 +1,5 @@
-import pg from 'pg';
-if(!process.env.DATABASE_URL)throw new Error('DATABASE_URL is required');
-const pool=new pg.Pool({connectionString:process.env.DATABASE_URL,ssl:process.env.NODE_ENV==='production'?{rejectUnauthorized:false}:false});
+import { createDatabasePool } from '../lib/db-env.mjs';
+const pool=createDatabasePool();
 try{
  const r=await pool.query(`SELECT p.part_no,p.name,p.stock AS website_available,s.physical_qty,s.reserved_qty,s.available_qty AS expected_available
  FROM products p JOIN location_stock s ON s.product_id=p.id JOIN business_locations l ON l.id=s.location_id
