@@ -5,6 +5,8 @@ Requires python-pptx (e.g. pip install python-pptx==1.0.2).
 Run from repository root: python scripts/generate_corporate_presentation.py
 The presentation describes capabilities in the checked-in application; cost estimates
 come from the stakeholder brief and are not provider quotes.
+Verify the result (text readability on every panel) with:
+python scripts/check_presentation_contrast.py
 """
 from pathlib import Path
 from io import BytesIO
@@ -36,6 +38,10 @@ BLANK = prs.slide_layouts[6]
 BG = '0B191C'; GREEN = '133B36'; GREEN2 = '1A4C42'; LIME = 'C5EB68'
 CREAM = 'F4F5F0'; WHITE = 'FFFFFF'; INK = '172A2B'; MUTED = '667978'
 PALE = 'E9EEE9'; RULE = 'D9E1DC'; AMBER = 'EFBA6A'; RED = '9E503F'
+# Aptos is the Microsoft 365 default but is missing from WPS Office and from older
+# PowerPoint builds, which then substitute a fallback font and reflow the layout.
+# Arial ships everywhere, so slides look the same in PowerPoint, LibreOffice and WPS.
+FONT = 'Arial'
 
 
 def rgb(h):
@@ -59,7 +65,7 @@ def box(slide, x, y, w, h, fill=None, line=None, radius=False, lw=1):
 
 
 def txt(slide, text, x, y, w, h, size=16, color=INK, bold=False,
-        align=PP_ALIGN.LEFT, font='Aptos', valign=MSO_ANCHOR.MIDDLE,
+        align=PP_ALIGN.LEFT, font=FONT, valign=MSO_ANCHOR.MIDDLE,
         margin=0, spacing=None):
     shape = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
     tf = shape.text_frame
@@ -70,13 +76,18 @@ def txt(slide, text, x, y, w, h, size=16, color=INK, bold=False,
     tf.vertical_anchor = valign
     for i, line in enumerate(text.split('\n')):
         p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-        p.text = line
         p.alignment = align
         p.space_after = Pt(spacing if spacing is not None else 0)
-        p.font.name = font
-        p.font.size = Pt(size)
-        p.font.bold = bold
-        p.font.color.rgb = rgb(color)
+        # Colour and typeface are written on the run, not only on the paragraph.
+        # PowerPoint inherits paragraph formatting when a run has no rPr of its own,
+        # but python-pptx cannot read an inherited colour back (it raises
+        # AttributeError), which silently disables the theme recolouring pass below.
+        run = p.add_run()
+        run.text = line
+        run.font.name = font
+        run.font.size = Pt(size)
+        run.font.bold = bold
+        run.font.color.rgb = rgb(color)
     return shape
 
 
@@ -145,7 +156,7 @@ notes(s, 'Presentation based on the checked-in Shilatech application and documen
 
 # 02 — proposition
 s = slide_base('EXECUTIVE VIEW', 2)
-title(s, 'THE OPPORTUNITY', 'Move from separate tasks to one connected workflow',
+title(s, 'THE OPPORTUNITY', 'Move from separate tasks to one workflow',
       'Make it easier to find parts, transact safely and coordinate the team behind every order.')
 card(s, 0.70, 2.62, 3.83, 3.24, '01', 'Find the right part',
      'Catalogue search, vehicle brands, VIN lookup foundation and customer accounts give buyers a clearer path to purchase.')
@@ -201,7 +212,8 @@ for x, heading, tagline, items in [
         box(s, x+0.31, yy+0.17, 0.12, 0.12, LIME)
         txt(s, item, x+0.61, yy, 4.89, 0.44, 14, INK)
 box(s, 6.50, 4.30, 0.55, 0.55, LIME, None, True)
-txt(s, '↔', 6.53, 4.38, 0.47, 0.31, 16, GREEN, True, PP_ALIGN.CENTER)
+# Dark glyph: this one sits on the bright lime accent square, not on a dark panel.
+txt(s, '↔', 6.53, 4.38, 0.47, 0.31, 16, BG, True, PP_ALIGN.CENTER)
 
 # 05 — stock discipline
 s = slide_base('INVENTORY & SALES', 5, True)
@@ -258,7 +270,7 @@ notes(s, 'docs/finance-analysis.md and docs/payroll-v1.md. Payroll v1 does not p
 
 # 08 — safeguards
 s = slide_base('CONTROLS', 8, True)
-title(s, 'BUILT FOR CONTROL', 'Operational safeguards worth preserving at launch',
+title(s, 'BUILT FOR CONTROL', 'Operational safeguards to preserve at launch',
       'A controlled go-live is as important as the software itself.', True)
 for i, (head, body) in enumerate([
     ('Access by role', 'Staff routes and actions check the signed-in user and permissions.'),
@@ -399,42 +411,59 @@ txt(s,'Budget assumptions, not vendor quotes. USD items use ~KES 130 / USD; conf
 notes(s, 'Budget is based on stakeholder-supplied estimates, not independently validated live provider quotations. The M-Pesa Daraja KES 0 setup/monthly claim is stakeholder-provided; independently verify onboarding eligibility and current Paybill/Till transaction tariff before contracting. Vercel $20≈KES2600, Supabase $25≈KES3250 and off-site bucket $5≈KES650 at an assumed 130 KES/USD; plans and usage may differ. Free SSL assumed. Checkout currently offers payment selection but live gateway charges remain disabled pending official credentials and integration (README.md).')
 
 # Apply the website's approved black / grass-green / white palette to every slide.
-# Recolor solid shapes and text separately so white cards become dark website panels,
-# while white lettering remains white. All text and diagrams stay editable in PowerPoint.
+# Solid fills, borders and text are recoloured in three separate passes so that the
+# light cards above become dark website panels while their lettering turns light.
+# All text and diagrams stay editable text boxes, not flattened pictures.
 panel_colors = {
     BG: '080A09', CREAM: '080A09', WHITE: '101610', PALE: '151915',
     GREEN: '101610', GREEN2: '243E18', LIME: '58B72A', RULE: '3B4935',
     '1B4B42': '151F15', '17342F': '151915',
 }
+# Every colour used for lettering above must appear here. Light greys that are
+# already readable on the dark theme map to themselves so that the completeness
+# check below still covers them.
 text_colors = {
-    BG: '080A09', INK: 'F6F7F5', WHITE: 'F6F7F5', MUTED: 'ABB5A7',
-    GREEN: '9DDD71', GREEN2: '90DC5D', LIME: '9AE367',
-    'CEDBD4': 'D8DDD7', 'B5C6BF': 'B8C6B7', '8FA39C': '9AA99B',
-    'BED0C4': 'B8C6B7', 'DCE7E0': 'DCE7E0', 'C9D8D1': 'C9D8D1',
+    BG: '080A09', INK: 'F6F7F5', WHITE: 'F6F7F5', MUTED: 'B7C1B3',
+    GREEN: '9DDD71', GREEN2: '96DD62', LIME: '9AE367',
+    'CEDBD4': 'D8DDD7', 'B5C6BF': 'C3D0C2', '8FA39C': 'A6B5A7',
+    'BED0C4': 'C3D0C2', 'DCE7E0': 'DCE7E0', 'C9D8D1': 'CFDCD2',
+    'C7D8CF': 'CFDCD2',
 }
-for slide in prs.slides:
+missing = []
+for i, slide in enumerate(prs.slides, start=1):
     for shape in slide.shapes:
         try:
             current = str(shape.fill.fore_color.rgb)
             if current in panel_colors:
                 shape.fill.fore_color.rgb = rgb(panel_colors[current])
+            elif current != 'FFFFFF':
+                missing.append((i, 'fill', current))
         except (AttributeError, TypeError):
-            pass  # picture and unfilled text boxes
+            pass  # pictures and unfilled text boxes have no solid fill
         try:
             current = str(shape.line.color.rgb)
             if current in panel_colors:
                 shape.line.color.rgb = rgb(panel_colors[current])
         except (AttributeError, TypeError):
-            pass
+            pass  # shapes drawn without a border
         if shape.has_text_frame:
             for para in shape.text_frame.paragraphs:
                 for run in para.runs:
                     try:
                         current = str(run.font.color.rgb)
-                        if current in text_colors:
-                            run.font.color.rgb = rgb(text_colors[current])
                     except (AttributeError, TypeError):
-                        pass
+                        raise RuntimeError(
+                            f'slide {i}: run {run.text!r} has no explicit colour; '
+                            'the theme pass cannot recolour inherited text')
+                    if current in text_colors:
+                        run.font.color.rgb = rgb(text_colors[current])
+                    else:
+                        missing.append((i, 'text', current, run.text[:40]))
+if missing:
+    raise SystemExit(
+        'Unmapped colours would keep the old light-theme palette and can render '
+        'as dark-on-dark. Add them to panel_colors or text_colors:\n  ' +
+        '\n  '.join(str(m) for m in missing))
 
 prs.core_properties.title = 'Shilatech Auto Spares | Corporate Platform Overview'
 prs.core_properties.subject = 'Platform capabilities, controlled launch and indicative monthly and yearly online costs'
