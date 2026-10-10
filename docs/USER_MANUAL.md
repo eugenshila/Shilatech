@@ -286,7 +286,7 @@ Staff tools are private. They never appear in search engines and cannot be opene
 2. Enter the **current / temporary password**, then the **new password** twice. The new password must be **at least 12 characters**.
 3. Press **Save my new password**. This signs out any other sessions on your account. You are then taken to your department.
 
-**Note:** the app only forces this screen when you sign in through `/staff-login`. Until the password is changed, the system refuses every staff action even if a page opens, so always sign in through *Staff portal*.
+**Note:** if you open any staff page directly while still on a temporary password, you will see the same *Change your temporary password* screen. Until the password is changed, the system refuses every staff action.
 
 **Signing out:** press **Sign out** at the right of the staff bar. Always sign out on shared computers.
 
@@ -338,7 +338,7 @@ Press a card to open only that function. Use the **Back to dashboard** button to
 | **Cashier** (`cashier`) | Sales counter, Requests & approvals, My HR; also uses *Sales & customer accounts* (`/receivables`) for their own documents |
 | **Garage staff** (`garage_staff`) | Garage jobs, Requests & approvals, My HR |
 | **Delivery driver** (`delivery_driver`) | Delivery (own jobs only), Requests & approvals, My HR |
-| **Finance** (`finance`) | Sales & customer accounts and Finance workspace only (`/receivables`, opens automatically after sign-in) |
+| **Finance** (`finance`) | Sales & customer accounts and Finance workspace (`/receivables`, opens automatically after sign-in), plus Requests & approvals (view everything, submit refund / correction requests) |
 | **HR** (`hr`) | My HR only (HR administration) |
 
 **Brand-assigned warehouse accounts.** A warehouse account whose email starts with a brand name — for example `jeep@…`, `mercedesbenz@…`, `volkswagen@…`, `rangerrover@…`, `volvo@…`, `ford@…` — can see and work on **that brand's storage area only**.
@@ -555,17 +555,26 @@ Nothing changes until the administrator applies it. Pending requests never chang
 |---|---|
 | Cashier | Price change, Refund, Sale correction (own counter sales only) |
 | Garage staff | Garage correction (cancel, reopen or correct a job) |
+| Finance | Refund, Sale correction (payment reference or customer name), Order correction (order or payment status) — for any sale or order |
 | Warehouse roles | Stock adjustment |
 | General manager, Administrator | All types, including Order correction |
 
 ### Submitting a request
 
-> **Known issue:** the *Submit an exception request* form has no card on the dashboard in the current version, so it can't be opened yet — see [3.4](#34-known-issues-for-the-administrator--it). The steps below describe how it is meant to work.
+**Finance** staff can open this page too (staff bar → **Requests & approvals**, or the link at the top of *Sales & customer accounts*). They can see every request and approved refund, and raise the request types in the table above. They cannot review, approve or record payouts.
 
-1. Open **Submit an exception request**.
+1. On the dashboard press the **Submit an exception request** card.
 2. Choose the **Request type**. Depending on the type, also choose the **Sale type** (POS or ONLINE), the **record**, the **field** to change, the new value (for example *Order status* or *Payment record status*).
 3. Write the **Reason and supporting reference** — explain the original error and the exact correction.
-4. Press **Submit for approval**.
+4. Press **Submit for approval**. Nothing changes yet — the request goes to the general manager for review and then to the administrator.
+
+![Submit an exception request (cashier: price change, refund or sale correction).](images/manual/72-approvals-new-request.jpg)
+
+*Submit an exception request (cashier: price change, refund or sale correction).*
+
+![The same form for the Finance role: refund, sale correction or order correction.](images/manual/73-finance-approvals.jpg)
+
+*The same form for the Finance role: refund, sale correction or order correction.*
 
 ### Following a request
 
@@ -597,7 +606,7 @@ Nothing changes until the administrator applies it. Pending requests never chang
 
 *Finance workspace → Profit & loss analysis.*
 
-**Open:** type `/receivables` after the website address (for example `https://your-site/receivables`). **Finance** staff land here automatically after signing in. There is **no link to it in the staff bar**, and this page shows the normal website header rather than the staff bar. Use the browser's Back button or return to `/staff` to leave.
+**Open:** type `/receivables` after the website address (for example `https://your-site/receivables`). **Finance** staff land here automatically after signing in. There is **no link to it in the staff bar** of other departments, and this page shows the normal website header rather than the staff bar. A **Requests & approvals** link at the top of the page opens the requests page (where Finance gets the full staff bar). Use the browser's Back button or return to `/staff` to leave.
 
 Roles: **administrator** and **finance** (everything), **cashier** (own documents and own sales performance), **general manager** (view).
 
@@ -823,14 +832,11 @@ These were found while preparing this manual by running the site against a test 
 
 | # | Where | What happens | Effect |
 |---|---|---|---|
-| 1 | Requests & approvals | The *Submit an exception request* form has no dashboard card (the card list expects a heading called "New request"). | Staff cannot raise price, refund, stock, sale, order or garage correction requests from the screen. |
-| 2 | Sales & customer accounts (`/receivables`) | All customer / quotation / invoice panels are hidden whenever the Finance workspace is shown. | Quotations, invoices and credit limits can't be used. Finance functions work. |
-| 3 | Temporary password | The staff session check does not report the "must change password" flag to the page, so the *Change your temporary password* screen doesn't appear when a page is opened directly. | Server still blocks actions, but staff may see confusing errors. Signing in through *Staff portal* works correctly. |
-| 4 | Public pages at about 1366 px wide | The page is slightly wider than the screen (about 1450 px). | The account and cart icons at the far right of the header can be pushed off-screen. Zoom out (Ctrl and minus) or widen the window. |
-| 5 | Sales counter and Garage jobs | Some headings and notes are dark text on a dark background. | Hard to read; the buttons and inputs still work. |
-| 6 | Brand warehouses | Brand logo images show as broken pictures. | Cosmetic. |
-| 7 | New database setup | `pnpm db:migrate` fails on a brand-new empty database at the last step (`must_change_password` column used before it is created). | Only affects setting up a fresh database, not the live one. |
-| 8 | Contact page | "Send enquiry" button does nothing. | Use phone, email or WhatsApp. |
+| 1 | Sales & customer accounts (`/receivables`) | All customer / quotation / invoice panels are hidden whenever the Finance workspace is shown. | Quotations, invoices and credit limits can't be used. Finance functions work. |
+| 2 | New database setup | `pnpm db:migrate` fails on a brand-new empty database at the last step (`must_change_password` column used before it is created). | Only affects setting up a fresh database, not the live one. |
+| 3 | Contact page | "Send enquiry" button does nothing. | Use phone, email or WhatsApp. |
+
+**Fixed in this version** (after being found while preparing the first draft of this manual): the *Submit an exception request* form could not be opened; the *Change your temporary password* screen did not appear when a page was opened directly; the header's account and cart icons were pushed off-screen at about 1366 px; dark-on-dark text on the Sales counter, Garage and other staff function pages; and broken brand logos on Brand warehouses. Finance can now view and raise requests under *Requests & approvals*.
 
 ---
 

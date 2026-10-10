@@ -286,7 +286,7 @@ img+em,p>em:only-child{display:block;text-align:center;color:#5a6657;font-size:1
 <li>Enter the <strong>current / temporary password</strong>, then the <strong>new password</strong> twice. The new password must be <strong>at least 12 characters</strong>.</li>
 <li>Press <strong>Save my new password</strong>. This signs out any other sessions on your account. You are then taken to your department.</li>
 </ol>
-<p><strong>Note:</strong> the app only forces this screen when you sign in through <code>/staff-login</code>. Until the password is changed, the system refuses every staff action even if a page opens, so always sign in through <em>Staff portal</em>.</p>
+<p><strong>Note:</strong> if you open any staff page directly while still on a temporary password, you will see the same <em>Change your temporary password</em> screen. Until the password is changed, the system refuses every staff action.</p>
 <p><strong>Signing out:</strong> press <strong>Sign out</strong> at the right of the staff bar. Always sign out on shared computers.</p>
 <p><strong>If you see "Welcome to the staff portal / available only to authorised staff":</strong> you are either not signed in or your role does not include that page. Press the button on the screen (<em>Staff sign in</em> or <em>Open my department</em>).</p>
 <p><strong>Customer accounts cannot sign in here.</strong> Staff accounts are created by the administrator — ask them if you do not have one.</p>
@@ -365,7 +365,7 @@ img+em,p>em:only-child{display:block;text-align:center;color:#5a6657;font-size:1
 </tr>
 <tr>
 <td><strong>Finance</strong> (<code>finance</code>)</td>
-<td>Sales &amp; customer accounts and Finance workspace only (<code>/receivables</code>, opens automatically after sign-in)</td>
+<td>Sales &amp; customer accounts and Finance workspace (<code>/receivables</code>, opens automatically after sign-in), plus Requests &amp; approvals (view everything, submit refund / correction requests)</td>
 </tr>
 <tr>
 <td><strong>HR</strong> (<code>hr</code>)</td>
@@ -533,6 +533,10 @@ A request made by the general manager goes straight to the administrator. A requ
 <td>Garage correction (cancel, reopen or correct a job)</td>
 </tr>
 <tr>
+<td>Finance</td>
+<td>Refund, Sale correction (payment reference or customer name), Order correction (order or payment status) — for any sale or order</td>
+</tr>
+<tr>
 <td>Warehouse roles</td>
 <td>Stock adjustment</td>
 </tr>
@@ -543,15 +547,17 @@ A request made by the general manager goes straight to the administrator. A requ
 </tbody>
 </table>
 <h3 id="submitting-a-request">Submitting a request</h3>
-<blockquote>
-<p><strong>Known issue:</strong> the <em>Submit an exception request</em> form has no card on the dashboard in the current version, so it can't be opened yet — see <a href="#34-known-issues-for-the-administrator--it">3.4</a>. The steps below describe how it is meant to work.</p>
-</blockquote>
+<p><strong>Finance</strong> staff can open this page too (staff bar → <strong>Requests &amp; approvals</strong>, or the link at the top of <em>Sales &amp; customer accounts</em>). They can see every request and approved refund, and raise the request types in the table above. They cannot review, approve or record payouts.</p>
 <ol>
-<li>Open <strong>Submit an exception request</strong>.</li>
+<li>On the dashboard press the <strong>Submit an exception request</strong> card.</li>
 <li>Choose the <strong>Request type</strong>. Depending on the type, also choose the <strong>Sale type</strong> (POS or ONLINE), the <strong>record</strong>, the <strong>field</strong> to change, the new value (for example <em>Order status</em> or <em>Payment record status</em>).</li>
 <li>Write the <strong>Reason and supporting reference</strong> — explain the original error and the exact correction.</li>
-<li>Press <strong>Submit for approval</strong>.</li>
+<li>Press <strong>Submit for approval</strong>. Nothing changes yet — the request goes to the general manager for review and then to the administrator.</li>
 </ol>
+<p><img alt="Submit an exception request (cashier: price change, refund or sale correction)." src="images/manual/72-approvals-new-request.jpg" /></p>
+<p><em>Submit an exception request (cashier: price change, refund or sale correction).</em></p>
+<p><img alt="The same form for the Finance role: refund, sale correction or order correction." src="images/manual/73-finance-approvals.jpg" /></p>
+<p><em>The same form for the Finance role: refund, sale correction or order correction.</em></p>
 <h3 id="following-a-request">Following a request</h3>
 <p><img alt="Requests &amp; decisions." src="images/manual/71-approvals-history.jpg" /></p>
 <p><em>Requests &amp; decisions.</em>
@@ -571,7 +577,7 @@ A request made by the general manager goes straight to the administrator. A requ
 <p><em>Finance workspace → Payment reports.</em></p>
 <p><img alt="Finance workspace → Profit &amp; loss analysis." src="images/manual/80f-finance-pnl.jpg" /></p>
 <p><em>Finance workspace → Profit &amp; loss analysis.</em></p>
-<p><strong>Open:</strong> type <code>/receivables</code> after the website address (for example <code>https://your-site/receivables</code>). <strong>Finance</strong> staff land here automatically after signing in. There is <strong>no link to it in the staff bar</strong>, and this page shows the normal website header rather than the staff bar. Use the browser's Back button or return to <code>/staff</code> to leave.</p>
+<p><strong>Open:</strong> type <code>/receivables</code> after the website address (for example <code>https://your-site/receivables</code>). <strong>Finance</strong> staff land here automatically after signing in. There is <strong>no link to it in the staff bar</strong> of other departments, and this page shows the normal website header rather than the staff bar. A <strong>Requests &amp; approvals</strong> link at the top of the page opens the requests page (where Finance gets the full staff bar). Use the browser's Back button or return to <code>/staff</code> to leave.</p>
 <p>Roles: <strong>administrator</strong> and <strong>finance</strong> (everything), <strong>cashier</strong> (own documents and own sales performance), <strong>general manager</strong> (view).</p>
 <p><strong>First use:</strong> if you see <strong>Enable sales and finance records</strong> or <strong>Enable extended finance</strong>, ask the administrator to press the button once (it only creates empty records).</p>
 <p>The page opens on <strong>Finance workspace — "Choose a function to continue."</strong> Press a card to open that function. Use <strong>Back to finance dashboard</strong> to return.</p>
@@ -909,53 +915,24 @@ A request made by the general manager goes straight to the administrator. A requ
 <tbody>
 <tr>
 <td>1</td>
-<td>Requests &amp; approvals</td>
-<td>The <em>Submit an exception request</em> form has no dashboard card (the card list expects a heading called "New request").</td>
-<td>Staff cannot raise price, refund, stock, sale, order or garage correction requests from the screen.</td>
-</tr>
-<tr>
-<td>2</td>
 <td>Sales &amp; customer accounts (<code>/receivables</code>)</td>
 <td>All customer / quotation / invoice panels are hidden whenever the Finance workspace is shown.</td>
 <td>Quotations, invoices and credit limits can't be used. Finance functions work.</td>
 </tr>
 <tr>
-<td>3</td>
-<td>Temporary password</td>
-<td>The staff session check does not report the "must change password" flag to the page, so the <em>Change your temporary password</em> screen doesn't appear when a page is opened directly.</td>
-<td>Server still blocks actions, but staff may see confusing errors. Signing in through <em>Staff portal</em> works correctly.</td>
-</tr>
-<tr>
-<td>4</td>
-<td>Public pages at about 1366 px wide</td>
-<td>The page is slightly wider than the screen (about 1450 px).</td>
-<td>The account and cart icons at the far right of the header can be pushed off-screen. Zoom out (Ctrl and minus) or widen the window.</td>
-</tr>
-<tr>
-<td>5</td>
-<td>Sales counter and Garage jobs</td>
-<td>Some headings and notes are dark text on a dark background.</td>
-<td>Hard to read; the buttons and inputs still work.</td>
-</tr>
-<tr>
-<td>6</td>
-<td>Brand warehouses</td>
-<td>Brand logo images show as broken pictures.</td>
-<td>Cosmetic.</td>
-</tr>
-<tr>
-<td>7</td>
+<td>2</td>
 <td>New database setup</td>
 <td><code>pnpm db:migrate</code> fails on a brand-new empty database at the last step (<code>must_change_password</code> column used before it is created).</td>
 <td>Only affects setting up a fresh database, not the live one.</td>
 </tr>
 <tr>
-<td>8</td>
+<td>3</td>
 <td>Contact page</td>
 <td>"Send enquiry" button does nothing.</td>
 <td>Use phone, email or WhatsApp.</td>
 </tr>
 </tbody>
 </table>
+<p><strong>Fixed in this version</strong> (after being found while preparing the first draft of this manual): the <em>Submit an exception request</em> form could not be opened; the <em>Change your temporary password</em> screen did not appear when a page was opened directly; the header's account and cart icons were pushed off-screen at about 1366 px; dark-on-dark text on the Sales counter, Garage and other staff function pages; and broken brand logos on Brand warehouses. Finance can now view and raise requests under <em>Requests &amp; approvals</em>.</p>
 <hr />
 <p><em>Shilatech Auto Spares — Nairobi, Kenya · +254 721 802 597 · info@shilatechautospares.co.ke</em></p></body></html>
