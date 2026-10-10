@@ -17,6 +17,13 @@ export default function StaffBrandBackground(){
   .functionView form,.functionView .counterCard,.functionView .warehousePanel,.functionView .panel,.functionView .staffRecord{
    background-color:rgba(8,15,8,.94);
   }
+  /* Light text on the dark function view: the shared staff styles default to dark navy/green text for light pages. */
+  .functionView .counterShell,.functionView .hrPage{color:#e8f1e4}
+  .functionView .counterShell :is(h1,h2,h3,h4,legend),.functionView .staffRecord h3,.functionView .panel :is(h2,h3,h4){color:#e8f1e4}
+  .functionView .staffForm label,.functionView .counterShell label{color:#dbe8d5}
+  .functionView .staffHint,.functionView .counterShell small{color:#b4c5ad}
+  .functionView .counterShell button:disabled{opacity:.75}
+  .functionView .counterShell button small{color:#51685b}
   @media(max-width:640px){
    #employee-dashboard,div.functionView{background-size:cover,cover;background-position:center,center}
    #employee-dashboard:has(.backLink){background-size:cover,cover;background-position:center,center}

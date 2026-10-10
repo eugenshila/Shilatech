@@ -9,7 +9,7 @@ const emptyReturn={productId:'',quantity:'',reason:'Factory defect',defectType:'
 const staffRoles=new Set(['admin','general_manager','warehouse_manager','warehouse_clerk','picker','packer','dispatch','finance','auditor']);
 const brands=['Jeep','Mercedes-Benz','Volkswagen','Range Rover','Volvo','Ford'];
 const categories=['Engine','Brakes','Suspension','Electrical','Body','Interior','Cooling','Transmission','Filters','Steering','Other'];
-const brandLogos={Jeep:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Jeep_logo.svg','Mercedes-Benz':'https://commons.wikimedia.org/wiki/Special:Redirect/file/Mercedes_benz_logo1989.png',Volkswagen:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Volkswagen_logo.png','Range Rover':'https://commons.wikimedia.org/wiki/Special:Redirect/file/Land_Rover_logo_2.jpg',Volvo:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Volvo-iron-mark-2021.jpg',Ford:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Ford_Logo.png'};
+const brandLogos={Jeep:'/images/brand-logos/jeep-black.jpg','Mercedes-Benz':'/images/brand-logos/mercedes-benz-black.png',Volkswagen:'/images/brand-logos/volkswagen-black.png','Range Rover':'/images/brand-logos/land-rover-black.png',Volvo:'/images/brand-logos/volvo-black.png',Ford:'/images/brand-logos/ford.png'};
 const brandSlugs={Jeep:'jeep','Mercedes-Benz':'mercedes-benz',Volkswagen:'volkswagen','Range Rover':'range-rover',Volvo:'volvo',Ford:'ford'};
 const brandFromSlug=slug=>Object.keys(brandSlugs).find(name=>brandSlugs[name]===String(slug||'').toLowerCase())||'';
 
