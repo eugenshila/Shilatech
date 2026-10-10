@@ -13,14 +13,16 @@ export default async function handler(req,res){
  try{
   if(req.method==='GET'){
    const management=['admin','general_manager'].includes(user.role);
-   const requests=await c.query(`SELECT r.*,u.name requester_name,m.name reviewer_name,a.name approver_name FROM staff_requests r JOIN customers u ON u.id=r.requested_by LEFT JOIN customers m ON m.id=r.reviewed_by LEFT JOIN customers a ON a.id=r.approved_by WHERE ($1 OR r.requested_by=$2) ORDER BY r.created_at DESC LIMIT 150`,[management,user.id]);
-   const refunds=await c.query(`SELECT f.*,s.sale_no,o.order_no FROM approved_refunds f JOIN staff_requests r ON r.id=f.request_id LEFT JOIN counter_sales s ON s.id=f.sale_id LEFT JOIN orders o ON o.id=f.order_id WHERE ($1 OR r.requested_by=$2) ORDER BY f.created_at DESC LIMIT 100`,[management,user.id]);
+   // Finance can read every request and approved refund, and look up any sale or order for its own requests.
+   const seeAll=management||user.role==='finance';
+   const requests=await c.query(`SELECT r.*,u.name requester_name,m.name reviewer_name,a.name approver_name FROM staff_requests r JOIN customers u ON u.id=r.requested_by LEFT JOIN customers m ON m.id=r.reviewed_by LEFT JOIN customers a ON a.id=r.approved_by WHERE ($1 OR r.requested_by=$2) ORDER BY r.created_at DESC LIMIT 150`,[seeAll,user.id]);
+   const refunds=await c.query(`SELECT f.*,s.sale_no,o.order_no FROM approved_refunds f JOIN staff_requests r ON r.id=f.request_id LEFT JOIN counter_sales s ON s.id=f.sale_id LEFT JOIN orders o ON o.id=f.order_id WHERE ($1 OR r.requested_by=$2) ORDER BY f.created_at DESC LIMIT 100`,[seeAll,user.id]);
    // The request form offers only records this department can reference.
    const kinds=allowedRequestKinds(user.role),targets={};
    if(kinds.includes('PRICE_CHANGE'))targets.products=(await c.query('SELECT id,part_no,name,price_kes FROM products WHERE active ORDER BY name LIMIT 1000')).rows;
    if(kinds.includes('STOCK_ADJUSTMENT'))targets.batches=(await c.query(`SELECT b.id,b.batch_no,b.available_qty,p.part_no,w.name warehouse FROM inventory_batches b JOIN products p ON p.id=b.product_id JOIN warehouses w ON w.id=b.warehouse_id WHERE w.location_id=$1 AND w.active AND w.storage_type='BRAND' AND b.status IN ('AVAILABLE','DEPLETED') ORDER BY b.received_at DESC LIMIT 1000`,[user.location_id])).rows;
-   if(kinds.includes('SALE_CORRECTION'))targets.sales=(await c.query(`SELECT id,sale_no,total_kes,customer_name FROM counter_sales WHERE location_id=$1 AND ($2 OR cashier_id=$3) ORDER BY created_at DESC LIMIT 1000`,[user.location_id,management,user.id])).rows;
-   if(management)targets.orders=(await c.query('SELECT id,order_no,total_kes,status,payment_status FROM orders ORDER BY created_at DESC LIMIT 1000')).rows;
+   if(kinds.includes('SALE_CORRECTION'))targets.sales=(await c.query(`SELECT id,sale_no,total_kes,customer_name FROM counter_sales WHERE location_id=$1 AND ($2 OR cashier_id=$3) ORDER BY created_at DESC LIMIT 1000`,[user.location_id,seeAll,user.id])).rows;
+   if(seeAll)targets.orders=(await c.query('SELECT id,order_no,total_kes,status,payment_status FROM orders ORDER BY created_at DESC LIMIT 1000')).rows;
    if(kinds.includes('GARAGE_CORRECTION'))targets.jobs=(await c.query('SELECT id,job_no,registration,status FROM garage_jobs WHERE location_id=$1 ORDER BY created_at DESC LIMIT 1000',[user.location_id])).rows;
    return res.json({user:{id:user.id,name:user.name,role:user.role},kinds,requests:requests.rows,refunds:refunds.rows,targets});
   }

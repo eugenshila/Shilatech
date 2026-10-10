@@ -1,4 +1,5 @@
 import {useEffect,useRef,useState} from 'react';
+import Link from 'next/link';
 import Layout from '../components/Layout';
 import FinanceLedger from '../components/FinanceLedger';
 import FinanceAnalysis from '../components/FinanceAnalysis';
@@ -16,6 +17,7 @@ export default function Receivables(){
  const choices=data?.clients?.map(c=><option key={c.id} value={c.id}>{c.name} · credit limit {money(c.credit_limit_kes)}</option>);
  return <Layout title="Sales & finance | Shilatech" noindex><section className="counterShell receivables"><h1>Sales &amp; customer accounts</h1>
  <p>Quotations, commercial invoices and recorded collections. This register does not reserve or dispatch stock, create POS sales, charge customers or transmit invoices to KRA.</p><p><a href="https://www.kra.go.ke/online-services/etims" target="_blank" rel="noreferrer">eTIMS integration is required separately</a>. Use sample transactions while testing. Do not add these figures to POS sales without reconciliation.</p>
+ {role&&<p><Link href="/approvals">Requests &amp; approvals</Link> — view staff requests and approved refunds, or submit a refund or correction request.</p>}
  {error&&<p role="alert">{error}</p>}{notice&&<p role="status">{notice}</p>}
  {!data&&<p>Loading finance access…</p>}
  {data&&!data.ready&&<article className="panel"><h2>Enable sales and finance records</h2><p>Creates empty records only; no stock, salaries or existing sales are changed.</p>{role==='admin'?<button disabled={busy} onClick={()=>send({action:'SETUP'})}>Initialise sales and finance</button>:<p>Ask the administrator to initialise this module.</p>}</article>}

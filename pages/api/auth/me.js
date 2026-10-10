@@ -7,10 +7,10 @@ export default async function handler(req, res) {
   const session = await readSession(req);
   if (!session) return res.status(401).json({ user: null });
   try {
-    const result = await query('SELECT id,name,email,phone,role FROM customers WHERE id=$1 LIMIT 1', [session.sub]);
+    const result = await query('SELECT id,name,email,phone,role,must_change_password FROM customers WHERE id=$1 LIMIT 1', [session.sub]);
     const user = result.rows[0] || null;
     if (!user) return res.status(401).json({ user: null });
-    res.status(200).json({ user });
+    res.status(200).json({ user: { ...user, mustChangePassword: Boolean(user.must_change_password) } });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Could not load account.' });
