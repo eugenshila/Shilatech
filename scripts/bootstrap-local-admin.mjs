@@ -1,5 +1,5 @@
 import pg from 'pg';
-import nextEnv from '@next/env';
+import { loadDatabaseUrl } from '../lib/db-env.mjs';
 import { assertLocalDatabase, createLocalAdministrator } from '../lib/local-admin.mjs';
 
 // Run only on your own laptop, after db:migrate. Never store the printed password.
@@ -10,7 +10,7 @@ if (!email) {
 } else {
   try {
     if (process.env.NODE_ENV === 'production') throw new Error('Local administrator setup is disabled in production.');
-    nextEnv.loadEnvConfig(process.cwd(), true); // Unlike migration scripts, this reads .env.local.
+    loadDatabaseUrl();
     assertLocalDatabase(process.env.DATABASE_URL);
     const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, ssl: false });
     try {

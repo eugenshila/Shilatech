@@ -1,5 +1,5 @@
-import pg from 'pg';
-const {Pool}=pg;const pool=new Pool({connectionString:process.env.DATABASE_URL,ssl:process.env.NODE_ENV==='production'?{rejectUnauthorized:false}:false});
+import { createDatabasePool } from '../lib/db-env.mjs';
+const pool=createDatabasePool();
 const sql=`
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_service_code TEXT;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_eta TEXT;
