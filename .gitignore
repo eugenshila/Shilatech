@@ -15,3 +15,11 @@ npm-debug.log*
 *.bak
 *.wbk
 *.asd
+
+# Finished document exports are generated from the editable sources in docs/
+# (Markdown/HTML and scripts/generate_corporate_presentation.py) and are kept out of Git.
+docs/*.pptx
+docs/*.docx
+docs/*.pdf
+**/*.pptx
+**/*.docx
