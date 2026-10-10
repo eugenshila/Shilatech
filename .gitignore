@@ -8,4 +8,10 @@ __pycache__/
 .env.*.local
 npm-debug.log*
 
-
+# Office/WPS lock and autosave files
+~$*
+.~lock.*#
+*.tmp
+*.bak
+*.wbk
+*.asd
