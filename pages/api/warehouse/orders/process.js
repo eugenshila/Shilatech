@@ -1,12 +1,14 @@
 import { getPool } from '../../../../lib/db';
 import { requireWarehouseStaff } from '../../../../lib/warehouse-auth';
 
+// One warehouse operator runs the whole chain. Dispatch and driver accounts remain valid for handover.
+const OPERATOR_ROLES=['warehouse_manager','warehouse_operator','dispatch'];
 const actionRoles={
-  START_PICKING:['warehouse_manager','picker'],
-  PICK_ITEM:['warehouse_manager','picker'],
-  START_PACKING:['warehouse_manager','packer'],
-  READY_DISPATCH:['warehouse_manager','packer','dispatch'],
-  DISPATCH:['warehouse_manager','dispatch']
+  START_PICKING:OPERATOR_ROLES,
+  PICK_ITEM:OPERATOR_ROLES,
+  START_PACKING:OPERATOR_ROLES,
+  READY_DISPATCH:OPERATOR_ROLES,
+  DISPATCH:OPERATOR_ROLES
 };
 
 export default async function handler(req,res){

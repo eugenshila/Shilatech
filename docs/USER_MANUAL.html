@@ -336,12 +336,8 @@ img+em,p>em:only-child{display:block;text-align:center;color:#5a6657;font-size:1
 <td>Warehouse (receiving, imports, returns, preorders), Requests &amp; approvals, My HR</td>
 </tr>
 <tr>
-<td><strong>Picker</strong> (<code>picker</code>)</td>
-<td>Warehouse (start picking, scan &amp; pick), Requests &amp; approvals, My HR</td>
-</tr>
-<tr>
-<td><strong>Packer</strong> (<code>packer</code>)</td>
-<td>Warehouse (start packing, ready for dispatch), Requests &amp; approvals, My HR</td>
+<td><strong>Warehouse operator</strong> (<code>warehouse_operator</code>)</td>
+<td>Warehouse: the whole fulfilment chain on one card (pick, pack, dispatch, deliver with recipient signature and M-Pesa prompt), Requests &amp; approvals, My HR</td>
 </tr>
 <tr>
 <td><strong>Dispatch</strong> (<code>dispatch</code>)</td>
@@ -379,19 +375,20 @@ img+em,p>em:only-child{display:block;text-align:center;color:#5a6657;font-size:1
 <p><em>Warehouse dashboard (warehouse manager).</em></p>
 <p><img alt="Brand warehouses: one storage area per vehicle brand." src="images/manual/42-wh-brand-storage.jpg" /></p>
 <p><em>Brand warehouses: one storage area per vehicle brand.</em></p>
-<p><strong>Open:</strong> staff bar → <strong>Warehouse</strong> (<code>/warehouse</code>). Roles: warehouse manager, clerk, picker, packer, dispatch, auditor; administrator and general manager (view only).</p>
+<p><strong>Open:</strong> staff bar → <strong>Warehouse</strong> (<code>/warehouse</code>). Roles: warehouse manager, warehouse operator, clerk, dispatch, auditor; administrator and general manager (view only).</p>
 <p>The warehouse has <strong>six brand storage areas</strong> — one for each vehicle brand. Parts are automatically assigned to the correct brand zone. Press a brand tile to focus on that brand; press <strong>← Back to all warehouses</strong> to return.</p>
 <p>Functions (cards):</p>
 <h3 id="customer-order-fulfilment-queue-pick-pack-dispatch">Customer order fulfilment queue — <em>Pick, pack &amp; dispatch</em></h3>
 <p><img alt="Fulfilment queue: Start picking → Scan &amp; pick → Start packing → Ready for dispatch → Mark dispatched." src="images/manual/41-wh-fulfilment.jpg" /></p>
 <p><em>Fulfilment queue: Start picking → Scan &amp; pick → Start packing → Ready for dispatch → Mark dispatched.</em>
-Handles every website order from picking through dispatch.</p>
+Handles every website order from picking through delivery, on one card. A warehouse operator does the whole chain; dispatch and warehouse manager accounts can also run any step.</p>
 <ol>
-<li><strong>Start picking</strong> (picker / warehouse manager).</li>
+<li><strong>Start picking</strong> (warehouse operator / warehouse manager).</li>
 <li><strong>Scan &amp; pick</strong> each item. The barcode scan is checked and stock is issued using <strong>FIFO</strong> (oldest stock first).</li>
-<li><strong>Start packing</strong> (packer / warehouse manager).</li>
-<li><strong>Ready for dispatch</strong> (packer, dispatch or warehouse manager).</li>
-<li><strong>Mark dispatched</strong> (dispatch or warehouse manager).</li>
+<li><strong>Start packing</strong> once every item is picked.</li>
+<li><strong>Ready for dispatch</strong> once packed. This creates the delivery job.</li>
+<li><strong>Mark dispatched</strong>. For M-Pesa orders, the payment panel appears on the card: use <strong>Prompt customer to pay</strong>, then <strong>Refresh payment status</strong>.</li>
+<li><strong>Customer signed — mark Delivered</strong>. Enter the recipient name, capture the customer's signature, add optional notes and submit. Delivery is blocked until an M-Pesa order shows as paid.</li>
 </ol>
 <h3 id="receive-stock-receive-parts">Receive stock — <em>Receive parts</em></h3>
 <p><img alt="Receive stock form." src="images/manual/43-wh-receive.jpg" /></p>

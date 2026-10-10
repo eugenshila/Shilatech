@@ -13,10 +13,10 @@ export default async function handler(req,res){
       query(`SELECT id,part_no,name,brand,stock,barcode FROM products WHERE active=TRUE ORDER BY brand,name LIMIT 300`),
       query(`SELECT id,code,name,address,brand_code,storage_type FROM warehouses WHERE active=TRUE ORDER BY CASE WHEN storage_type='BRAND' THEN 0 ELSE 1 END,name`),
       query(`SELECT w.id,w.code,w.name,w.brand_code,COALESCE(SUM(b.available_qty),0)::int AS units_on_hand,COUNT(b.id) FILTER (WHERE b.available_qty>0)::int AS active_batches FROM warehouses w LEFT JOIN inventory_batches b ON b.warehouse_id=w.id WHERE w.active=TRUE AND w.storage_type='BRAND' GROUP BY w.id,w.code,w.name,w.brand_code ORDER BY w.name`),
-      query(`SELECT wo.id,wo.job_no,wo.status,wo.priority,wo.created_at,o.order_no,o.customer_name,o.phone,o.delivery_zone,o.total_kes,o.payment_method,o.payment_status,
+      query(`SELECT wo.id,wo.job_no,wo.status,wo.priority,wo.created_at,o.order_no,o.customer_name,o.phone,o.delivery_zone,o.total_kes,o.payment_method,o.payment_status,o.delivery_address,dj.id AS delivery_id,dj.status AS delivery_status,dj.recipient_name,
         COALESCE(json_agg(json_build_object('id',wi.id,'brand',wi.brand,'partNo',wi.part_no,'name',wi.name,'quantity',wi.quantity,'pickedQty',wi.picked_qty,'status',wi.status,'storageArea',w.name) ORDER BY wi.id) FILTER (WHERE wi.id IS NOT NULL),'[]'::json) AS items
-        FROM warehouse_orders wo JOIN orders o ON o.id=wo.order_id LEFT JOIN warehouse_order_items wi ON wi.warehouse_order_id=wo.id LEFT JOIN warehouses w ON w.id=wi.storage_area_id
-        WHERE wo.status NOT IN ('COMPLETED','CANCELLED') GROUP BY wo.id,o.id ORDER BY wo.created_at ASC LIMIT 50`)
+        FROM warehouse_orders wo JOIN orders o ON o.id=wo.order_id LEFT JOIN warehouse_order_items wi ON wi.warehouse_order_id=wo.id LEFT JOIN warehouses w ON w.id=wi.storage_area_id LEFT JOIN delivery_jobs dj ON dj.warehouse_order_id=wo.id
+        WHERE wo.status NOT IN ('COMPLETED','CANCELLED') GROUP BY wo.id,o.id,dj.id ORDER BY wo.created_at ASC LIMIT 50`)
     ]);
     const brand=session.assignedBrand;
     const onlyBrand=rows=>brand?rows.filter(r=>r.brand===brand||r.brand_code===brand||(r.items||[]).some(i=>i.brand===brand)):rows;

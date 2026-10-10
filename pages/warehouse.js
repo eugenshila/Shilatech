@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../components/Layout';
+import FulfilmentQueue from '../components/FulfilmentQueue';
 
 const emptyReceipt={productId:'',warehouseId:'',quantity:'',batchNo:'',supplierName:'',supplierRef:'',binCode:'',unitCostKes:''};
 const emptyNewPart={name:'',brand:'Jeep',category:'Engine',partNo:'',partType:'Aftermarket',priceKes:'',years:'',models:'',engine:'',imageUrl:''};
 const emptyPreorder={productId:'',customerName:'',phone:'',email:'',quantity:'',expectedAt:'',notes:''};
 const emptyReturn={productId:'',quantity:'',reason:'Factory defect',defectType:'',disposition:'QUARANTINE',notes:''};
-const staffRoles=new Set(['admin','general_manager','warehouse_manager','warehouse_clerk','picker','packer','dispatch','finance','auditor']);
+const staffRoles=new Set(['admin','general_manager','warehouse_manager','warehouse_clerk','warehouse_operator','dispatch','finance','auditor']);
 const brands=['Jeep','Mercedes-Benz','Volkswagen','Range Rover','Volvo','Ford'];
 const categories=['Engine','Brakes','Suspension','Electrical','Body','Interior','Cooling','Transmission','Filters','Steering','Other'];
 const brandLogos={Jeep:'/images/brand-logos/jeep-black.jpg','Mercedes-Benz':'/images/brand-logos/mercedes-benz-black.png',Volkswagen:'/images/brand-logos/volkswagen-black.png','Range Rover':'/images/brand-logos/land-rover-black.png',Volvo:'/images/brand-logos/volvo-black.png',Ford:'/images/brand-logos/ford.png'};
@@ -30,6 +31,7 @@ export default function Warehouse(){
   const [csvRows,setCsvRows]=useState([]);
   const [csvName,setCsvName]=useState('');
   const [importMessage,setImportMessage]=useState('');
+  const [notice,setNotice]=useState('');
 
   async function load(){setError('');try{const r=await fetch('/api/warehouse/overview',{cache:'no-store'});const j=await r.json();if(r.status===401||r.status===403){setAuth('login');setData(null);return;}if(!r.ok)throw new Error(j.error||'Could not load warehouse.');setData(j);setAuth('staff');}catch(e){setError(e.message);}}
   useEffect(()=>{(async()=>{try{const r=await fetch('/api/auth/me');const j=await r.json();if(r.ok&&staffRoles.has(j.user?.role)){setAuth('staff');await load();}else setAuth('login');}catch{setAuth('login');}})();},[]);
@@ -66,7 +68,9 @@ export default function Warehouse(){
   async function chooseCsv(e){setError('');setImportMessage('');const file=e.target.files?.[0];if(!file)return;try{const rows=parseCsv(await file.text());setCsvRows(rows);setCsvName(file.name);setImportMessage(`${rows.length} part row${rows.length===1?'':'s'} ready to import.`);}catch(err){setCsvRows([]);setCsvName('');setError(err.message);}}
   async function importCsv(){setBusy(true);setError('');setImportMessage('');try{const r=await fetch('/api/warehouse/import-csv',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rows:csvRows})});const j=await r.json();if(!r.ok)throw new Error(j.error||'CSV import failed.');setImportMessage(`${j.imported} rows imported successfully. ${j.createdProducts} new parts created and published online.`);setCsvRows([]);setCsvName('');await load();}catch(err){setError(err.message);}finally{setBusy(false);}}
 
-  async function send(url,body,reset){setBusy(true);setError('');try{const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw new Error(j.error||'Action failed.');if(reset)reset();await load();}catch(e){setError(e.message);}finally{setBusy(false);}}
+  async function send(url,body,reset){setBusy(true);setError('');try{const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw new Error(j.error||'Action failed.');if(reset)reset();await load();return true;}catch(e){setError(e.message);return false;}finally{setBusy(false);}}
+  async function promptPayment(job){setBusy(true);setError('');setNotice('');try{const r=await fetch('/api/payments/mpesa/stk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({deliveryId:job.delivery_id,phone:job.phone})});const j=await r.json();if(!r.ok)throw new Error(j.error||'Could not send payment prompt.');setNotice(`M-Pesa prompt sent to ${job.phone}. Ask the customer to complete payment, then tap Refresh payment status.`);}catch(e){setError(e.message);}finally{setBusy(false);}}
+  async function deliverOrder(payload,reset){setNotice('');const ok=await send('/api/delivery/complete',payload,reset);if(ok)setNotice('Proof of delivery saved. The order is marked delivered.');}
   async function processOrder(jobId,action,itemId=null){const body={jobId,action};if(itemId){body.itemId=itemId;body.barcode=scan[itemId]||'';}await send('/api/warehouse/orders/process',body,()=>{if(itemId)setScan(s=>({...s,[itemId]:''}));});}
   function selectReceiptProduct(value){const p=products.find(x=>String(x.id)===String(value));const area=brandAreas.find(w=>w.brand_code===p?.brand);setReceipt({...receipt,productId:value,warehouseId:area?String(area.id):''});}
   function setNewPartBrand(brand){const area=brandAreas.find(w=>w.brand_code===brand);setNewPart({...newPart,brand});setReceipt({...receipt,warehouseId:area?String(area.id):''});}
@@ -83,19 +87,13 @@ export default function Warehouse(){
   return <Layout>
     <section className="pageHero compactHero"><div className="container warehouseHeroRow"><div><span className="eyebrow">PRIVATE STAFF PORTAL</span><h1>{activeBrand?`${activeBrand} Warehouse`:'Warehouse & 3PL Operations'}</h1><p>{activeBrand?`Dedicated ${activeBrand} parts, FIFO inventory, receiving, preorders and returns.`:'Customer orders, FIFO inventory, brand-separated storage, barcodes, preorders and returns.'}</p></div><button className="warehouseLogout" onClick={logout}>Sign out</button></div></section>
     <section className="section warehousePage"><div className="container">
-      {error&&<div className="warehouseAlert">{error}</div>}
+      {error&&<div className="warehouseAlert">{error}</div>}{notice&&<div className="storageAssignment"><b>Done</b><span>{notice}</span></div>}
       {!data&&!error&&<p>Loading warehouse…</p>}
       {data&&<>
         <div className="warehouseMetrics"><div><span>Units on hand</span><strong>{activeBrand?activeSummary?.units_on_hand||0:data.metrics.units_on_hand}</strong></div><div><span>Active FIFO batches</span><strong>{activeBrand?activeSummary?.active_batches||0:data.metrics.active_batches}</strong></div><div><span>Online orders waiting</span><strong>{visibleOrders.length}</strong></div><div><span>Open preorders</span><strong>{visiblePreorders.length}</strong></div></div>
 
-        <div className="warehousePanel warehouseOrderQueue"><div className="warehousePanelHead"><div><span className="eyebrow">ONLINE SALES → WAREHOUSE</span><h2>Customer order fulfilment queue</h2><p>Process every website order from picking through dispatch. Barcode scans are checked before FIFO stock is issued.</p></div></div>
-          {visibleOrders.length?<div className="warehouseOrderGrid">{visibleOrders.map(o=><div className="warehouseOrderCard" key={o.id}>
-            <div className="warehouseOrderTop"><div><b>{o.job_no}</b><span>Order {o.order_no}</span></div><strong>{o.status}</strong></div>
-            <div className="warehouseCustomer"><b>{o.customer_name}</b><span>{o.phone} · {o.delivery_zone}</span><span>{o.payment_method} · {o.payment_status}</span></div>
-            <div className="warehouseOrderItems">{(o.items||[]).filter(i=>!activeBrand||i.brand===activeBrand).map(i=><div key={i.id} className="warehousePickRow"><div><b>{i.brand} · {i.partNo}</b><span>{i.name}</span><small>{i.storageArea||'Storage area pending'}</small></div><div className="warehousePickControl"><strong>{i.pickedQty}/{i.quantity}</strong>{o.status==='PICKING'&&i.status!=='PICKED'&&<><input aria-label={`Scan barcode for ${i.partNo}`} placeholder="Scan barcode / part no." value={scan[i.id]||''} onChange={e=>setScan({...scan,[i.id]:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();processOrder(o.id,'PICK_ITEM',i.id);}}}/><button disabled={busy||!(scan[i.id]||'').trim()} onClick={()=>processOrder(o.id,'PICK_ITEM',i.id)}>Scan & pick</button></>}</div></div>)}</div>
-            <div className="warehouseFlow"><span className={['PICKING','PICKED','PACKING','READY_DISPATCH'].includes(o.status)?'done':''}>Picking</span><span className={['PICKED','PACKING','READY_DISPATCH'].includes(o.status)?'done':''}>Picked</span><span className={['PACKING','READY_DISPATCH'].includes(o.status)?'done':''}>Packing</span><span className={o.status==='READY_DISPATCH'?'done':''}>Dispatch ready</span></div>
-            <div className="warehouseOrderActions">{o.status==='NEW'&&<button disabled={busy} onClick={()=>processOrder(o.id,'START_PICKING')}>Start picking</button>}{o.status==='PICKED'&&<button disabled={busy} onClick={()=>processOrder(o.id,'START_PACKING')}>Start packing</button>}{o.status==='PACKING'&&<button disabled={busy} onClick={()=>processOrder(o.id,'READY_DISPATCH')}>Ready for dispatch</button>}{o.status==='READY_DISPATCH'&&<button disabled={busy} onClick={()=>processOrder(o.id,'DISPATCH')}>Mark dispatched</button>}</div>
-          </div>)}</div>:<div className="emptyWarehouseOrders">No online orders waiting for warehouse processing.</div>}
+        <div className="warehousePanel warehouseOrderQueue"><div className="warehousePanelHead"><div><span className="eyebrow">ONLINE SALES → WAREHOUSE</span><h2>Customer order fulfilment queue</h2><p>Process every website order from picking through delivery on one card. Barcode scans are checked before FIFO stock is issued, and delivery needs M-Pesa payment confirmed plus the customer's signature.</p></div></div>
+          <FulfilmentQueue orders={visibleOrders} activeBrand={activeBrand} busy={busy} scan={scan} setScan={setScan} onProcess={processOrder} onPromptPayment={promptPayment} onRefresh={()=>load()} onDeliver={deliverOrder}/>
         </div>
 
         <div className="brandStorageHead"><div><span className="eyebrow">DEDICATED STORAGE</span><h2>Separate storage area for every vehicle brand</h2><p>Parts are automatically assigned to the correct brand zone.</p></div></div>

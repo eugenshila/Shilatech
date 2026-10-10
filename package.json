@@ -10,11 +10,11 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start -p ${PORT:-3000}",
-    "test": "node --test tests/*.test.mjs",
+    "test": "node --test tests/*.test.mjs tests/*.test.cjs",
     "admin:bootstrap:local": "node scripts/bootstrap-local-admin.mjs",
     "db:migrate:pos": "node scripts/migrate-locations-pos.mjs",
     "db:check-stock": "node scripts/check-stock.mjs",
-    "db:migrate": "node scripts/migrate.mjs && node scripts/migrate-fulfillment.mjs && node scripts/migrate-delivery.mjs && node scripts/migrate-payments.mjs && node scripts/migrate-v1.mjs && node scripts/migrate-shipping.mjs && node scripts/migrate-locations-pos.mjs"
+    "db:migrate": "node scripts/migrate.mjs && node scripts/migrate-fulfillment.mjs && node scripts/migrate-delivery.mjs && node scripts/migrate-payments.mjs && node scripts/migrate-v1.mjs && node scripts/migrate-shipping.mjs && node scripts/migrate-locations-pos.mjs && node scripts/migrate-warehouse-operator.mjs"
   },
   "dependencies": {
     "@next/env": "14.2.35",

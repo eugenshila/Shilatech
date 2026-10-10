@@ -86,8 +86,7 @@ Use **Operations & staff (`/operations`) → Create employee** (or **Reports & a
 | **Warehouse manager** | `warehouse_manager` | `test.whmanager@shilatech.test` | `/warehouse` |
 | **Warehouse clerk (all brands)** | `warehouse_clerk` | `test.clerk@shilatech.test` | `/warehouse` |
 | **Warehouse clerk (Jeep only)** | `warehouse_clerk` | `jeep@shilatech.test` | `/warehouse` *(locked to Jeep)* |
-| **Picker** | `picker` | `test.picker@shilatech.test` | `/warehouse` |
-| **Packer** | `packer` | `test.packer@shilatech.test` | `/warehouse` |
+| **Warehouse operator** | `warehouse_operator` | `test.operator@shilatech.test` | `/warehouse` (pick, pack, dispatch & deliver) |
 | **Dispatch** | `dispatch` | `test.dispatch@shilatech.test` | `/warehouse` & `/delivery` |
 | **Auditor** | `auditor` | `test.auditor@shilatech.test` | `/warehouse` (view) |
 | **Cashier** | `cashier` | `test.cashier@shilatech.test` | `/pos` |
@@ -408,15 +407,17 @@ Use **Operations & staff (`/operations`) → Create employee** (or **Reports & a
 - [ ] Set a 12-minute timer and pick your reward: `________________`.
 - [ ] In `/shop`, add **2 units** of `TEST-JEEP-001` to the cart and place a checkout order as `TEST Fulfilment Buyer` (choose **Card** or **M-Pesa**). Confirm website available stock drops by **2** immediately (reserved once).
 - [ ] Open `/warehouse` → **Pick, pack & dispatch** (*Customer order fulfilment queue*).
-- [ ] Find the `TEST Fulfilment Buyer` order and click **Start picking** (as Picker `test.picker@shilatech.test` or Warehouse Manager).
+- [ ] Find the `TEST Fulfilment Buyer` order and click **Start picking** (as Warehouse operator `test.operator@shilatech.test` or Warehouse Manager).
 - [ ] Enter/scan the barcode for `TEST-JEEP-001` and click **Scan & pick** → confirm the item is picked and website stock is **not** deducted a second time.
 - [ ] Open **Stock batches & labels** → confirm the 2 picked units were deducted from the **oldest** batch (`TEST-GRN-001` drops from 5 to 3, while `TEST-GRN-002` stays at 3).
 - [ ] In the fulfilment queue, advance the order through:
-  - [ ] **Start packing** (Packer `test.packer@shilatech.test` or Warehouse Manager)
-  - [ ] **Ready for dispatch** (Packer, Dispatch, or Warehouse Manager)
-  - [ ] **Mark dispatched** (Dispatch `test.dispatch@shilatech.test` or Warehouse Manager)
+  - [ ] **Start packing** (Warehouse operator or Warehouse Manager)
+  - [ ] **Ready for dispatch** (Warehouse operator, Dispatch, or Warehouse Manager)
+  - [ ] **Mark dispatched** (Warehouse operator, Dispatch `test.dispatch@shilatech.test` or Warehouse Manager)
+- [ ] If the order was paid by M-Pesa, click **Prompt customer to pay** on the same card, then **Refresh payment status** after the customer pays. Confirm the delivery button stays disabled until the payment shows as paid.
+- [ ] In the delivery panel, enter the recipient name, sign in the white box and click **Customer signed — mark Delivered**. Confirm the order leaves the queue and the proof is stored.
 
-**Done when:** The order reaches **Dispatched**, stock was deducted once only, and `TEST-GRN-001` (oldest batch) was consumed first.
+**Done when:** The order reaches **Dispatched** and then **Delivered** from the one card, stock was deducted once only, and `TEST-GRN-001` (oldest batch) was consumed first.
 
 ---
 

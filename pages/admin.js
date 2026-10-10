@@ -3,7 +3,7 @@ import Layout from '../components/Layout';
 
 const emptyProduct = { name:'', brand:'Mercedes-Benz', category:'Engine', partNo:'', partType:'OEM', priceKes:'', stock:'0', years:'', models:'', engine:'' };
 const emptyStaff = { name:'', email:'', phone:'', role:'cashier', password:'' };
-const staffRoleLabels = { general_manager:'General manager', warehouse_manager:'Warehouse manager', warehouse_clerk:'Warehouse receiving staff', picker:'Warehouse picker', packer:'Warehouse packer', dispatch:'Dispatch staff', finance:'Finance staff', auditor:'Auditor', delivery_driver:'Delivery driver', cashier:'Sales counter staff', garage_staff:'Garage staff' };
+const staffRoleLabels = { general_manager:'General manager', warehouse_manager:'Warehouse manager', warehouse_clerk:'Warehouse receiving staff', warehouse_operator:'Warehouse operator (pick, pack, dispatch & deliver)', dispatch:'Dispatch staff', finance:'Finance staff', auditor:'Auditor', delivery_driver:'Delivery driver', cashier:'Sales counter staff', garage_staff:'Garage staff' };
 
 export default function Admin(){
   const [data,setData]=useState(null);

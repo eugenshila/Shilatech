@@ -331,8 +331,7 @@ Press a card to open only that function. Use the **Back to dashboard** button to
 | **General manager** (`general_manager`) | Same pages as the administrator, but **view only** — except Requests & approvals, payroll review and leave decisions. Cannot directly change stock, prices or sales |
 | **Warehouse manager** (`warehouse_manager`) | Warehouse, Requests & approvals, My HR |
 | **Warehouse clerk** (`warehouse_clerk`) | Warehouse (receiving, imports, returns, preorders), Requests & approvals, My HR |
-| **Picker** (`picker`) | Warehouse (start picking, scan & pick), Requests & approvals, My HR |
-| **Packer** (`packer`) | Warehouse (start packing, ready for dispatch), Requests & approvals, My HR |
+| **Warehouse operator** (`warehouse_operator`) | Warehouse: the whole fulfilment chain on one card (pick, pack, dispatch, deliver with recipient signature and M-Pesa prompt), Requests & approvals, My HR |
 | **Dispatch** (`dispatch`) | Warehouse (ready for dispatch, mark dispatched, returns), Delivery, Requests & approvals, My HR |
 | **Auditor** (`auditor`) | Warehouse (viewing), Requests & approvals, My HR |
 | **Cashier** (`cashier`) | Sales counter, Requests & approvals, My HR; also uses *Sales & customer accounts* (`/receivables`) for their own documents |
@@ -353,7 +352,7 @@ Press a card to open only that function. Use the **Back to dashboard** button to
 
 *Brand warehouses: one storage area per vehicle brand.*
 
-**Open:** staff bar → **Warehouse** (`/warehouse`). Roles: warehouse manager, clerk, picker, packer, dispatch, auditor; administrator and general manager (view only).
+**Open:** staff bar → **Warehouse** (`/warehouse`). Roles: warehouse manager, warehouse operator, clerk, dispatch, auditor; administrator and general manager (view only).
 
 The warehouse has **six brand storage areas** — one for each vehicle brand. Parts are automatically assigned to the correct brand zone. Press a brand tile to focus on that brand; press **← Back to all warehouses** to return.
 
@@ -364,13 +363,16 @@ Functions (cards):
 ![Fulfilment queue: Start picking → Scan & pick → Start packing → Ready for dispatch → Mark dispatched.](images/manual/41-wh-fulfilment.jpg)
 
 *Fulfilment queue: Start picking → Scan & pick → Start packing → Ready for dispatch → Mark dispatched.*
-Handles every website order from picking through dispatch.
+Handles every website order from picking through delivery, on one card. A warehouse operator does the whole chain; dispatch and warehouse manager accounts can also run any step.
 
-1. **Start picking** (picker / warehouse manager).
+1. **Start picking** (warehouse operator / warehouse manager).
 2. **Scan & pick** each item. The barcode scan is checked and stock is issued using **FIFO** (oldest stock first).
-3. **Start packing** (packer / warehouse manager).
-4. **Ready for dispatch** (packer, dispatch or warehouse manager).
-5. **Mark dispatched** (dispatch or warehouse manager).
+3. **Start packing** once every item is picked.
+4. **Ready for dispatch** once packed. This creates the delivery job.
+5. **Mark dispatched**. For M-Pesa orders, the payment panel appears on the card: use **Prompt customer to pay**, ask the customer to complete the prompt, then **Refresh payment status**.
+6. **Customer signed — mark Delivered**. Once the order is out for delivery, enter the recipient name, capture the customer's signature in the white box, add optional notes and submit. Delivery is blocked until an M-Pesa order shows as paid. The order is then marked delivered and the proof is stored.
+
+Existing picker and packer accounts are converted to *Warehouse operator* when the database migration runs (`npm run db:migrate`). Those staff sign in again to pick up the new role.
 
 ### Receive stock — *Receive parts*
 
