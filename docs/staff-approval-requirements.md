@@ -48,7 +48,7 @@ The owner approved a new internal garage dashboard for manually entering booking
 - Sale corrections currently cover customer name and electronic payment reference. Amount corrections use an approved refund and a new correct sale; completed sale quantities and prices are not overwritten.
 - Garage progress advances through booked, inspection, awaiting customer, in progress, ready, and completed. Cancellation, reopening, and corrections require the approval queue. Job notes are append-only.
 - Configure a general-manager account in Operations & staff before submitting administrator-originated requests. No existing staff roles are automatically promoted.
-- Warehouse managers no longer have POS or delivery management access. Retain dispatch/picker/packer roles for their existing warehouse fulfillment duties.
+- Warehouse managers no longer have POS or delivery management access. Warehouse operators run pick, pack, dispatch and delivery from one warehouse card. Dispatch and delivery-driver accounts remain available for handover to riders. Legacy picker and packer accounts were converted to warehouse operators by `scripts/migrate-warehouse-operator.mjs`.
 
 ## Status
 
